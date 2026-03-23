@@ -1,3 +1,6 @@
 body {
-    color: brown;
+    color: greenyellow; text-align: center; background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4SHV5hS5tCLH9kXWUZKIFwJw2kpyxfNxlkQ&s");
+}
+p{
+     opacity: 0.7
 }
