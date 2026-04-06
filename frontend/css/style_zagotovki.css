@@ -1,0 +1,39 @@
+body {
+    color: rgb(27, 91, 66); text-align: center; background-color: aquamarine;
+}
+p{
+     opacity: 0.7
+}
+button {
+    border: none;
+    border-radius: 100px;
+    text-decoration: none;
+    color: white;
+    background: #0B63F6;
+    box-shadow: 0 5px 0 #003CC5;
+}
+
+button:hover {
+    background: #003CC5;
+    box-shadow: none;
+    position: relative;
+    top: 5px;
+}
+.beautiful-link {
+    color: #0f7afc; /* Синий цвет текста */
+    text-decoration: none;
+    border-bottom: 1px solid rgba(15, 122, 252, 0.2); /* Тонкое подчёркивание */
+    position: relative;
+    transition: all 0.3s ease; /* Плавный переход */
+    padding-bottom: 2px;
+}
+
+.beautiful-link:hover {
+    color: #ffffff; /* Белый текст при наведении */
+    background: linear-gradient(90deg, #0f7afc, #00d4ff); /* Градиентный фон */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); /* Светлая линия */
+    border-radius: 4px; /* Скруглённые углы */
+    padding: 4px 8px; /* Отступы как у кнопки */
+    box-shadow: 0 2px 8px rgba(15, 122, 252, 0.3); /* Тень */
+}
+/*background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4SHV5hS5tCLH9kXWUZKIFwJw2kpyxfNxlkQ&s")*/

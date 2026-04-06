@@ -1,33 +1,41 @@
 <!DOCTYPE html>
-<html>
-    <body>
-        <h1><p>Личные данные</p></h1>
+<html lang="en">
+<header>Регистраци 2 этап</header>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style_personal_data.css">
+</head>
+
+<body>
+    <h1>
+        <p>Личные данные</p>
+    </h1>
+
+
+    <form action="chose.html">
         <div>
-            <label for="name">Имя*</label>
-            <input id="name" type="text" placeholder="Введите ваше имя">
+            <input id="name" type="text" required placeholder="Введите ваше имя *">
         </div>
         <div>
-            <label for="surname">Фамилия*</label>
-            <input id="surname" type="text" placeholder="Введите вашу фамилию">
+            <input id="surname" type="text" required placeholder="Введите вашу фамилию *">
         </div>
         <div>
-            <label for="thirdname">Отчество*</label>
-            <input id="thirdname" type="text" placeholder="Введите вуше отчество">
+            <input id="thirdname" type="text" placeholder="Введите ваше отчество">
         </div>
         <div>
             <label for="date_of_birth">Дата рождения*</label>
-            <input id="date_of_birth" type="date">
+            <input id="date_of_birth" type="date" required>
         </div>
-        <label for="pol">Пол</label>
-        <form>
-            <select>
-                <option value="male">Мужской</option>
-                <option value="female">Женский</option>
-                <option value="another">Другое</option>
-            </select>
-        </form>
-        <form action="chose.html">
+        <select>
+                                <option value="male">Мужской</option>
+                                <option value="female">Женский</option>
+                            </select>
+        <div>
             <button value="submit">Далее</button>
-        </form>
-    </body>
+        </div>
+    </form>
+</body>
+
 </html>

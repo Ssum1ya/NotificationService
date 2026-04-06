@@ -1,0 +1,16 @@
+body{ text-align: center; background-color: aquamarine;}
+button {
+    border: none;
+    border-radius: 100px;
+    text-decoration: none;
+    color: white;
+    background: #0B63F6;
+    box-shadow: 0 5px 0 #003CC5;
+}
+
+button:hover {
+    background: #003CC5;
+    box-shadow: none;
+    position: relative;
+    top: 5px;
+}
