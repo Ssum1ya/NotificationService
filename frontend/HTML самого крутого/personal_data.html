@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html>
+    <header>Регистраци 2 этап</header>
+    <head><link rel="stylesheet" href="css/style_personal_data.css"></head>
     <body>
         <h1><p>Личные данные</p></h1>
-        <div>
-            <label for="name">Имя*</label>
-            <input id="name" type="text" placeholder="Введите ваше имя">
-        </div>
-        <div>
-            <label for="surname">Фамилия*</label>
-            <input id="surname" type="text" placeholder="Введите вашу фамилию">
-        </div>
-        <div>
-            <label for="thirdname">Отчество*</label>
-            <input id="thirdname" type="text" placeholder="Введите вуше отчество">
-        </div>
-        <div>
-            <label for="date_of_birth">Дата рождения*</label>
-            <input id="date_of_birth" type="date">
-        </div>
-        <label for="pol">Пол</label>
-        <form>
-            <select>
-                <option value="male">Мужской</option>
-                <option value="female">Женский</option>
-                <option value="another">Другое</option>
-            </select>
-        </form>
+
+
         <form action="chose.html">
+            <div>
+            <input id="name" type="text" required placeholder="Введите ваше имя *">
+            </div>
+            <div>
+            <input id="surname" type="text" required  placeholder="Введите вашу фамилию *">
+            </div>
+            <div>
+            <input id="thirdname" type="text"  placeholder="Введите ваше отчество">
+            </div>
+            <div>
+            <label for="date_of_birth">Дата рождения*</label>
+            <input id="date_of_birth" type="date" required>
+            </div>          
+                            <select>
+                                <option value="male">Мужской</option>
+                                <option value="female">Женский</option>
+                            </select>
+            <div>          
             <button value="submit">Далее</button>
+            </div>  
         </form>
     </body>
 </html>

@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html>
+    <header>Вход</header>
+    <head>
+        <link rel="stylesheet" href="css/style_zagotovki.css">
+    </head>
     <body>
         <div>
             <p><h1>Добро пожаловать</h1>
-            <h5>Войдите в свой аккаунт</h5></p>
+            <h2>Войдите в свой аккаунт</h2></p>
         </div>
-            <div>
-                <label for="login">Введите свою логин:</label>
-                <input type="text" id="login" placeholder="Введите свою логин">
-            </div>
-            <div>
-                <label for="password">Введите пароль: </label>
-                <input type="password" id="password" placeholder="Введите пароль">
-            </div>
             <form action="lobby.html">
-                <button type="submit">Pereiti</button>
+        <div>
+            <input type="email" id="emaili"  name=smth required placeholder="Введите свою почту">
+        </div>
+        <div>
+        <input type="password" id="password" placeholder="Введите пароль">
+        </div>
+        <div>
+            <label for="zap">Запомнить меня</label>
+            <input type="checkbox" id="zap">
+        </div>
+        <div>
+            <button type="submit">Перейти</button>
+        </div>
             </form>
-                <p><h4>Нет аккаунта?</h4></p><a href="register.html">Зарегестрируйтесь</a>
-    </body>
+            <div class="no-wrap">
+                <p><h4>Нет аккаунта?</h4><a class="beautiful-link" href="register.html">Зарегистрируйтесь</a></p>
+            </div>
 
+    </body>
 </html>
