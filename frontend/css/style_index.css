@@ -1,0 +1,83 @@
+body {
+    color: #333333; 
+    text-align: center; 
+    background-color: wheat;
+    
+}
+p{
+     opacity: 0.7
+}
+button {
+    border: none;
+    border-radius: 100px;
+    text-decoration: none;
+    color: white;
+    background: #654321;
+    box-shadow: 0 5px 0 #8B4513;
+}
+
+button:hover {
+    background: #8B4513;
+    box-shadow: none;
+    position: relative;
+    top: 5px;
+}
+.beautiful-link {
+    color: #1E3A8A; /* Синий цвет текста */
+    text-decoration: none;
+    border-bottom: 1px solid rgba(15, 122, 252, 0.2); /* Тонкое подчёркивание */
+    position: relative;
+    transition: all 0.3s ease; /* Плавный переход */
+    padding-bottom: 2px;
+}
+
+.beautiful-link:hover {
+    color: #ffffff; /* Белый текст при наведении */
+    background: linear-gradient(90deg, #1E3A8A, #00d4ff); /* Градиентный фон */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); /* Светлая линия */
+    border-radius: 4px; /* Скруглённые углы */
+    padding: 4px 8px; /* Отступы как у кнопки */
+    box-shadow: 0 2px 8px rgba(15, 122, 252, 0.3); /* Тень */
+}
+
+.parent-container {
+  display: flex;                
+  justify-content: center;      
+  align-items: center;          
+}
+
+
+
+.input-wheat {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 400;
+  color: #444; /* тёплый тёмно‑серый, не чёрный */
+  padding: 10px 12px;
+  border: 1px solid #ccad99; /* бежево‑коричневата рамка */
+  border-radius: 8px;
+  outline: none;
+  background-color: #f8f2e9; /* чуть светлее, чем wheat */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* при наведении */
+.input-wheat:hover {
+  border-color: #b89686;
+}
+
+/* при фокусе */
+.input-wheat:focus {
+  border-color: #a88a77;
+  box-shadow: 0 0 0 3px rgba(168, 138, 119, 0.3);
+  background-color: #fdfbf8; /* чуть светлее фона страницы */
+}
+
+/*background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4SHV5hS5tCLH9kXWUZKIFwJw2kpyxfNxlkQ&s")*/
