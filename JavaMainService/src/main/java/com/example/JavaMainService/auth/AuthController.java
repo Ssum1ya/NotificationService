@@ -1,6 +1,7 @@
 package com.example.JavaMainService.auth;
 
 import com.example.JavaMainService.auth.model.RegisterRequestDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping
-    public ResponseEntity<Void> register(@RequestBody RegisterRequestDTO request) {
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDTO request) {
         authService.register(request);
 
         return ResponseEntity.ok(null);

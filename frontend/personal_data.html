@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<header>Регистраци 2 этап</header>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style_personal_data.css">
+</head>
+
+<body>
+    <h1>
+        <p>Личные данные</p>
+    </h1>
+
+
+    <form action="chose.html">
+        <div>
+            <input id="name" type="text" required placeholder="Введите ваше имя *">
+        </div>
+        <div>
+            <input id="surname" type="text" required placeholder="Введите вашу фамилию *">
+        </div>
+        <div>
+            <input id="thirdname" type="text" placeholder="Введите ваше отчество">
+        </div>
+        <div>
+            <label for="date_of_birth">Дата рождения*</label>
+            <input id="date_of_birth" type="date" required>
+        </div>
+        <select>
+                                <option value="male">Мужской</option>
+                                <option value="female">Женский</option>
+                            </select>
+        <div>
+            <button value="submit">Далее</button>
+        </div>
+    </form>
+</body>
+
+</html>

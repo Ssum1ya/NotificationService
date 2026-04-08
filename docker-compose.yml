@@ -17,6 +17,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks: [test-net]
   db:
     image: postgres:latest 
     volumes:
@@ -30,7 +31,26 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5434:5432"
+    networks: [test-net]
+  
+  backend:
+    build: ./JavaMainService
+    ports: ["8080:8080"]
+    networks: [test-net]
+  
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    networks: [test-net]
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
-  
+
+networks:
+  test-net:
+    driver: bridge
