@@ -1,6 +1,6 @@
 package com.example.JavaMainService.auth;
 
-import com.example.JavaMainService.auth.model.RegisterRequestDTO;
+import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
 import com.example.JavaMainService.user.Role;
 import com.example.JavaMainService.user.User;
 import lombok.RequiredArgsConstructor;

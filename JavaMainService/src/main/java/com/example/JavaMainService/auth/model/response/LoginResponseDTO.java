@@ -1,4 +1,6 @@
-package com.example.JavaMainService.auth.model;
+package com.example.JavaMainService.auth.model.response;
 
-public class LoginResponseDTO {
+public record LoginResponseDTO(
+        String accessToken
+) {
 }

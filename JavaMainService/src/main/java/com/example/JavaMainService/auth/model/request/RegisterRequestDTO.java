@@ -1,4 +1,4 @@
-package com.example.JavaMainService.auth.model;
+package com.example.JavaMainService.auth.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

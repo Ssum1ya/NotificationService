@@ -1,10 +1,11 @@
 package com.example.JavaMainService.auth;
 
 import com.example.JavaMainService.auth.errors.LoginBusyException;
+import com.example.JavaMainService.auth.errors.LoginInvalidException;
+import com.example.JavaMainService.auth.errors.PasswordInvalidException;
 import com.example.JavaMainService.globalException.GlobalErrorResponse;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -15,9 +16,9 @@ import java.time.temporal.ChronoUnit;
 @RestControllerAdvice(basePackageClasses = AuthController.class)
 public class AuthErrorsHandler {
 
-    @ExceptionHandler(LoginBusyException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<GlobalErrorResponse> handleRegisterException(
-            LoginBusyException ex, WebRequest request
+            IllegalArgumentException ex, WebRequest request
     ) {
 
         GlobalErrorResponse response = new GlobalErrorResponse("BAD REQUEST", ex.getMessage(),

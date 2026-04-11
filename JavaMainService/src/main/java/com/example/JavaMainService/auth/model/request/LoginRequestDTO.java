@@ -1,4 +1,9 @@
-package com.example.JavaMainService.auth.model;
+package com.example.JavaMainService.auth.model.request;
 
-public class LoginRequestDTO {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequestDTO(
+        String login,
+        String password
+) {
 }

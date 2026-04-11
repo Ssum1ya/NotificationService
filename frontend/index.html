@@ -15,21 +15,22 @@
             <h2>Войдите в свой аккаунт</h2>
         </p>
     </div>
-    <form action="lobby.html">
+    <form action="lobby.html" id="loginForm">
         <div>
-            <input type="text" id="login" name=smth required placeholder="Введите свою почту">
+            <input type="text" id="login" name="login" placeholder="Введите логин">
         </div>
         <div>
-            <input type="password" id="password" placeholder="Введите пароль">
+            <input type="password" id="password" name="password" placeholder="Введите пароль">
         </div>
         <div>
-            <button type="submit">Перейти</button>
+            <button type="submit" name="loginButton" id="loginButton">Перейти</button>
         </div>
     </form>
     <div class="no-wrap">
         <p>
             <h4>Нет аккаунта?</h4><a class="beautiful-link" href="register.html">Зарегистрируйтесь</a></p>
     </div>
+    <script src="login.js"></script>
 
 </body>
 
