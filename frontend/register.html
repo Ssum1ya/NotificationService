@@ -1,26 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-<header>регистрация 1 этап</header>
-
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style_register.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
-    <h1>
-        <p>Создать аккаунт</p>
-    </h1>
-    <div>
-    </div>
-    <form action="personal_data.html" id="registerForm">
-        <input type="text" name="login" required placeholder="Введите ваш логин">
-        <input type="text" name="password" required placeholder="Введите ваш пароль">
-        <input type="text" name="password2" required placeholder="Введите ваш пароль ещё раз">
-        <button type="submit" id="registerBtn">Зарегестрироваться</button>
-    </form>
-    <script src="register.js"></script>
-</body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="header">
+                <div class="icon-circle">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                </div>
+                <h1>Регистрация</h1>
+                <p>Создайте новый аккаунт</p>
+            </div>
 
+            <form id="registerForm" class="form">
+                <div class="form-group">
+                    <label for="register-login">Логин</label>
+                    <input type="text" id="register-login" placeholder="Введите логин" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" placeholder="Введите пароль" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="confirm-password" placeholder="Повторите пароль" required>
+                </div>
+
+                <button type="submit" class="btn-primary">Зарегистрироваться</button>
+            </form>
+
+            <div class="footer">
+                <p>Уже есть аккаунт? <a href="index.html">Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для ошибок -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="error-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 id="errorTitle">Ошибка валидации</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+                <ul id="errorList"></ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeErrorModal()">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для успеха -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 id="successTitle">Успешно!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>

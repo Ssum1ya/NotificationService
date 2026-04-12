@@ -17,6 +17,7 @@ public class AuthMapper {
           request.login(), passwordEncoder.encode(request.password())
         );
         user.setRole(Role.User);
+        user.setIsHead(false);
 
         return user;
     }

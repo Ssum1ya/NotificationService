@@ -1,8 +1,5 @@
 package com.example.JavaMainService.auth;
 
-import com.example.JavaMainService.auth.errors.LoginBusyException;
-import com.example.JavaMainService.auth.errors.LoginInvalidException;
-import com.example.JavaMainService.auth.errors.PasswordInvalidException;
 import com.example.JavaMainService.globalException.GlobalErrorResponse;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;

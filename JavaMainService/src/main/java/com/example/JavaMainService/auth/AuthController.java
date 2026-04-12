@@ -2,16 +2,12 @@ package com.example.JavaMainService.auth;
 
 import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
 import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
+import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
 import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Encoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.crypto.SecretKey;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,5 +25,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PutMapping("/updateAcessToken")
+    public ResponseEntity<LoginResponseDTO> updateAccessToken(@RequestBody UpdateTokenRequestDTO request) {
+        return ResponseEntity.ok(authService.updateTokens(request));
     }
 }

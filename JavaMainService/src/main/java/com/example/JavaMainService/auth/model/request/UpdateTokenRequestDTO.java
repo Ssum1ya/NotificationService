@@ -1,4 +1,6 @@
 package com.example.JavaMainService.auth.model.request;
 
-public record UpdateTokenRequestDTO() {
+public record UpdateTokenRequestDTO(
+        String refreshToken
+) {
 }

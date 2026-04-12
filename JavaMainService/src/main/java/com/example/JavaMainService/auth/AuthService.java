@@ -2,11 +2,15 @@ package com.example.JavaMainService.auth;
 
 import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
 import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
+import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
 import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
+import com.example.JavaMainService.security.MyUserDetails;
+import com.example.JavaMainService.security.MyUserDetailsService;
 import com.example.JavaMainService.security.jwt.JwtService;
 import com.example.JavaMainService.user.User;
 import com.example.JavaMainService.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final MyUserDetailsService myUserDetailsService;
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
@@ -40,8 +45,24 @@ public class AuthService {
             throw new IllegalArgumentException("Неверный пароль");
         }
 
-        String token = jwtService.generateToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new LoginResponseDTO(token);
+        return new LoginResponseDTO(accessToken, refreshToken);
+    }
+
+    public LoginResponseDTO updateTokens(UpdateTokenRequestDTO request) {
+        String login = jwtService.extractLogin(request.refreshToken());
+        MyUserDetails myUserDetails = (MyUserDetails) myUserDetailsService.loadUserByUsername(login);
+
+        if (jwtService.validateToken(request.refreshToken(), myUserDetails)) {
+            User user = myUserDetails.getUser();
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+            return new LoginResponseDTO(accessToken, refreshToken);
+        }
+
+        throw new BadCredentialsException("Invalid token");
     }
 }
