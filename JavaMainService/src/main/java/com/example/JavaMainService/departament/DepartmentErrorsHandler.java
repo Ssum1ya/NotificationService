@@ -1,6 +1,6 @@
-package com.example.JavaMainService.auth;
+package com.example.JavaMainService.departament;
 
-import com.example.JavaMainService.globalException.GlobalErrorResponse;
+import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,8 +10,8 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@RestControllerAdvice(basePackageClasses = AuthController.class)
-public class AuthErrorsHandler {
+@RestControllerAdvice(basePackageClasses = DepartamentService.class)
+public class DepartamentErrorsHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<GlobalErrorResponse> handleRegisterException(

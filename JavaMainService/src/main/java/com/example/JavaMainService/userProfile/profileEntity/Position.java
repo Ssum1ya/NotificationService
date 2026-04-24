@@ -1,10 +1,11 @@
 package com.example.JavaMainService.userProfile;
 
 public enum Position {
-    BackendDeveloper,
+    Developer,
     Tester,
-    ProductAnalyst,
-    FrontendDeveloper,
-    Devops,
+    Analyst,
     Designer,
+    Manager,
+    Devops,
+    DataScientist
 }

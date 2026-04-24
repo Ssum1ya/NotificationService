@@ -1,6 +1,7 @@
 package com.example.JavaMainService.user;
 
-import com.example.JavaMainService.userProfile.UserProfile;
+import com.example.JavaMainService.departament.Department;
+import com.example.JavaMainService.userProfile.profileEntity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,12 +30,21 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "isHead")
-    private Boolean isHead;
+    @Column(name = "requestStatusHead")
+    @Enumerated(EnumType.STRING)
+    private RequestStatus requestStatusHead;
+
+    @Column(name = "requestStatusAdmin")
+    @Enumerated(EnumType.STRING)
+    private RequestStatus requestStatusAdmin;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
-    private UserProfile userProfile;
+    private Profile profile;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "departement_id")
+    private Department department;
 
     public User(String login, String password) {
         this.login = login;

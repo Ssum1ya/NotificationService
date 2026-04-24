@@ -1,6 +1,6 @@
 package com.example.JavaMainService.userProfile;
 
-import com.example.JavaMainService.departament.Departament;
+import com.example.JavaMainService.departament.Department;
 import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserProfile {
+public class Profile {
     @Id
     @UuidGenerator
     private UUID id;
@@ -35,6 +35,9 @@ public class UserProfile {
     @Enumerated(EnumType.STRING)
     private Communication communication;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "position")
     @Enumerated(EnumType.STRING)
     private Position position;
@@ -43,19 +46,16 @@ public class UserProfile {
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "departement_id")
-    private Departament departament;
-
     @JsonIgnore
-    @OneToOne(mappedBy = "userProfile")
+    @OneToOne(mappedBy = "profile")
     private User user;
 
-    public UserProfile(String lastName, String name, String surname, Communication communication, Position position, Grade grade, User user) {
+    public Profile(String lastName, String name, String surname, Communication communication, String username, Position position, Grade grade, User user) {
         this.lastName = lastName;
         this.name = name;
         this.surname = surname;
         this.communication = communication;
+        this.username = username;
         this.position = position;
         this.grade = grade;
         this.user = user;

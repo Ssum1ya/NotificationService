@@ -1,14 +1,14 @@
 package com.example.JavaMainService.departament;
 
 import com.example.JavaMainService.user.User;
-import com.example.JavaMainService.userProfile.UserProfile;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.JavaMainService.userProfile.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,9 +24,12 @@ public class Departament {
     @Column(name = "name")
     private String name;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "departament")
-    private UserProfile userProfile;
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "head_id")
+    private User head;
+
+    @OneToMany(mappedBy = "departament")
+    private List<Profile> employees;
 
     public Departament(String name) {
         this.name = name;
