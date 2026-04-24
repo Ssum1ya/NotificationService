@@ -1,4 +1,10 @@
 package com.example.JavaMainService.userProfile.model;
 
-public record GetProfileById() {
+import java.util.UUID;
+
+public record GetProfileById(
+        UUID departmentId,
+        String login,
+        ProfileDTO profileDTO
+) {
 }

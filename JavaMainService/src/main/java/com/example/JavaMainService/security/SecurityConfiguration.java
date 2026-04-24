@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -33,7 +34,20 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/users/admin").hasAuthority("ADMIN_ROLE")
+                        .requestMatchers("/ping/**").permitAll()
+
+                        .requestMatchers("/admin").hasAuthority("Admin")
+
+                        .requestMatchers("/departament/user-select-profile").hasAuthority("User")
+                        .requestMatchers("/departament/get-all").hasAuthority("Admin")
+                        .requestMatchers("/departament/create").hasAuthority("Admin")
+
+                        .requestMatchers("/profile/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/profile/head/**").hasAuthority("Head")
+
+                        .requestMatchers("/user/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/user/head/**").hasAuthority("Head")
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -60,7 +74,7 @@ public class SecurityConfiguration {
                 "http://127.0.0.1"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

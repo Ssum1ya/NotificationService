@@ -1,6 +1,7 @@
 package com.example.JavaMainService.security.jwt;
 
-import com.example.JavaMainService.user.User;
+import com.example.JavaMainService.departament.Department;
+import com.example.JavaMainService.user.userEntity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,17 +15,26 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value("${jwtSecretKey}")
+    @Value("${JWTSECRET}")
     private String secretKey;
 
     public String generateAccessToken(User user) {
+        UUID departmentId = null;
+
+        Department department = user.getDepartment();
+        if (department != null) {
+            departmentId = department.getId();
+        }
+
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getUuid());
         claims.put("role", user.getRole());
-        claims.put("isHead", user.getIsHead());
+        claims.put("departmentId", departmentId);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -61,6 +71,10 @@ public class JwtService {
 
     public String extractLogin(String token) {
         return extractClaim(token, claims -> claims.getSubject());
+    }
+
+    public String extractDepartmentId(String token) {
+        return extractClaim(token, claims -> claims.get("departmentId", String.class));
     }
 
     private Date extractExpiration(String token) {

@@ -4,6 +4,7 @@ import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
 import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
 import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
 import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
+import com.example.JavaMainService.auth.model.response.UpdateTokenResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @PutMapping("/updateAcessToken")
-    public ResponseEntity<LoginResponseDTO> updateAccessToken(@RequestBody UpdateTokenRequestDTO request) {
+    public ResponseEntity<UpdateTokenResponseDTO> updateAccessToken(@RequestBody UpdateTokenRequestDTO request) {
         return ResponseEntity.ok(authService.updateTokens(request));
     }
 }

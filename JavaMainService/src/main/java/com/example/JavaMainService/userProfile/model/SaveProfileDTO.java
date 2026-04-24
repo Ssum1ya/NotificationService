@@ -2,7 +2,7 @@ package com.example.JavaMainService.userProfile.model;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ProfileDTO(
+public record SaveProfileDTO(
         @NotBlank(message = "фамилия обязательна")
         String lastName,
         @NotBlank(message = "имя обязательно")

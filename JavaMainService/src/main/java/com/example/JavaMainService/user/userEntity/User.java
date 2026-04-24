@@ -1,4 +1,4 @@
-package com.example.JavaMainService.user;
+package com.example.JavaMainService.user.userEntity;
 
 import com.example.JavaMainService.departament.Department;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;

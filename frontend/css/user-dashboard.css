@@ -1,0 +1,425 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f8fafc;
+    color: #1e3a8a;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Боковая панель */
+.sidebar {
+    width: 260px;
+    background: white;
+    border-right: 1px solid #bfdbfe;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid #bfdbfe;
+}
+
+.sidebar-header h2 {
+    color: #1e3a8a;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.sidebar-nav {
+    padding: 16px 0;
+    flex: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #64748b;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.nav-item:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.nav-item.active {
+    background: #dbeafe;
+    color: #2563eb;
+    border-right: 3px solid #2563eb;
+}
+
+.nav-item svg {
+    flex-shrink: 0;
+}
+
+.badge {
+    background: #dc2626;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* Основной контент */
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 32px;
+}
+
+.content-header {
+    margin-bottom: 32px;
+}
+
+.content-header h1 {
+    color: #1e3a8a;
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 16px;
+}
+
+/* Секции */
+.section-title {
+    color: #1e3a8a;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+/* Уведомления */
+.notifications-section {
+    margin-bottom: 40px;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification-card {
+    background: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+}
+
+.notification-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-color: #93c5fd;
+}
+
+.notification-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-icon.info {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.notification-icon.success {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.notification-icon.warning {
+    background: #fef3c7;
+    color: #ca8a04;
+}
+
+.notification-icon.error {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    color: #1e3a8a;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.notification-time {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.notification-text {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.notification-unread {
+    border-left: 4px solid #2563eb;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    font-size: 14px;
+}
+
+/* Быстрые действия */
+.quick-actions {
+    margin-bottom: 40px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.action-card {
+    background: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: start;
+    transition: all 0.2s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-color: #93c5fd;
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    background: #dbeafe;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.action-card h3 {
+    color: #1e3a8a;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.action-card p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #bfdbfe;
+}
+
+.modal-header {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid #bfdbfe;
+}
+
+.modal-header h3 {
+    color: #1e3a8a;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.notification-date {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #bfdbfe;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Иконки модальных окон */
+.success-icon, .error-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.success-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.error-icon {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Кнопки */
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+.btn-close {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-close:hover {
+    background: #1d4ed8;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid #bfdbfe;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .content-header h1 {
+        font-size: 24px;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

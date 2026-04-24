@@ -1,4 +1,7 @@
-package com.example.JavaMainService.notifications.model.request;
+package com.example.JavaMainService.notifications.model;
 
-public record ConsumerCommunicationData() {
+public record ConsumerCommunicationDTO(
+        Communication communication,
+        String username
+) {
 }

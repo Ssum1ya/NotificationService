@@ -1,4 +1,11 @@
 package com.example.JavaMainService.departament.model.response;
 
-public record DepartamentDTO() {
+import java.util.UUID;
+
+public record DepartmentDTO(
+        UUID id,
+        String name,
+        String headName,
+        Integer employeeCount
+) {
 }

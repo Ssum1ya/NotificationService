@@ -1,5 +1,8 @@
 package com.example.JavaMainService.globalException;
 
+import com.example.JavaMainService.globalException.exceptions.AccessDeniedException;
+import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
+import com.example.JavaMainService.globalException.exceptionsDTO.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +68,12 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex, WebRequest request
     ) {
 
+        String traceId = MDC.get("traceId");
+        if (traceId == null) {
+            MDC.put("traceId", UUID.randomUUID().toString());
+            traceId = MDC.get("traceId");
+        }
+
         List<ValidationError.FieldsError> fieldsErrorList = new ArrayList<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error -> {
@@ -72,8 +81,25 @@ public class GlobalExceptionHandler {
         });
 
         ValidationError validationError = new ValidationError("VALIDATION_FAILED",
-                "Некоторые поля не прошли валидацию", MDC.get("traceId"), Instant.now().truncatedTo(ChronoUnit.SECONDS).toString(), request.getDescription(false).split("uri=")[1], fieldsErrorList);
+                "Некоторые поля не прошли валидацию", traceId, Instant.now().truncatedTo(ChronoUnit.SECONDS).toString(), request.getDescription(false).split("uri=")[1], fieldsErrorList);
 
         return ResponseEntity.status(422).body(validationError);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<GlobalErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex, WebRequest request
+    ) {
+        String traceId = MDC.get("traceId");
+        if (traceId == null) {
+            MDC.put("traceId", UUID.randomUUID().toString());
+            traceId = MDC.get("traceId");
+        }
+
+        GlobalErrorResponse response = new GlobalErrorResponse("FORBIDDEN", "Недостаточно прав доступа",
+                traceId, Instant.now().truncatedTo(ChronoUnit.SECONDS).toString(),
+                request.getDescription(false).split("uri=")[1]);
+
+        return ResponseEntity.status(403).body(response);
     }
 }

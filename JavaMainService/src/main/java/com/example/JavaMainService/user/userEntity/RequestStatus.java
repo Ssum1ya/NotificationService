@@ -1,7 +1,7 @@
-package com.example.JavaMainService.user;
+package com.example.JavaMainService.user.userEntity;
 
 public enum RequestStatus {
-    Approved,
-    Pending,
-    Declined
+    APPROVED,
+    PENDING,
+    DECLINED
 }

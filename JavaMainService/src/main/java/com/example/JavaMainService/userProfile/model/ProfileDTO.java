@@ -4,10 +4,7 @@ import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.userProfile.profileEntity.Grade;
 import com.example.JavaMainService.userProfile.profileEntity.Position;
 
-import java.util.UUID;
-
-public record GetProfileByIdDTO(
-        UUID departmentId,
+public record ProfileDTO(
         String lastName,
         String name,
         String surname,

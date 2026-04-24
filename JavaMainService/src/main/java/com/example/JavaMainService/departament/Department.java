@@ -1,7 +1,6 @@
 package com.example.JavaMainService.departament;
 
-import com.example.JavaMainService.user.User;
-import com.example.JavaMainService.userProfile.Profile;
+import com.example.JavaMainService.user.userEntity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Departament {
+public class Department {
     @Id
     @UuidGenerator
     private UUID id;
@@ -28,10 +27,10 @@ public class Departament {
     @JoinColumn(name = "head_id")
     private User head;
 
-    @OneToMany(mappedBy = "departament")
-    private List<Profile> employees;
+    @OneToMany(mappedBy = "department")
+    private List<User> employees;
 
-    public Departament(String name) {
+    public Department(String name) {
         this.name = name;
     }
 }

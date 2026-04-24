@@ -1,4 +1,4 @@
-package com.example.JavaMainService.globalException;
+package com.example.JavaMainService.globalException.exceptionsDTO;
 
 import lombok.Getter;
 import lombok.Setter;

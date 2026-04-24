@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заполнение профиля</title>
-    <link rel="stylesheet" href="css/profile-form.css">
+    <link rel="stylesheet" href="../css/profile-form.css">
 </head>
 <body>
     <div class="container">
@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="middleName">Отчество</label>
+                        <label for="middleName">Отчество (при наличии)</label>
                         <input type="text" id="middleName" placeholder="Введите отчество">
                     </div>
 
@@ -57,26 +57,22 @@
                 <!-- Шаг 2: Контакты -->
                 <div class="form-step" data-step="2">
                     <h2>Контакты</h2>
-                    <p class="step-description">Укажите предпочтительный способ связи</p>
 
                     <div class="form-group">
                         <label for="messenger">Рекомендуемый вид связи <span class="required">*</span></label>
                         <select id="messenger" required>
-                            <option value="">Выберите мессенджер</option>
+                            <option value="">Выберите площадку</option>
                             <option value="telegram">Telegram</option>
-                            <option value="whatsapp">WhatsApp</option>
-                            <option value="viber">Viber</option>
-                            <option value="email">Email</option>
-                            <option value="slack">Slack</option>
-                            <option value="discord">Discord</option>
+                            <option value="email">Mail</option>
+                            <option value="vk">Vk</option>
                         </select>
                     </div>
 
-                    <p class="step-description">Ваш ваш username в платформе которую вы выбрали</p>
-                    
                     <div class="form-group">
-                        <label for="username">Username<span class="required">*</span></label>
-                        <input type="text" id="username" placeholder="Введите username" required>
+                        <label for="username" id="usernameLabel">
+                            Контактные данные<span class="required">*</span>
+                        </label>
+                        <input type="text" id="username" placeholder="Введите контактные данные" required>
                     </div>
 
 
@@ -95,28 +91,32 @@
                         <label for="position">Позиция <span class="required">*</span></label>
                         <select id="position" required>
                             <option value="">Выберите позицию</option>
-                            <option value="developer">Разработчик</option>
-                            <option value="tester">Тестировщик</option>
-                            <option value="analyst">Аналитик</option>
-                            <option value="designer">Дизайнер</option>
-                            <option value="manager">Менеджер проекта</option>
-                            <option value="devops">DevOps инженер</option>
-                            <option value="dataScientist">Data Scientist</option>
+                            <option value="Developer">Разработчик</option>
+                            <option value="Tester">Тестировщик</option>
+                            <option value="Analyst">Аналитик</option>
+                            <option value="Designer">Дизайнер</option>
+                            <option value="Manager">Менеджер проекта</option>
+                            <option value="Devops">DevOps инженер</option>
+                            <option value="DataScientist">Data Scientist</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="department">Департамент <span class="required">*</span></label>
+                        <label for="grade">Уровень <span class="required">*</span></label>
+                        <select id="grade" required>
+                            <option value="">Выберите уровень</option>
+                            <option value="Intern">Intern (Стажер)</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Middle">Middle</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Департамент<span class="required">*</span></label>
                         <select id="department" required>
-                            <option value="">Выберите департамент</option>
-                            <option value="development">Разработка</option>
-                            <option value="qa">Тестирование (QA)</option>
-                            <option value="design">Дизайн</option>
-                            <option value="analytics">Аналитика</option>
-                            <option value="devops">DevOps</option>
-                            <option value="hr">HR</option>
-                            <option value="marketing">Маркетинг</option>
-                            <option value="sales">Продажи</option>
+                            <option value="" id="">Загрузка...</option>
                         </select>
                     </div>
 
@@ -126,6 +126,44 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для ошибок -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="error-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 id="errorTitle">Ошибка валидации</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+                <ul id="errorList"></ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeErrorModal()">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для успеха -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 id="successTitle">Успешно!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
         </div>
     </div>
 

@@ -1,4 +1,4 @@
-package com.example.JavaMainService.user;
+package com.example.JavaMainService.user.userEntity;
 
 public enum Role {
     User,

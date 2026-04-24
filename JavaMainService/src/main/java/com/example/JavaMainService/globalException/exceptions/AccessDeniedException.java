@@ -1,7 +1,7 @@
 package com.example.JavaMainService.globalException.exceptions;
 
-public class AcessDeniedException extends RuntimeException {
-  public AcessDeniedException(String message) {
-    super(message);
-  }
+public class AccessDeniedException extends RuntimeException {
+    public AccessDeniedException(String message) {
+        super(message);
+    }
 }

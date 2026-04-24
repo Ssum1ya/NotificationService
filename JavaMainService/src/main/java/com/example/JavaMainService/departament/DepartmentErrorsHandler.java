@@ -10,8 +10,8 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@RestControllerAdvice(basePackageClasses = DepartamentService.class)
-public class DepartamentErrorsHandler {
+@RestControllerAdvice(basePackageClasses = DepartmentService.class)
+public class DepartmentErrorsHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<GlobalErrorResponse> handleRegisterException(
@@ -22,6 +22,6 @@ public class DepartamentErrorsHandler {
                 MDC.get("traceId"), Instant.now().truncatedTo(ChronoUnit.SECONDS).toString(),
                 request.getDescription(false).split("uri=")[1]);
 
-        return ResponseEntity.status(401).body(response);
+        return ResponseEntity.status(400).body(response);
     }
 }

@@ -4,6 +4,21 @@ function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Парсинг JWT токена
+function parseJWT(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Ошибка парсинга JWT:', e);
+        return null;
+    }
+}
+
 // Функция отображения красивых ошибок
 function showErrorModal(errorResponse) {
     const modal = document.getElementById('errorModal');
@@ -71,6 +86,12 @@ window.addEventListener('click', function(event) {
     }
 });
 
+// Получение роли пользователя из токена
+function getUserRoleFromToken(token) {
+    const payload = parseJWT(token);
+    return payload ? payload.role : null;
+}
+
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', async function(e) {
@@ -101,10 +122,28 @@ if (loginForm) {
         const result = await response.json();
         localStorage.setItem('acessToken', result.accessToken);
         localStorage.setItem('refreshToken', result. refreshToken);
+        
+        let href = '';
+        const userRole = getUserRoleFromToken(result.accessToken);
+
+        if (result.role === 'Admin') {
+            href = 'admin-panel/admin-panel.html';
+        } else if (!result.profile) {
+            href = 'profile-form/profile-form.html';
+        } else if (result.role === 'Head') {
+            href = 'department-head/departament-head.html'
+        } 
+        else if (!result.requestStatusAdmin === "APPROVED" && !result.requestStatusHead === "APPROVED") {
+            showSuccessModal('Ваша заявка находиться в обработке', '')
+            timeout(2000);
+            return
+        } else {
+            href = 'user-dashboard/user-dashboard.html'
+        }
 
         showSuccessModal('Вход выполнен!', 'Добро пожаловать в систему');
         timeout(2000).then(() => {
-            window.location.href = '/profile-form.html';
+            window.location.href = href;
         });  
     });
 }

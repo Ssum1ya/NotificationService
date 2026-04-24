@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель главы департамента</title>
+    <link rel="stylesheet" href="../css/departament-head.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Портал Главы</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="home">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Главная
+                </a>
+
+                <a href="#" class="nav-item" data-tab="applications">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Заявки
+                    <span class="badge" id="applicationsBadge">0</span>
+                </a>
+
+                <a href="#" class="nav-item" data-tab="staff">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Состав департамента
+                </a>
+
+                <a href="#" class="nav-item" data-tab="messages">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Сообщения
+                </a>
+
+                <a href="#" class="nav-item" data-tab="notifications">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Уведомления
+                    <span class="badge" id="notificationsBadge">0</span>
+                </a>
+
+                <a href="#" class="nav-item" onclick="logout()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Выход
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Tab -->
+            <div class="tab-content active" id="homeTab">
+                <div class="content-header">
+                    <h1>Добро пожаловать, Глава департамента!</h1>
+                    <p class="subtitle">Управление департаментом и командой</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div>
+                                <p class="stat-label">Новые заявки</p>
+                                <p class="stat-value" id="statApplications">0</p>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div>
+                                <p class="stat-label">Всего сотрудников</p>
+                                <p class="stat-value" id="statEmployees">0</p>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Быстрые действия</div>
+                <div class="actions-grid">
+                    <a href="#" class="action-card" data-tab="applications">
+                        <div class="action-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>Обработать заявки</h3>
+                            <p>Просмотр и принятие решений</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="action-card" data-tab="messages">
+                        <div class="action-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>Отправить сообщение</h3>
+                            <p>Связаться с сотрудниками</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Applications Tab -->
+            <div class="tab-content" id="applicationsTab">
+                <div class="content-header">
+                    <h1>Заявки на вступление</h1>
+                    <p class="subtitle">Просмотр и обработка заявок от кандидатов</p>
+                </div>
+
+                <div id="applicationsList"></div>
+            </div>
+
+            <!-- Staff Tab -->
+            <div class="tab-content" id="staffTab">
+                <div class="content-header">
+                    <h1>Состав департамента</h1>
+                    <p class="subtitle">Список всех сотрудников вашего департамента</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="staff-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Должность</th>
+                                <th>Департамент</th>
+                                <th>Средство связи</th>
+                                <th>Контактные данные</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div class="tab-content" id="messagesTab">
+                <div class="content-header">
+                    <h1>Отправить сообщение</h1>
+                    <p class="subtitle">Выберите сотрудников и отправьте им сообщение</p>
+                </div>
+
+                <div class="messages-grid">
+                    <div class="recipients-panel">
+                        <div class="panel-header">
+                            <h2>Выбрать получателей</h2>
+                            <button class="select-all-btn" onclick="toggleSelectAll()">Выбрать всех</button>
+                        </div>
+
+                        <div class="recipients-list" id="recipientsList"></div>
+
+                        <div id="selectedCount" class="selected-count" style="display: none;">
+                            Выбрано сотрудников: <span id="selectedCountValue">0</span>
+                        </div>
+                    </div>
+
+                    <div class="message-panel">
+                        <h2>Текст сообщения</h2>
+
+                        <textarea
+                            id="messageText"
+                            placeholder="Введите текст сообщения..."
+                            class="message-textarea"
+                        ></textarea>
+
+                        <button class="send-btn" onclick="sendMessage()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                            Отправить сообщение
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div class="tab-content" id="notificationsTab">
+                <div class="content-header">
+                    <h1>Уведомления</h1>
+                    <p class="subtitle">Все ваши уведомления и важные сообщения</p>
+                </div>
+
+                <div id="notificationsList"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 id="modalTitle">Успешно!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeModal()">Отлично</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успеха -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 id="successTitle">Успешно!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeSuccessModal()">Отлично</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно ошибки -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="error-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 id="errorTitle">Ошибка</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+                <ul id="errorList"></ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeErrorModal()">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра профиля -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="profileModalTitle">Профиль пользователя</h3>
+            </div>
+            <div class="modal-body">
+                <div id="profileContent">
+                    <!-- Профиль будет загружен здесь -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-primary" onclick="closeProfileModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="departament-head.js"></script>
+</body>
+</html>

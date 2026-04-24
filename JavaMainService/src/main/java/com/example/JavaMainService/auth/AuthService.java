@@ -4,10 +4,11 @@ import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
 import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
 import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
 import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
+import com.example.JavaMainService.auth.model.response.UpdateTokenResponseDTO;
 import com.example.JavaMainService.security.MyUserDetails;
 import com.example.JavaMainService.security.MyUserDetailsService;
 import com.example.JavaMainService.security.jwt.JwtService;
-import com.example.JavaMainService.user.User;
+import com.example.JavaMainService.user.userEntity.User;
 import com.example.JavaMainService.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -48,10 +49,10 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new LoginResponseDTO(accessToken, refreshToken);
+        return authMapper.userToLoginResponseDTO(user, accessToken, refreshToken);
     }
 
-    public LoginResponseDTO updateTokens(UpdateTokenRequestDTO request) {
+    public UpdateTokenResponseDTO updateTokens(UpdateTokenRequestDTO request) {
         String login = jwtService.extractLogin(request.refreshToken());
         MyUserDetails myUserDetails = (MyUserDetails) myUserDetailsService.loadUserByUsername(login);
 
@@ -60,7 +61,7 @@ public class AuthService {
             String accessToken = jwtService.generateAccessToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
 
-            return new LoginResponseDTO(accessToken, refreshToken);
+            return new UpdateTokenResponseDTO(accessToken, refreshToken);
         }
 
         throw new BadCredentialsException("Invalid token");

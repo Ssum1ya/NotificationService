@@ -1,4 +1,6 @@
 package com.example.JavaMainService.user.model;
 
-public record ProfileCheckDTO() {
+public record ProfileCheckDTO(
+        Boolean isProfile
+) {
 }

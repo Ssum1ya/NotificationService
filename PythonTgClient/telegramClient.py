@@ -10,6 +10,8 @@ from BulkSender import *
 import json
 import os
 
+print('tg-client started')
+
 load_dotenv()
 id = int(os.environ['TELEGRAM_API_ID'])
 hash = os.environ['TELEGRAM_API_HASH']
@@ -26,14 +28,6 @@ mobile_device = {
     "system_lang_code": "en-US",
 }
 
-
-consumer = KafkaConsumer(
-    'notifications',
-    bootstrap_servers=['localhost:9092'],
-    group_id='consumer-group',
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
-)
-
 async def main():
     client = TelegramClient(
         'session',
@@ -46,11 +40,27 @@ async def main():
         system_lang_code=mobile_device["system_lang_code"],
     )
     await client.start()
+    print('client_started')
+
+    consumer = KafkaConsumer(
+        'notifications-telegram', # пример с отправкой mail
+        bootstrap_servers=['localhost:29092'],
+        group_id='consumer-group',
+        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    )
+    print('kafka-started')
 
     sender = BulkSender(client)
     for message in consumer:
-        target = message.value
+        
+        notification = message.value
+        print(message)
+
+        subj = notification['fromFullName'] + " " +  notification['fromFullPosition'] + " " + notification['fromDepartmentName']
+        message = subj + "\n" + notification['message']
+        target = notification['usernameList']
+
         await sender.send(target, message)
 
-if __name__ == '__main__':
-    asyncio.run(main())
+
+asyncio.run(main())

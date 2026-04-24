@@ -1,7 +1,8 @@
 package com.example.JavaMainService.departament;
 
-import com.example.JavaMainService.departament.model.request.CreateDepDTO;
-import com.example.JavaMainService.departament.model.response.GetDepartamentAllDTO;
+import com.example.JavaMainService.departament.model.request.CreateDepartmentDTO;
+import com.example.JavaMainService.departament.model.response.DepartmentDTO;
+import com.example.JavaMainService.departament.model.response.DepartmentUserSelectDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,21 +12,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/departament")
 @RequiredArgsConstructor
-public class DepartamentController {
-    private final DepartamentService departamentService;
+public class DepartmentController {
+    private final DepartmentService departmentService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<GetDepartamentAllDTO>> getAllDepartament() {
-        return ResponseEntity.ok(departamentService.getAll());
+    @GetMapping("/user-select-profile")
+    public ResponseEntity<List<DepartmentUserSelectDTO>> userSelect() {
+        return ResponseEntity.ok(departmentService.getAllDepartmentsName());
     }
 
-    @GetMapping("/user-select")
-    public ResponseEntity<List<String>> user_select() {
-        return ResponseEntity.ok(departamentService.user_select());
+    @GetMapping("/get-all")
+    public ResponseEntity<List<DepartmentDTO>> getAllDepartment() {
+        return ResponseEntity.ok(departmentService.getAllDepartments());
     }
 
-    @PostMapping
-    public void createDep(@RequestBody CreateDepDTO request) {
-        departamentService.createDep(request);
+    @PostMapping("/create")
+    public void createDepartment(@RequestBody CreateDepartmentDTO request) {
+        departmentService.createDepartment(request);
     }
 }

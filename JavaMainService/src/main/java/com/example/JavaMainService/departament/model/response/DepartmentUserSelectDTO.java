@@ -1,4 +1,9 @@
 package com.example.JavaMainService.departament.model.response;
 
-public class DepartmentUserSelectDTO {
+import java.util.UUID;
+
+public record DepartmentUserSelectDTO(
+        UUID id,
+        String name
+) {
 }

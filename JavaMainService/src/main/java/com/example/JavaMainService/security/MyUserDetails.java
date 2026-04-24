@@ -1,6 +1,6 @@
 package com.example.JavaMainService.security;
 
-import com.example.JavaMainService.user.User;
+import com.example.JavaMainService.user.userEntity.User;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
