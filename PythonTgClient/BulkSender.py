@@ -1,5 +1,5 @@
 import asyncio
-from telethon import TelegramClient
+from telethon import TelegramClient, connection
 
 class BulkSender:
     def __init__(self, client: TelegramClient):

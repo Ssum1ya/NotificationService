@@ -27,6 +27,18 @@
                     Заявки
                     <span class="badge" id="requestsBadge">0</span>
                 </a>
+                <a href="#" class="nav-item" data-section="messages" onclick="switchSection(event, 'messages')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Отправить сообщение
+                </a>
+                <a href="#" class="nav-item" data-section="messageHistory" onclick="switchSection(event, 'messageHistory')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    История сообщений
+                </a>
                 <a href="#" class="nav-item" onclick="logout()">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -64,6 +76,58 @@
                 <div class="requests-list" id="requestsList">
                     <!-- Заявки будут загружены здесь -->
                 </div>
+            </div>
+
+            <!-- Секция отправки сообщений -->
+            <div id="messages-section" class="content-section">
+                <div class="content-header">
+                    <h1>Отправить сообщение</h1>
+                    <p class="subtitle" style="margin-top: 8px;"></p>
+                </div>
+
+                <div class="messages-grid">
+                    <div class="recipients-panel">
+                        <div class="panel-header">
+                            <h2>Главы отделов</h2>
+                            <button class="select-all-btn" onclick="toggleSelectAll()">Выбрать всех</button>
+                        </div>
+
+                        <div class="recipients-list" id="recipientsList"></div>
+
+                        <div id="selectedCount" class="selected-count" style="display: none;">
+                            Выбрано сотрудников: <span id="selectedCountValue">0</span>
+                        </div>
+                    </div>
+
+                    <div class="message-panel">
+                        <h2>Текст сообщения</h2>
+
+                        <textarea
+                            id="messageText"
+                            placeholder="Введите текст сообщения..."
+                            class="message-textarea"
+                        ></textarea>
+
+                        <button class="send-btn" onclick="sendMessage()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                            Отправить сообщение
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message History Tab -->
+            <div class="content-section" id="messageHistory-section">
+                <div class="content-header">
+                    <h1>История отправленных сообщений</h1>
+                </div>
+
+                <div id="messageHistoryList"></div>
+            </div>
+
+                <div id="messageHistoryList"></div>
             </div>
         </main>
     </div>

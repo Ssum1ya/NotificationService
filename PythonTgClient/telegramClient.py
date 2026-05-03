@@ -1,9 +1,3 @@
-
-# нужен session.session файл для авторизации
-# где то локально сделайте маленький скрипт с авторизацией telethon с вашим ботом там или как у вас
-# создастся session.session файл, его кидаете в папку с этим скриптом
-# файл (сессия) должен называтся именно session.session, ибо его ожидает телефон в этой папке
-# также закидываете api_id и api_hash в .env 
 from kafka import KafkaConsumer
 from dotenv import load_dotenv
 from BulkSender import *
@@ -16,10 +10,12 @@ load_dotenv()
 id = int(os.environ['TELEGRAM_API_ID'])
 hash = os.environ['TELEGRAM_API_HASH']
 
-# наверное можно сообщение тоже через кафку передавать но хз
-message = "Lorem Ipsum"
+proxySecret = os.environ['PROXY_SECRET']
+proxyServer = os.environ['PROXY_SERVER']
+proxyPort = int(os.environ['PROXY_PORT'])
 
-# https://github.com/LonamiWebs/Telethon/issues/4730#issuecomment-3765009509
+proxy = (proxyServer, proxyPort, proxySecret)
+
 mobile_device = {
     "device_model": "Pixel 5",
     "system_version": "11",
@@ -33,6 +29,8 @@ async def main():
         'session',
         id,
         hash,
+        connection=connection.ConnectionTcpMTProxyRandomizedIntermediate,
+        proxy=proxy,
         device_model=mobile_device["device_model"],
         system_version=mobile_device["system_version"],
         app_version=mobile_device["app_version"],
@@ -43,7 +41,7 @@ async def main():
     print('client_started')
 
     consumer = KafkaConsumer(
-        'notifications-telegram', # пример с отправкой mail
+        'notifications-telegram',
         bootstrap_servers=['localhost:29092'],
         group_id='consumer-group',
         value_deserializer=lambda x: json.loads(x.decode('utf-8'))
@@ -51,8 +49,8 @@ async def main():
     print('kafka-started')
 
     sender = BulkSender(client)
+
     for message in consumer:
-        
         notification = message.value
         print(message)
 

@@ -1,12 +1,38 @@
 // API базовый URL
-const API_BASE_URL = 'http://localhost:8000'; // Замените на ваш URL
+const API_BASE_URL = 'http://localhost:8080'; // Замените на ваш URL
 
 // Проверка авторизации при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const actionCards = document.querySelectorAll('.action-card');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tab = this.getAttribute('data-tab');
+            if (tab) {
+                switchTab(tab);
+            }
+        });
+    });
+
+    actionCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tab = this.getAttribute('data-tab');
+            if (tab) {
+                switchTab(tab);
+            }
+        });
+    });
+
+    renderProfile();
+    renderNotifications();
     checkAuth();
-    loadUserData();
+    renderYoungMessages();
+    // loadUserData();
     loadNotifications();
-    loadUnreadMessages();
+    //loadUnreadMessages();
 });
 
 // Проверка авторизации
@@ -18,31 +44,67 @@ function checkAuth() {
     }
 }
 
-// Загрузка данных пользователя
-async function loadUserData() {
-    const token = localStorage.getItem('acessToken');
-    
+// Парсинг JWT токена
+function parseJWT(token) {
     try {
-        const response = await fetch(`${API_BASE_URL}/profile`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            document.getElementById('userName').textContent = data.firstName || 'Пользователь';
-        } else {
-            // Используем демо-данные если API недоступен
-            document.getElementById('userName').textContent = 'Иван';
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки данных пользователя:', error);
-        // Демо-данные
-        document.getElementById('userName').textContent = 'Иван';
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Ошибка парсинга JWT:', e);
+        return null;
     }
+}
+
+function getUserIdFromToken(token) {
+    const payload = parseJWT(token);
+    return payload ? payload.userId : null;
+}
+
+// // Загрузка данных пользователя
+// async function loadUserData() {
+//     const token = localStorage.getItem('acessToken');
+    
+//     try {
+//         const response = await fetch(`${API_BASE_URL}/profile`, {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${token}`,
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+
+//         if (response.ok) {
+//             const data = await response.json();
+//             document.getElementById('userName').textContent = data.firstName || 'Пользователь';
+//         } else {
+//             // Используем демо-данные если API недоступен
+//             document.getElementById('userName').textContent = 'Иван';
+//         }
+//     } catch (error) {
+//         console.error('Ошибка загрузки данных пользователя:', error);
+//         // Демо-данные
+//         document.getElementById('userName').textContent = 'Иван';
+//     }
+// }
+
+function switchTab(tabName) {
+    // Update nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-tab') === tabName) {
+            item.classList.add('active');
+        }
+    });
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
 // Загрузка уведомлений
@@ -107,6 +169,165 @@ function displayDemoNotifications() {
     displayNotifications(demoNotifications);
 }
 
+// Notifications
+async function renderProfile() {
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+    const container = document.getElementById('profileTab');
+    const p = result;
+
+    container.innerHTML = `
+        <div class="profile-container">
+            
+            <div class="profile-section">
+                <h2 class="section-title">Личная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Имя</span>
+                        <span class="profile-value">${p.name}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Фамилия</span>
+                        <span class="profile-value">${p.lastName}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Отчество</span>
+                        <span class="profile-value">${p.surname}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">Контактная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Средство связи</span>
+                        <span class="profile-value">${p.communication}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Контактные данные</span>
+                        <span class="profile-value">${p.username}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">Рабочая информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Грейд</span>
+                        <span class="profile-value">${p.grade}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Должность</span>
+                        <span class="profile-value">${p.position}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Департамент</span>
+                        <span class="profile-value">${p.department}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>`;
+}
+
+// Отображение истории сообщений
+async function renderYoungMessages() {
+    const container = document.getElementById('recentNotificationsList');
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/message/young-messages/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+    
+    container.innerHTML = result.map(notif => `
+        <div class="notification-item">
+            <div class="notification-icon ${'info'}">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-header">
+                    <div class="notification-title">${notif.fromName}</div>
+                    <div class="notification-time">${notif.message_time}</div>
+                </div>
+                <div class="notification-text">${notif.message}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Notifications
+async function renderNotifications() {
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/message/notification-history/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+
+    const container = document.getElementById('notificationsList');
+    container.innerHTML = result.map(notif => `
+        <div class="notification-item">
+            <div class="notification-icon ${'info'}">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-header">
+                    <div class="notification-title">${notif.fromName}</div>
+                    <div class="notification-time">${notif.message_time}</div>
+                </div>
+                <div class="notification-text">${notif.message}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
 // Отображение уведомлений
 function displayNotifications(notifications) {
     const notificationsList = document.getElementById('notificationsList');
@@ -151,31 +372,31 @@ function getNotificationIcon(type) {
     return icons[type] || icons.info;
 }
 
-// Загрузка количества непрочитанных сообщений
-async function loadUnreadMessages() {
-    const token = localStorage.getItem('acessToken');
+// // Загрузка количества непрочитанных сообщений
+// async function loadUnreadMessages() {
+//     const token = localStorage.getItem('acessToken');
     
-    try {
-        const response = await fetch(`${API_BASE_URL}/messages/unread-count`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+//     try {
+//         const response = await fetch(`${API_BASE_URL}/messages/unread-count`, {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${token}`,
+//                 'Content-Type': 'application/json'
+//             }
+//         });
 
-        if (response.ok) {
-            const data = await response.json();
-            updateMessagesBadge(data.count);
-        } else {
-            // Демо-данные
-            updateMessagesBadge(3);
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки сообщений:', error);
-        updateMessagesBadge(3);
-    }
-}
+//         if (response.ok) {
+//             const data = await response.json();
+//             updateMessagesBadge(data.count);
+//         } else {
+//             // Демо-данные
+//             updateMessagesBadge(3);
+//         }
+//     } catch (error) {
+//         console.error('Ошибка загрузки сообщений:', error);
+//         updateMessagesBadge(3);
+//     }
+// }
 
 // Обновление бейджа сообщений
 function updateMessagesBadge(count) {

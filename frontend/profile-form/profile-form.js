@@ -198,7 +198,7 @@ messengerSelect.addEventListener("change", () => {
     } else if (value === "email") {
         text = "Введите почту";
     } else if (value === "vk") {
-        text = "Введите username";
+        text = "Введите id аккаунта";
     }
 
     // меняем всё сразу

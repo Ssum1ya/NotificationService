@@ -17,4 +17,4 @@ COPY . .
 # Проверяем, что файлы скопировались
 RUN ls -la
 
-CMD ["python", "-u", "telegramClient.py"]
+CMD ["python", "-u", "main.py"]

@@ -78,14 +78,24 @@ public class ProfileSql {
             u.request_status_head = 'APPROVED'
             """;
 
+    public static final String getHeadEmployeesForNotify = """
+            select u.uuid as user_id, p.last_name, p.name, p.surname, d.name as department_name from user_profiles p
+            
+            inner join users u
+            	on u.profile_id = p.id
+            
+            inner join departament d
+            	on d.head_id = u.uuid
+            """;
+
 
     public static final String getProfileFromProducer = """
             select u.uuid as user_id, up.last_name, up.name, up.surname, up.grade, up.position, d.name as department_name  from user_profiles up
             
-            left join users u
+            full outer join users u
             	on u.profile_id = up.id
             
-            left join departament d
+            full outer join departament d
             	on u.departement_id = d.id
             
             where u.login = ?
@@ -98,5 +108,15 @@ public class ProfileSql {
             	on u.profile_id = up.id
             
             where u.uuid = ANY(?)
+            """;
+
+    public static final String getProducerName = """
+            select CONCAT(up.last_name, ' ', up.name, ' ', up.surname) as from_name
+            from user_profiles up
+            
+            join users u
+            	on u.profile_id = up.id
+            
+            where u.uuid = ?
             """;
 }

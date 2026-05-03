@@ -109,6 +109,16 @@ public class ProfileJdbcRepository {
         );
     }
 
+    public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
+        return jdbcTemplate.query(ProfileSql.getHeadEmployeesForNotify, (rs, rowNum) ->
+                        new HeadEmployeeForNotifyDTO(
+                                UUID.fromString(rs.getString("user_id")),
+                                rs.getString("last_name") + " " + rs.getString("name") + " " + rs.getString("surname"),
+                                rs.getString("department_name")
+                        )
+        );
+    }
+
     public Optional<ProfileProducerDTO> getProfileFromProducer(String login) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(ProfileSql.getProfileFromProducer, (rs, rowNum) ->
                 new ProfileProducerDTO(
@@ -138,12 +148,12 @@ public class ProfileJdbcRepository {
                                 rs.getString("username")
                         )
                 );
-//        return jdbcTemplate.query(ProfileSql.getConsumerCommunication, (rs, rowNum) ->
-//                        new ConsumerCommunicationDTO(
-//                                Communication.valueOf(rs.getString("communication")),
-//                                rs.getString("username")
-//                        ),
-//                fromLogin
-//        );
+    }
+
+    public Optional<String> getProducerName(UUID producerId) {
+        return Optional.ofNullable(jdbcTemplate.queryForObject(ProfileSql.getProducerName, (rs, rowNum) ->
+                rs.getString("from_name"),
+                producerId)
+        );
     }
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -22,17 +23,24 @@ public class Message {
     @Column(name = "message")
     private String message;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_id")
     private User from;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_id")
     private User to;
 
-    public Message(String message, User from, User to) {
+    @Column(name = "messageTime")
+    private LocalDateTime messageTime;
+
+    @Column(name = "batchId")
+    private UUID batchId;
+
+    public Message(String message, User from, User to, LocalDateTime time) {
         this.message = message;
         this.from = from;
         this.to = to;
+        this.messageTime = time;
     }
 }

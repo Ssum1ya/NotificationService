@@ -1,6 +1,7 @@
 package com.example.JavaMainService.user.userEntity;
 
 import com.example.JavaMainService.departament.Department;
+import com.example.JavaMainService.message.Message;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +47,12 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "departement_id")
     private Department department;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "to")
+    private List<Message> messages;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "from")
+    private List<Message> messageHistory;
 
     public User(String login, String password) {
         this.login = login;

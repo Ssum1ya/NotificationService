@@ -46,7 +46,7 @@ public class Profile {
     private Grade grade;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "profile")
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL)
     private User user;
 
     public Profile(String lastName, String name, String surname, Communication communication, String username, Position position, Grade grade, User user) {

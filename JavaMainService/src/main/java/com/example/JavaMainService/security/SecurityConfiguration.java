@@ -35,6 +35,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/ping/**").permitAll()
+                        .requestMatchers("/test/**").permitAll()
+
+                        .requestMatchers("/message/history/**").hasAnyRole("Admin", "Head")
 
                         .requestMatchers("/admin").hasAuthority("Admin")
 
@@ -43,6 +46,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/departament/create").hasAuthority("Admin")
 
                         .requestMatchers("/profile/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/profile/head-employees-for-notification").hasAuthority("Admin")
                         .requestMatchers("/profile/head/**").hasAuthority("Head")
 
                         .requestMatchers("/user/admin/**").hasAuthority("Admin")

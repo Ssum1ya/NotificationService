@@ -2,7 +2,7 @@ package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.user.userEntity.User;
-import com.example.JavaMainService.userProfile.model.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
 import com.example.JavaMainService.userProfile.profileEntity.Grade;
 import com.example.JavaMainService.userProfile.profileEntity.Position;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;

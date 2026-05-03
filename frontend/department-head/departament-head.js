@@ -84,26 +84,164 @@ function getUserDepIdFromToken(token) {
     return payload ? payload.departmentId : null;
 }
 
+function getUserIdFromToken(token) {
+    const payload = parseJWT(token);
+    return payload ? payload.userId : null;
+}
+
 function getIsHeadFromToken(token) {
     const payload = parseJWT(token);
     return payload ? payload.isHead : null;
 }
 
-let applications = [
-    { id: 1, name: 'Иванов Иван Иванович', position: 'Разработчик', experience: '5 лет', date: '2026-04-15', status: 'pending', isEnabledHead: true },
-    { id: 2, name: 'Петрова Анна Сергеевна', position: 'Дизайнер', experience: '3 года', date: '2026-04-14', status: 'pending', isEnabledHead: false },
-    { id: 3, name: 'Сидоров Петр Алексеевич', position: 'Аналитик', experience: '4 года', date: '2026-04-13', status: 'pending', isEnabledHead: true },
+let messageHistory = [
+    {
+        id: 1,
+        date: '2026-04-24 09:00',
+        recipients: ['Кузнецов Алексей', 'Смирнова Ольга', 'Волков Дмитрий'],
+        message: 'Напоминаю всем о завтрашнем собрании в 10:00. Пожалуйста, подготовьте отчеты.'
+    },
+    {
+        id: 2,
+        date: '2026-04-23 15:30',
+        recipients: ['Морозова Елена'],
+        message: 'Пожалуйста, проверьте последние тесты перед релизом.'
+    },
+    {
+        id: 3,
+        date: '2026-04-22 11:20',
+        recipients: ['Все сотрудники'],
+        message: 'С понедельника вводится новый график работы. Подробности в приложении.'
+    }
 ];
 
-// const employees = [
-//     { id: 1, name: 'Кузнецов Алексей', position: 'Senior Developer', department: 'Разработка', communication: 'telegram', username: '@asd' },
-//     { id: 2, name: 'Смирнова Ольга', position: 'Team Lead', department: 'Разработка', communication: 'vk', username: '@dsa' },
-//     { id: 3, name: 'Волков Дмитрий', position: 'Middle Developer', department: 'Разработка', communication: 'email', username: 'asd@mail.ru' },
-//     { id: 4, name: 'Морозова Елена', position: 'QA Engineer', department: 'Тестирование', communication: 'telegram', username: '@zxc' },
-//     { id: 5, name: 'Новиков Сергей', position: 'DevOps', department: 'Инфраструктура', communication: 'email', username: 'zxc@mail.ru' },
-// ];
+// Отображение истории сообщений
+async function renderYoungMessages() {
+    const container = document.getElementById('recentNotificationsList');
 
-let notifications = [
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/message/young-messages/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+    
+    container.innerHTML = result.map(notif => `
+        <div class="notification-item">
+            <div class="notification-icon ${'info'}">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-header">
+                    <div class="notification-title">${notif.fromName}</div>
+                    <div class="notification-time">${notif.message_time}</div>
+                </div>
+                <div class="notification-text">${notif.message}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Отображение истории сообщений
+async function renderMessageHistory() {
+    const container = document.getElementById('messageHistoryList');
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/message/sending-history/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Нет отправленных сообщений</h3>
+                <p>История сообщений пуста</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = result.map(msg => `
+        <div class="message-history-item">
+            <div class="message-history-header">
+                <div class="message-history-date">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    ${msg.messageTime}
+                </div>
+            </div>
+            <div class="message-recipients">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2563eb;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                ${msg.usernames.map(r => `<span class="recipient-tag">${r}</span>`).join('')}
+            </div>
+            <div class="message-history-text">${msg.message}</div>
+        </div>
+    `).join('');
+}
+
+// При отправке сообщения добавить в историю
+function sendMessage() {
+    const messageText = document.getElementById('messageText').value;
+    const selectedNames = selectedEmployees.map(id => {
+        const emp = employees.find(e => e.id === id);
+        return emp ? emp.name : '';
+    }).filter(Boolean);
+
+    if (selectedEmployees.length === 0 || !messageText.trim()) {
+        // показать ошибку
+        return;
+    }
+
+    // Добавить в историю
+    messageHistory.unshift({
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU'),
+        recipients: selectedNames.length === employees.length ? ['Все сотрудники'] : selectedNames,
+        message: messageText
+    });
+
+    // Сбросить форму
+    selectedEmployees = [];
+    document.getElementById('messageText').value = '';
+    updateSelectedCount();
+
+    // Показать успех
+    showModal('Сообщение отправлено', `Сообщение отправлено ${selectedNames.length} сотрудникам`);
+}
+
+let s = [
     { id: 1, title: 'Новая заявка', message: 'Поступила новая заявка от Иванова И.И. на позицию Разработчик', type: 'info', date: '2026-04-15 14:30', read: false },
     { id: 2, title: 'Собрание команды', message: 'Завтра в 10:00 запланировано общее собрание департамента', type: 'warning', date: '2026-04-14 16:00', read: false },
     { id: 3, title: 'Успешное обновление', message: 'Система успешно обновлена до версии 2.0', type: 'success', date: '2026-04-13 09:15', read: true },
@@ -153,6 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    renderMessageHistory();
+    renderYoungMessages();
 
     renderApplications();
     renderStaff();
@@ -606,29 +747,26 @@ async function sendMessage() {
         return;
     }
 
-    showModal(
-        'Сообщение отправлено',
-        `Сообщение отправлено ${selectedEmployees.length} сотрудникам`
-    );
-
     console.log(messageText)
     console.log(selectedEmployees)
 
     try {
         const token = localStorage.getItem('acessToken');
+        const fromId = getUserIdFromToken(token);
 
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
+        if (!token) {           
+            console.error('No token found');        
+            return;     
+        }                           
 
-        const response = await fetch(`${API_URL}/notify`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
+        const response = await fetch(`${API_URL}/notify`, {         
+            method: 'POST',         
+            headers: {               
+                'Authorization': 'Bearer ' + token,                                                                                                                                                                                                                
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                fromId: fromId,
                 message: messageText,
                 listUserIds: selectedEmployees
             })
@@ -654,19 +792,40 @@ async function sendMessage() {
 }
 
 // Notifications
-function renderNotifications() {
+async function renderNotifications() {
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/message/notification-history/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+
+    // ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})
+
     const container = document.getElementById('notificationsList');
-    container.innerHTML = notifications.map(notif => `
-        <div class="notification-item ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})">
-            <div class="notification-icon ${notif.type}">
+    container.innerHTML = result.map(notif => `
+        <div class="notification-item">
+            <div class="notification-icon ${'info'}">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
             </div>
             <div class="notification-content">
                 <div class="notification-header">
-                    <div class="notification-title">${notif.title}</div>
-                    <div class="notification-time">${notif.date}</div>
+                    <div class="notification-title">${notif.fromName}</div>
+                    <div class="notification-time">${notif.message_time}</div>
                 </div>
                 <div class="notification-text">${notif.message}</div>
             </div>

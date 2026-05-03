@@ -1,8 +1,8 @@
 package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
-import com.example.JavaMainService.user.userEntity.Role;
 import com.example.JavaMainService.userProfile.model.*;
+import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,21 +35,6 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getProfileByUserId(userId, requestRole, requestDepartmentId, requestLogin));
     }
 
-//    @GetMapping("/admin/{profileId}")
-//    public ResponseEntity<ProfileDTO> adminGetProfileById(@PathVariable("profileId") UUID profileId, Authentication auth) {
-//        System.err.println(auth.getAuthorities().contains("Admin"));
-//        System.err.println(auth.getAuthorities().contains(Role.Admin));
-//        return ResponseEntity.ok(profileService.adminGetProfileById(profileId));
-//    }
-//
-//    @GetMapping("/head/{userId}")
-//    public ResponseEntity<ProfileDTO> headGetProfileById(@PathVariable("userId") UUID userId, Authentication auth) {
-//        Map<String, String> credentials = (Map<String, String>) auth.getCredentials();
-//        UUID requestDepartmentId = UUID.fromString(credentials.get("departmentId"));
-//
-//        return ResponseEntity.ok(profileService.headGetProfileById(userId, requestDepartmentId));
-//    }
-
     @GetMapping("/admin/departament-employees/{departmentId}")
     public ResponseEntity<List<DepartmentEmployeeDTO>> adminGetEmployeesByDepartmentId(@PathVariable("departmentId") UUID departmentId) {
         return ResponseEntity.ok(profileService.adminGetEmployeesByDepartment(departmentId));
@@ -76,8 +61,11 @@ public class ProfileController {
     public ResponseEntity<List<EmployeeForNotificationDTO>> getEmployeesForNotifications(@PathVariable("departmentId") UUID departmentId, Authentication auth) {
         String fromLogin = auth.getName();
 
-        System.err.println(fromLogin);
+        return ResponseEntity.ok(profileService.headGetEmployeesForNotify(departmentId, fromLogin));
+    }
 
-        return ResponseEntity.ok(profileService.headGetEmployeesForNotification(departmentId, fromLogin));
+    @GetMapping("/head-employees-for-notification")
+    public ResponseEntity<List<HeadEmployeeForNotifyDTO>> getEmployeesForNotifications() {
+        return ResponseEntity.ok(profileService.getHeadEmployeesForNotify());
     }
 }

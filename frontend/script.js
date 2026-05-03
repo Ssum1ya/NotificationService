@@ -133,11 +133,16 @@ if (loginForm) {
         } else if (result.role === 'Head') {
             href = 'department-head/departament-head.html'
         } 
-        else if (!result.requestStatusAdmin === "APPROVED" && !result.requestStatusHead === "APPROVED") {
+        else if (result.requestStatusAdmin === "PENDING" || result.requestStatusHead === "PENDING") {
             showSuccessModal('Ваша заявка находиться в обработке', '')
             timeout(2000);
             return
-        } else {
+        } else if (result.requestStatusAdmin === "DECLINED" && result.requestStatusHead === "DECLINED") {
+            showErrorModal('Ваша заявка была отклонена', '')
+            timeout(2000);
+            return
+        }
+         else {
             href = 'user-dashboard/user-dashboard.html'
         }
 

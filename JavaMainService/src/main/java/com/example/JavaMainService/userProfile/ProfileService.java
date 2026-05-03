@@ -7,6 +7,7 @@ import com.example.JavaMainService.user.userEntity.RequestStatus;
 import com.example.JavaMainService.user.userEntity.User;
 import com.example.JavaMainService.user.UserRepository;
 import com.example.JavaMainService.userProfile.model.*;
+import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,9 +21,7 @@ import java.util.UUID;
 public class ProfileService {
     private final ProfileMapper profileMapper;
 
-    private final ProfileRepository profileRepository;
     private final ProfileJdbcRepository profileJdbcRepository;
-
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -52,21 +51,12 @@ public class ProfileService {
         return getProfileById.profileDTO();
     }
 
-//    public ProfileDTO adminGetProfileById(UUID userId,) {
-//        return profileJdbcRepository.getProfileByIdDTO(userId).orElseThrow(() -> new IllegalArgumentException("Не найден профиль"));
-//    }
-//
-//    public ProfileDTO headGetProfileById(UUID userId, UUID departmentIdRequest) {
-//        ProfileDTO profile = profileJdbcRepository.getProfileByIdDTO(userId).orElseThrow(() -> new IllegalArgumentException("Не найден профиль"));
-//
-//        if (!profile.departmentId().equals(departmentIdRequest)) {
-//            throw new AccessDeniedException(null);
-//        }
-//        return profile;
-//    }
-
     public List<DepartmentEmployeeDTO> adminGetEmployeesByDepartment(UUID depId) {
         return profileJdbcRepository.adminGetEmployeesByDepartment(depId);
+    }
+
+    public List<GetEmployeesDTO> headGetEmployeesByDepartment(UUID depId, String login) {
+        return profileJdbcRepository.headGetEmployees(depId, login);
     }
 
     public List<DepartmentRequestDTO> adminGetDepartmentRequests() {
@@ -77,11 +67,11 @@ public class ProfileService {
         return profileJdbcRepository.headGetDepartmentRequests(depId);
     }
 
-    public List<GetEmployeesDTO> headGetEmployeesByDepartment(UUID depId, String login) {
-        return profileJdbcRepository.headGetEmployees(depId, login);
+    public List<EmployeeForNotificationDTO> headGetEmployeesForNotify(UUID departmentId, String login) {
+        return profileJdbcRepository.headGetEmployeesForNotification(departmentId, login);
     }
 
-    public List<EmployeeForNotificationDTO> headGetEmployeesForNotification(UUID departmentId, String login) {
-        return profileJdbcRepository.headGetEmployeesForNotification(departmentId, login);
+    public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
+        return profileJdbcRepository.getHeadEmployeesForNotify();
     }
 }

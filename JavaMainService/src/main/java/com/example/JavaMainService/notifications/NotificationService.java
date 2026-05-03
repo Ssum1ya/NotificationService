@@ -5,6 +5,7 @@ import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
 import com.example.JavaMainService.userProfile.ProfileJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,30 +17,27 @@ public class NotificationService {
     private final KafkaNotifyProducer kafkaNotifyProducer;
     private final ProfileJdbcRepository profileJdbcRepository;
 
-    //TODO: сделать нормальный ответ
-    //TODO: сделать больше проверок + оптимизация стримов
-    //TODO: топики хранить где то статически
     private void produceNotification(NotificationDTO notificationMail, NotificationDTO notificationTelegram, NotificationDTO notificationVk) {
-        String emailTopic = "notifications-email";
-        String vkTopic = "notifications-vk";
-        String telegramTopic = "notifications-telegram";
 
         if (!notificationMail.usernameList().isEmpty()) {
-            kafkaNotifyProducer.sendNotify(notificationMail, emailTopic);
+            kafkaNotifyProducer.sendNotify(notificationMail, KafkaTopics.emailTopic);
         }
 
         if (!notificationTelegram.usernameList().isEmpty()) {
-            kafkaNotifyProducer.sendNotify(notificationTelegram, telegramTopic);
+            kafkaNotifyProducer.sendNotify(notificationTelegram, KafkaTopics.telegramTopic);
         }
 
         if (!notificationVk.usernameList().isEmpty()) {
-            kafkaNotifyProducer.sendNotify(notificationVk, vkTopic);
+            kafkaNotifyProducer.sendNotify(notificationVk, KafkaTopics.vkTopic);
         }
     }
 
-    public void sendNotificationsToMessengers(NotifyRequestDTO request, String login) {
+    public void sendNotificationsToMessengers(NotifyRequestDTO request, String login, String role) {
         ProfileProducerDTO profileProducerDTO = profileJdbcRepository.getProfileFromProducer(login).orElseThrow(() ->
                 new RuntimeException("профиль отправителя не найден"));
+        if (role.equals("Admin")) {
+            profileProducerDTO = new ProfileProducerDTO(profileProducerDTO.userId(), "Admin", "", "");
+        }
         List<ConsumerCommunicationDTO> communicationDTOList = profileJdbcRepository.getConsumerCommunication(request.listUserIds());
 
        handleRequests(profileProducerDTO, communicationDTOList, request.message());

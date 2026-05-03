@@ -4,6 +4,31 @@ function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Парсинг JWT токена
+function parseJWT(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Ошибка парсинга JWT:', e);
+        return null;
+    }
+}
+
+function getUserRoleFromToken(token) {
+    const payload = parseJWT(token);
+    return payload ? payload.role : null;
+}
+
+function getUserIdFromToken(token) {
+    const payload = parseJWT(token);
+    return payload ? payload.userId : null;
+}
+
 // Проверка авторизации при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('acessToken');
@@ -24,29 +49,262 @@ document.addEventListener('DOMContentLoaded', function() {
     // Загрузка департаментов
     loadDepartments();
 
+    renderRecipients();
+    renderMessageHistory();
+    // renderNotifications();
+    // updateNotificationsBadge();
+
     // Загрузка заявок
     loadRequests();
 });
 
-// Парсинг JWT токена
-function parseJWT(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        console.error('Ошибка парсинга JWT:', e);
-        return null;
+// Отображение истории сообщений
+async function renderMessageHistory() {
+    const container = document.getElementById('messageHistoryList');
+
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+
+    if (!token) {
+        console.error('No token found');
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/message/sending-history/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Нет отправленных сообщений</h3>
+                <p>История сообщений пуста</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = result.map(msg => `
+        <div class="message-history-item">
+            <div class="message-history-header">
+                <div class="message-history-date">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    ${msg.messageTime}
+                </div>
+            </div>
+            <div class="message-recipients">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2563eb;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                ${msg.usernames.map(r => `<span class="recipient-tag">${r}</span>`).join('')}
+            </div>
+            <div class="message-history-text">${msg.message}</div>
+        </div>
+    `).join('');
+}
+
+let allEmployees = [
+    { id: 1, name: 'Кузнецов Алексей', position: 'Senior Developer', department: 'Разработка' },
+    { id: 2, name: 'Смирнова Ольга', position: 'Team Lead', department: 'Разработка' },
+    { id: 3, name: 'Волков Дмитрий', position: 'Middle Developer', department: 'Разработка' },
+    { id: 4, name: 'Морозова Елена', position: 'QA Engineer', department: 'Тестирование' },
+    { id: 5, name: 'Новиков Сергей', position: 'DevOps', department: 'Инфраструктура' }
+];
+
+let selectedEmployees = [];
+let employees;
+
+let messageHistory = [];
+let notifications = [];
+
+function switchSection(event, sectionName) {
+    event.preventDefault();
+
+    // Убираем active у всех вкладок
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Добавляем active к выбранной вкладке
+    event.currentTarget.classList.add('active');
+
+    // Скрываем все секции
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    console.log(sectionName)
+
+    // Показываем выбранную секцию
+    document.getElementById(sectionName + '-section').classList.add('active');
+
+    // Загружаем данные для секции
+    if (sectionName === 'requests') {
+        loadRequests();
+    } else if (sectionName === 'departments') {
+        loadDepartments();
     }
 }
 
-// Получение роли пользователя из токена
-function getUserRoleFromToken(token) {
-    const payload = parseJWT(token);
-    return payload ? payload.role : null;
+// Отображение списка получателей
+async function renderRecipients() {
+    try {
+        const token = localStorage.getItem('acessToken');
+
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        const response = await fetch(`${API_URL}/profile/head-employees-for-notification`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch employees');
+        }
+
+        const employeesForNotification = await response.json();
+
+        employees = employeesForNotification;
+
+        const container = document.getElementById('recipientsList');
+        container.innerHTML = employeesForNotification.map(emp => `
+            <label class="recipient-item">
+                <input type="checkbox" value="${emp.id}" onchange="toggleRecipient('${emp.id}')">
+                <div class="employee-avatar">${getInitials(emp.name)}</div>
+                <div style="flex: 1;">
+                    <div style="color: #1e3a8a; font-weight: 500;">${emp.name}</div>
+                    <div style="color: #64748b; font-size: 14px;">${emp.department}</div>
+                </div>
+            </label>
+        `).join('');
+
+    } catch (error) {
+        console.error('Error loading employees:', error);
+
+        const tbody = document.getElementById('staffTableBody');
+        tbody.innerHTML = `<tr><td colspan="5">Ошибка загрузки</td></tr>`;
+    }
+}
+
+function getInitials(name) {
+    return name.split(' ').map(n => n[0]).join('');
+}
+
+function toggleRecipient(id) {
+    if (selectedEmployees.includes(id)) {
+        selectedEmployees = selectedEmployees.filter(empId => empId !== id);
+    } else {
+        selectedEmployees.push(id);
+    }
+    updateSelectedCount();
+}
+
+function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]');
+    if (selectedEmployees.length === employees.length) {
+        selectedEmployees = [];
+        checkboxes.forEach(cb => cb.checked = false);
+        document.querySelector('.select-all-btn').textContent = 'Выбрать всех';
+    } else {
+        selectedEmployees = employees.map(emp => emp.id);
+        checkboxes.forEach(cb => cb.checked = true);
+        document.querySelector('.select-all-btn').textContent = 'Снять все';
+    }
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const countDiv = document.getElementById('selectedCount');
+    const countValue = document.getElementById('selectedCountValue');
+    
+    if (selectedEmployees.length > 0) {
+        countDiv.style.display = 'block';
+        countValue.textContent = selectedEmployees.length;
+    } else {
+        countDiv.style.display = 'none';
+    }
+
+    const btn = document.querySelector('.select-all-btn');
+    if (selectedEmployees.length === employees.length) {
+        btn.textContent = 'Снять все';
+    } else {
+        btn.textContent = 'Выбрать всех';
+    }
+}
+
+async function sendMessage() {
+    const messageText = document.getElementById('messageText').value;
+
+    if (selectedEmployees.length === 0) {
+        showModal('Ошибка', 'Выберите хотя бы одного сотрудника');
+        return;
+    }
+
+    if (!messageText.trim()) {
+        showModal('Ошибка', 'Введите текст сообщения');
+        return;
+    }
+
+    console.log(messageText)
+    console.log(selectedEmployees)
+
+    try {
+        const token = localStorage.getItem('acessToken');
+        const fromId = getUserIdFromToken(token);
+
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        const response = await fetch(`${API_URL}/notify`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fromId: fromId,
+                message: messageText,
+                listUserIds: selectedEmployees
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch employees');
+        }
+
+        showSuccessModal('Сообщения успешно отправлены', '');
+        timeout(2000);
+
+    } catch (error) {
+        console.error('Error sending message', error);
+    }
+
+    // Reset
+    selectedEmployees = [];
+    document.getElementById('messageText').value = '';
+    const checkboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    updateSelectedCount();
+    renderMessageHistory();
 }
 
 // Загрузка департаментов
@@ -457,34 +715,6 @@ function logout() {
     localStorage.removeItem('acessToken');
     localStorage.removeItem('refreshToken');
     window.location.href = '../index.html';
-}
-
-// Переключение между секциями
-function switchSection(event, sectionName) {
-    event.preventDefault();
-
-    // Убираем active у всех вкладок
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-
-    // Добавляем active к выбранной вкладке
-    event.currentTarget.classList.add('active');
-
-    // Скрываем все секции
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.remove('active');
-    });
-
-    // Показываем выбранную секцию
-    document.getElementById(sectionName + '-section').classList.add('active');
-
-    // Загружаем данные для секции
-    if (sectionName === 'requests') {
-        loadRequests();
-    } else if (sectionName === 'departments') {
-        loadDepartments();
-    }
 }
 
 // Удаление департамента

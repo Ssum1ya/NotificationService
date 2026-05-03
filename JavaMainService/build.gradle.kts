@@ -25,6 +25,10 @@ repositories {
 }
 
 dependencies {
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-redis:4.0.5")
+
     implementation("com.fasterxml.jackson.core:jackson-databind")
 
 	implementation("org.springframework.boot:spring-boot-starter-kafka")
