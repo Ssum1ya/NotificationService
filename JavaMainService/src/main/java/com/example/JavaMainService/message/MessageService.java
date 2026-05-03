@@ -6,6 +6,7 @@ import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
 import com.example.JavaMainService.userProfile.ProfileJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,8 +26,10 @@ import java.util.UUID;
 public class MessageService {
     private final MessageJdbcRepository messageJdbcRepository;
     private final ProfileJdbcRepository profileJdbcRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private static final String REDIS_PREFIX_KEY = "new_message:";
+
+    @Qualifier("newMessagesRedisTemplate")
+    private final RedisTemplate<String, Object> newMessagesRedisTemplate;
+    private static final String NEW_MESSAGES_REDIS_PREFIX_KEY = "new_message:";
     private final ObjectMapper objectMapper;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -49,11 +52,11 @@ public class MessageService {
 
         List<UUID> userIds = requestDTO.listUserIds();
         for (UUID id: userIds) {
-            String key = REDIS_PREFIX_KEY + id;
+            String key = NEW_MESSAGES_REDIS_PREFIX_KEY + id;
             NotificationHistoryDTO notification = new NotificationHistoryDTO(message, fromName, formatNow);
-            Long size = redisTemplate.opsForList().leftPush(key, notification);
+            Long size = newMessagesRedisTemplate.opsForList().leftPush(key, notification);
             if (size != null && size == 1) {
-                redisTemplate.expire(key, Duration.ofHours(24));
+                newMessagesRedisTemplate.expire(key, Duration.ofHours(24));
             }
         }
     }
@@ -68,9 +71,9 @@ public class MessageService {
 
     public List<NotificationHistoryDTO> getYoungNotifications(UUID userId) {
         List<Object> objectNotificationList =
-                redisTemplate.opsForList().range(REDIS_PREFIX_KEY + userId, 0, -1);
+                newMessagesRedisTemplate.opsForList().range(NEW_MESSAGES_REDIS_PREFIX_KEY + userId, 0, -1);
 
-        redisTemplate.delete(REDIS_PREFIX_KEY + userId);
+        newMessagesRedisTemplate.delete(NEW_MESSAGES_REDIS_PREFIX_KEY + userId);
 
         return objectNotificationList.stream()
                 .map(obj -> objectMapper.convertValue(obj, NotificationHistoryDTO.class))
