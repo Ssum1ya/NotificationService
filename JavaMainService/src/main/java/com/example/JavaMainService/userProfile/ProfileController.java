@@ -2,7 +2,12 @@ package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
 import com.example.JavaMainService.userProfile.model.*;
+import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
+import com.example.JavaMainService.userProfile.model.request.HeadUpdateUserProfileDTO;
 import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.model.request.UpdateProfileDTO;
+import com.example.JavaMainService.userProfile.model.response.AllUserData;
+import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,30 @@ public class ProfileController {
     @PostMapping
     public void saveProfile(@RequestBody @Valid SaveProfileDTO request, Authentication auth) {
         profileService.saveProfile(request, auth.getName());
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateProfileById(@PathVariable("userId") UUID userId, @RequestBody @Valid UpdateProfileDTO updateProfileDTO) {
+        profileService.updateProfileById(userId, updateProfileDTO);
+
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/head/{userId}")
+    public ResponseEntity<Void> headUpdateProfileByUserId(@PathVariable("userId") UUID userId, @RequestBody HeadUpdateUserProfileDTO userProfileDTO) {
+        profileService.headUpdateProfileByUserId(userId, userProfileDTO);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/admin/{userId}")
+    public ResponseEntity<Void> adminUpdateUserDataById(@PathVariable("userId") UUID userId, @RequestBody AdminUpdateUserData updateUserData) {
+        profileService.adminUpdateUserDataById(userId, updateUserData);
+        return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/admin/all-user-profiles")
+    public ResponseEntity<List<AllUserData>> getAllUsersData() {
+        return ResponseEntity.ok(profileService.getAllUsersData());
     }
 
     @GetMapping("/{profileId}")
@@ -64,8 +93,8 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.headGetEmployeesForNotify(departmentId, fromLogin));
     }
 
-    @GetMapping("/head-employees-for-notification")
-    public ResponseEntity<List<HeadEmployeeForNotifyDTO>> getEmployeesForNotifications() {
-        return ResponseEntity.ok(profileService.getHeadEmployeesForNotify());
+    @GetMapping("/admin/users-for-notification")
+    public ResponseEntity<List<AllUsersForNotify>> getUsersForNotify() {
+        return ResponseEntity.ok(profileService.getUsersForNotify());
     }
 }

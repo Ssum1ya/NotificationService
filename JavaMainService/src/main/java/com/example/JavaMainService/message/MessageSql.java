@@ -22,7 +22,7 @@ public class MessageSql {
                 ON up.id = u.profile_id
             WHERE m.from_id = ?
             GROUP BY m.batch_id, m.message_time, m.message
-            ORDER BY m.message_time;
+            ORDER BY m.message_time DESC;
             """;
 
     public static final String getNotificationHistory = """
@@ -36,6 +36,6 @@ public class MessageSql {
             	on up.id = u.profile_id
             
             where m.to_id = ?
-            ORDER BY m.message_time
+            ORDER BY m.message_time DESC
             """;
 }

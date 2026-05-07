@@ -5,7 +5,13 @@ import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.notifications.model.ConsumerCommunicationDTO;
 import com.example.JavaMainService.notifications.model.ProfileProducerDTO;
 import com.example.JavaMainService.user.userEntity.RequestStatus;
+import com.example.JavaMainService.user.userEntity.Role;
 import com.example.JavaMainService.userProfile.model.*;
+import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
+import com.example.JavaMainService.userProfile.model.request.HeadUpdateUserProfileDTO;
+import com.example.JavaMainService.userProfile.model.request.UpdateProfileDTO;
+import com.example.JavaMainService.userProfile.model.response.AllUserData;
+import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
 import com.example.JavaMainService.userProfile.profileEntity.Grade;
 import com.example.JavaMainService.userProfile.profileEntity.Position;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +28,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProfileJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
+
+    public List<AllUserData> getAllUsersData() {
+        return jdbcTemplate.query(ProfileSql.getAllUsersData, (rs, rowNum) ->
+                        new AllUserData(
+                                rs.getString("last_name"),
+                                rs.getString("name"),
+                                rs.getString("surname"),
+                                Grade.valueOf(rs.getString("grade")),
+                                Position.valueOf(rs.getString("position")),
+                                rs.getString("department_name"),
+                                Communication.valueOf(rs.getString("communication")),
+                                rs.getString("username"),
+                                Role.valueOf(rs.getString("role")),
+                                RequestStatus.valueOf(rs.getString("request_status_head")),
+                                RequestStatus.valueOf(rs.getString("request_status_admin")),
+                                UUID.fromString(rs.getString("id"))
+                        )
+        );
+    }
 
     public Optional<GetProfileById> getProfileByIdDTO(UUID userId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(ProfileSql.getProfileByUserId, (rs, rowNum) ->
@@ -109,6 +134,18 @@ public class ProfileJdbcRepository {
         );
     }
 
+    public List<AllUsersForNotify> adminGetAllUsersForNotify() {
+        return jdbcTemplate.query(ProfileSql.adminGetUsersForNotify, (rs, rowNum) ->
+                        new AllUsersForNotify(
+                                UUID.fromString(rs.getString("user_id")),
+                                rs.getString("last_name") + " " + rs.getString("name") + " " + rs.getString("surname"),
+                                rs.getString("department_name"),
+                                Role.valueOf(rs.getString("role")),
+                                rs.getString("grade") + " " + rs.getString("position")
+                        )
+        );
+    }
+
     public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
         return jdbcTemplate.query(ProfileSql.getHeadEmployeesForNotify, (rs, rowNum) ->
                         new HeadEmployeeForNotifyDTO(
@@ -155,5 +192,37 @@ public class ProfileJdbcRepository {
                 rs.getString("from_name"),
                 producerId)
         );
+    }
+
+    public void updateProfileById(UUID userId, UpdateProfileDTO updateProfileDTO) {
+        jdbcTemplate.update(ProfileSql.updateProfileByUserId,
+                updateProfileDTO.name(),
+                updateProfileDTO.lastName(),
+                updateProfileDTO.surname(),
+                updateProfileDTO.communication().toUpperCase(),
+                updateProfileDTO.username(),
+                userId
+        );
+    }
+
+    public void headUpdateProfileByUserId(UUID userId, HeadUpdateUserProfileDTO userProfileDTO) {
+        jdbcTemplate.update(ProfileSql.headUpdateProfileByUserId,
+                userProfileDTO.grade().toString(),
+                userProfileDTO.position().toString(),
+                userId
+        );
+    }
+
+    public void adminUpdateProfileByUserId(UUID uuid, AdminUpdateUserData updateUserData) {
+        jdbcTemplate.update(ProfileSql.adminUpdateProfileByUserId,
+                updateUserData.name(),
+                updateUserData.lastName(),
+                updateUserData.surname(),
+                updateUserData.communication().name(),
+                updateUserData.username(),
+                updateUserData.grade().name(),
+                updateUserData.position().name(),
+                uuid
+                );
     }
 }

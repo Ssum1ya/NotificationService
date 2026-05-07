@@ -136,6 +136,19 @@ async function renderYoungMessages() {
     });
 
     const result = await response.json();
+
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Последних уведомлений пока нет(</h3>
+                <p>-</p>
+            </div>
+        `;
+        return;
+    }
     
     container.innerHTML = result.map(notif => `
         <div class="notification-item">
@@ -249,6 +262,7 @@ let s = [
 
 let selectedEmployees = [];
 let employees;
+let cachedHeadProfile = null;
 
 // Utility Functions
 function getInitials(name) {
@@ -292,6 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    renderHeadProfile();
+
     renderMessageHistory();
     renderYoungMessages();
 
@@ -315,12 +331,281 @@ function switchTab(tabName) {
         content.classList.remove('active');
     });
     document.getElementById(tabName + 'Tab').classList.add('active');
+
+    if (tabName === 'headProfile' && !cachedHeadProfile) {
+        renderHeadProfile();
+    }
 }
+
+async function renderHeadProfile() {
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+ 
+    if (!token) return;
+ 
+    try {
+        const response = await fetch(`${API_URL}/profile/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+ 
+        const result = await response.json();
+        cachedHeadProfile = result;
+        renderHeadProfileView(result);
+    } catch (error) {
+        console.error('Ошибка загрузки профиля:', error);
+    }
+}
+ 
+function renderHeadProfileView(p) {
+    const container = document.getElementById('headProfileTab');
+ 
+    container.innerHTML = `
+        <div class="profile-container">
+ 
+            <div class="profile-edit-bar">
+                <button class="btn-edit-profile" onclick="renderHeadProfileEdit()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
+                               m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Редактировать профиль
+                </button>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">Личная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Имя</span>
+                        <span class="profile-value">${p.name}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Фамилия</span>
+                        <span class="profile-value">${p.lastName}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Отчество</span>
+                        <span class="profile-value">${p.surname || '—'}</span>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">Контактная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Средство связи</span>
+                        <span class="profile-value">${p.communication}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Контактные данные</span>
+                        <span class="profile-value">${p.username}</span>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">Рабочая информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <span class="profile-label">Грейд</span>
+                        <span class="profile-value">${p.grade}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Должность</span>
+                        <span class="profile-value">${p.position}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Департамент</span>
+                        <span class="profile-value">${p.department}</span>
+                    </div>
+                </div>
+            </div>
+ 
+        </div>`;
+}
+ 
+function renderHeadProfileEdit() {
+    const p = cachedHeadProfile;
+    if (!p) return;
+ 
+    const container = document.getElementById('headProfileTab');
+ 
+    container.innerHTML = `
+        <div class="profile-container">
+ 
+            <div class="profile-edit-bar">
+                <button class="btn-cancel-profile" onclick="renderHeadProfileView(cachedHeadProfile)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Отмена
+                </button>
+                <button class="btn-save-profile" onclick="saveHeadProfile()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Сохранить
+                </button>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">Личная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <label class="profile-label" for="head-edit-name">Имя</label>
+                        <input class="profile-input" id="head-edit-name" type="text" value="${p.name}" placeholder="Введите имя" oninput="clearHeadFieldError(this)"/>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" for="head-edit-lastName">Фамилия</label>
+                        <input class="profile-input" id="head-edit-lastName" type="text" value="${p.lastName}" placeholder="Введите фамилию" oninput="clearHeadFieldError(this)"/>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" for="head-edit-surname">Отчество</label>
+                        <input class="profile-input" id="head-edit-surname" type="text" value="${p.surname || ''}" placeholder="Введите отчество" oninput="clearHeadFieldError(this)"/>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">Контактная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <label class="profile-label" for="head-edit-communication">Средство связи</label>
+                        <select class="profile-input" id="head-edit-communication" onchange="updateHeadContactLabel(); clearHeadFieldError(this)">
+                            <option value="">Выберите площадку</option>
+                            <option value="telegram" ${p.communication.toLowerCase() === 'telegram' ? 'selected' : ''}>Telegram</option>
+                            <option value="email" ${p.communication.toLowerCase() === 'email' ? 'selected' : ''}>Mail</option>
+                            <option value="vk" ${p.communication.toLowerCase() === 'vk' ? 'selected' : ''}>Vk</option>
+                        </select>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" id="head-edit-username-label">Контактные данные</label>
+                        <input class="profile-input" id="head-edit-username" type="text" value="${p.username}" placeholder="Ваш контакт" oninput="clearHeadFieldError(this)"/>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="profile-section">
+                <h2 class="head-section-title">
+                    Рабочая информация
+                    <span class="readonly-badge">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6
+                                   a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Только для чтения
+                    </span>
+                </h2>
+                <div class="profile-card profile-card--readonly">
+                    <div class="profile-item">
+                        <span class="profile-label">Грейд</span>
+                        <span class="profile-value profile-value--readonly">${p.grade}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Должность</span>
+                        <span class="profile-value profile-value--readonly">${p.position}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Департамент</span>
+                        <span class="profile-value profile-value--readonly">${p.department}</span>
+                    </div>
+                </div>
+            </div>
+ 
+        </div>`;
+}
+ 
+async function saveHeadProfile() {
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+ 
+    const updatedFields = {
+        name:          document.getElementById('head-edit-name').value.trim(),
+        lastName:      document.getElementById('head-edit-lastName').value.trim(),
+        surname:       document.getElementById('head-edit-surname').value.trim(),
+        communication: document.getElementById('head-edit-communication').value.trim(),
+        username:      document.getElementById('head-edit-username').value.trim(),
+    };
+ 
+    const fieldLabels = {
+        name:          'Имя',
+        lastName:      'Фамилия',
+        surname:       'Отчество',
+        communication: 'Средство связи',
+        username:      'Контактные данные',
+    };
+ 
+    for (const [field, label] of Object.entries(fieldLabels)) {
+        if (!updatedFields[field]) {
+            showErrorModal({ message: `Поле "${label}" не может быть пустым.` });
+            const el = document.getElementById('head-edit-' + field);
+            if (el) { el.style.borderColor = '#dc2626'; el.focus(); }
+            return;
+        }
+    }
+ 
+    try {
+        const response = await fetch(`${API_URL}/profile/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedFields)
+        });
+ 
+        if (response.ok) {
+            cachedHeadProfile = { ...cachedHeadProfile, ...updatedFields };
+            renderHeadProfileView(cachedHeadProfile);
+            showSuccessModal('Готово!', 'Профиль успешно обновлён.');
+        } else if (response.status === 422) {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Сервер отклонил данные. Проверьте правильность заполненных полей.' });
+        } else {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Не удалось сохранить изменения. Попробуйте позже.' });
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения профиля:', error);
+        showErrorModal({ message: 'Проблема с соединением. Проверьте сеть и попробуйте снова.' });
+    }
+}
+ 
+function updateHeadContactLabel() {
+    const value = document.getElementById('head-edit-communication').value;
+    const label = document.getElementById('head-edit-username-label');
+    const input = document.getElementById('head-edit-username');
+ 
+    const map = {
+        '':         ['Контактные данные',   'Ваш контакт'],
+        'telegram': ['Username в Telegram', 'Введите username'],
+        'email':    ['Электронная почта',   'Введите почту'],
+        'vk':       ['VK ID',               'Введите id аккаунта'],
+    };
+ 
+    const [text, placeholder] = map[value] || map[''];
+    label.textContent = text;
+    input.placeholder = placeholder;
+}
+ 
+function clearHeadFieldError(el) {
+    el.style.borderColor = '';
+}
+
 
 // Applications
 async function renderApplications() {
 
     const token = localStorage.getItem('acessToken');
+
+    const container = document.getElementById('applicationsList');
 
     if (!token) {
         console.error('No token found');
@@ -339,7 +624,16 @@ async function renderApplications() {
 
     const result = await response.json();
 
-    if (!result || result.length === 0) {
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Заявок пока нет(</h3>
+                <p>-</p>
+            </div>
+        `;
         return;
     }
 
@@ -353,8 +647,6 @@ async function renderApplications() {
     } else {
         document.getElementById('applicationsBadge').style.display = 'inline-block';
     }
-
-    const container = document.getElementById('applicationsList');
 
     container.innerHTML = result.map(app => {
         const headStatus = app.requestStatus;
@@ -569,8 +861,12 @@ function displayProfile(profile) {
     document.getElementById('profileModal').classList.add('show');
 }
 
+let currentEditingUserId = null;
+
 function closeProfileModal() {
     document.getElementById('profileModal').classList.remove('show');
+    document.getElementById('profileSaveBtn').style.display = 'none';
+    currentEditingUserId = null;
 }
 
 function handleApplication(id, action) {
@@ -586,17 +882,16 @@ function handleApplication(id, action) {
     }
 }
 
-// Staff
 async function renderStaff() {
     try {
         const token = localStorage.getItem('acessToken');
         const depId = getUserDepIdFromToken(token);
-
+ 
         if (!token) {
             console.error('No token found');
             return;
         }
-
+ 
         const response = await fetch(`${API_URL}/profile/head/departament-employees/${depId}`, {
             method: 'GET',
             headers: {
@@ -604,42 +899,234 @@ async function renderStaff() {
                 'Content-Type': 'application/json'
             }
         });
-
+ 
         if (!response.ok) {
             throw new Error('Failed to fetch employees');
         }
-
+ 
         const employees = await response.json();
-
-         document.getElementById('statEmployees').textContent = employees.length;
-
-        const tbody = document.getElementById('staffTableBody');
-
+ 
+        document.getElementById('statEmployees').textContent = employees.length;
+ 
+        const container = document.getElementById('staffList');
+ 
         if (!employees || employees.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5">Нет сотрудников</td></tr>`;
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <h3>Сотрудников пока нет</h3>
+                    <p>-</p>
+                </div>`;
             return;
         }
-
-        tbody.innerHTML = employees.map(emp => `
-            <tr>
-                <td>
-                    <div class="employee-cell">
-                        <div class="employee-avatar">${getInitials(emp.name)}</div>
-                        <span class="employee-name">${emp.name}</span>
+ 
+        container.innerHTML = employees.map(emp => `
+            <div class="staff-card" data-id=${emp.id}>
+                <div class="staff-card-info">
+                    <div class="employee-avatar">${getInitials(emp.name)}</div>
+                    <div class="staff-card-details">
+                        <div class="staff-card-name">${emp.name}</div>
+                        <div class="staff-card-position">${emp.position}</div>
                     </div>
-                </td>
-                <td>${emp.position}</td>
-                <td>${emp.department}</td>
-                <td>${emp.communication.toLowerCase()}</td>
-                <td>${emp.username}</td>
-            </tr>
+                </div>
+                <div class="staff-card-actions">
+                    <button class="btn-small" onclick="openStaffProfile('${emp.id}')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Профиль
+                    </button>
+                    <button class="btn-reject" onclick="kickEmployee('${emp.id}', '${emp.name}')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6h12a6 6 0 00-6-6zM21 12h-6"/>
+                        </svg>
+                        Выгнать
+                    </button>
+                </div>
+            </div>
         `).join('');
-
+ 
     } catch (error) {
         console.error('Error loading employees:', error);
-
-        const tbody = document.getElementById('staffTableBody');
-        tbody.innerHTML = `<tr><td colspan="5">Ошибка загрузки</td></tr>`;
+        document.getElementById('staffList').innerHTML = `<div class="empty-state"><p>Ошибка загрузки сотрудников</p></div>`;
+    }
+}
+ 
+function openStaffProfile(userId) {
+    const token = localStorage.getItem('acessToken');
+    currentEditingUserId = userId;
+ 
+    fetch(`${API_URL}/profile/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => displayStaffProfile(data))
+    .catch(error => {
+        console.error('Ошибка загрузки профиля:', error);
+    });
+}
+ 
+function displayStaffProfile(profile) {
+    const content = document.getElementById('profileContent');
+ 
+    content.innerHTML = `
+        <div class="profile-section">
+            <div class="profile-section-title">Личная информация</div>
+            <div class="profile-grid">
+                <div class="profile-field">
+                    <div class="profile-label">Фамилия</div>
+                    <div class="profile-value">${profile.lastName}</div>
+                </div>
+                <div class="profile-field">
+                    <div class="profile-label">Имя</div>
+                    <div class="profile-value">${profile.name}</div>
+                </div>
+                ${profile.surname ? `
+                    <div class="profile-field profile-full-width">
+                        <div class="profile-label">Отчество</div>
+                        <div class="profile-value">${profile.surname}</div>
+                    </div>` : ''}
+            </div>
+        </div>
+ 
+        <div class="profile-section">
+            <div class="profile-section-title">Контактная информация</div>
+            <div class="profile-grid">
+                ${profile.username ? `
+                    <div class="profile-field">
+                        <div class="profile-label">Контактные данные</div>
+                        <div class="profile-value">${profile.username}</div>
+                    </div>` : ''}
+                <div class="profile-field">
+                    <div class="profile-label">Средство связи</div>
+                    <div class="profile-value">${profile.communication}</div>
+                </div>
+            </div>
+        </div>
+ 
+        <div class="profile-section">
+            <div class="profile-section-title">
+                Рабочая информация
+                <span class="editable-badge">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Можно редактировать
+                </span>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-field">
+                    <label class="profile-label" for="edit-staff-position">Позиция</label>
+                    <select class="profile-input" id="edit-staff-position">
+                        <option value="Developer" ${profile.position === 'Developer' ? 'selected' : ''}>Разработчик</option>
+                        <option value="Tester" ${profile.position === 'Tester' ? 'selected' : ''}>Тестировщик</option>
+                        <option value="Analyst" ${profile.position === 'Analyst' ? 'selected' : ''}>Аналитик</option>
+                        <option value="Designer" ${profile.position === 'Designer' ? 'selected' : ''}>Дизайнер</option>
+                        <option value="Manager" ${profile.position === 'Manager' ? 'selected' : ''}>Менеджер проекта</option>
+                        <option value="Devops" ${profile.position === 'Devops' ? 'selected' : ''}>DevOps инженер</option>
+                        <option value="DataScientist" ${profile.position === 'DataScientist' ? 'selected' : ''}>Data Scientist</option>
+                    </select>
+                </div>
+                <div class="profile-field">
+                    <label class="profile-label" for="edit-staff-grade">Grade</label>
+                    <select class="profile-input" id="edit-staff-grade">
+                        <option value="Junior" ${profile.grade === 'Junior' ? 'selected' : ''}>Junior</option>
+                        <option value="Middle" ${profile.grade === 'Middle' ? 'selected' : ''}>Middle</option>
+                        <option value="Senior" ${profile.grade === 'Senior' ? 'selected' : ''}>Senior</option>
+                        <option value="Lead" ${profile.grade === 'Lead' ? 'selected' : ''}>Lead</option>
+                    </select>
+                </div>
+                ${profile.department ? `
+                    <div class="profile-field profile-full-width">
+                        <div class="profile-label">Департамент</div>
+                        <div class="profile-value">${profile.department}</div>
+                    </div>` : ''}
+            </div>
+        </div>
+    `;
+ 
+    document.getElementById('profileModalTitle').textContent = `Профиль: ${profile.lastName} ${profile.name}`;
+ 
+    // Показываем кнопку сохранения
+    document.getElementById('profileSaveBtn').style.display = 'inline-flex';
+ 
+    document.getElementById('profileModal').classList.add('show');
+}
+ 
+// Сохранение изменений grade и position
+async function saveStaffProfile() {
+    const token = localStorage.getItem('acessToken');
+ 
+    const position = document.getElementById('edit-staff-position').value;
+    const grade = document.getElementById('edit-staff-grade').value;
+ 
+    if (!position) {
+        showErrorModal({ message: 'Поле "Позиция" не может быть пустым.' });
+        return;
+    }
+ 
+    try {
+        const response = await fetch(`${API_URL}/profile/head/${currentEditingUserId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ position, grade })
+        });
+ 
+        if (response.ok) {
+            closeProfileModal();
+            showSuccessModal('Готово!', 'Данные сотрудника успешно обновлены.');
+            renderStaff();
+        } else if (response.status === 422) {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Ошибка валидации данных.' });
+        } else {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Не удалось сохранить изменения.' });
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+        showErrorModal({ message: 'Проблема с соединением. Попробуйте снова.' });
+    }
+}
+ 
+// Выгнать сотрудника из департамента
+async function kickEmployee(userId, userName) {
+    if (!confirm(`Выгнать сотрудника ${userName} из департамента?`)) return;
+ 
+    const token = localStorage.getItem('acessToken');
+ 
+    try {
+        const response = await fetch(`${API_URL}/user/head/kick/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+ 
+        if (response.ok) {
+            showSuccessModal('Готово!', `${userName} исключён из департамента.`);
+            setTimeout(() => renderStaff(), 1500);
+        } else if (response.status === 422) {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Ошибка валидации.' });
+        } else {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal({ message: err.message || 'Не удалось исключить сотрудника.' });
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        showErrorModal({ message: 'Проблема с соединением. Попробуйте снова.' });
     }
 }
 
@@ -797,6 +1284,8 @@ async function renderNotifications() {
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
 
+    const container = document.getElementById('notificationsList');
+
     if (!token) {
         console.error('No token found');
         return;
@@ -812,9 +1301,21 @@ async function renderNotifications() {
 
     const result = await response.json();
 
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Уведомлений пока нет((</h3>
+                <p>-</p>
+            </div>
+        `;
+        return;
+    }
+
     // ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})
 
-    const container = document.getElementById('notificationsList');
     container.innerHTML = result.map(notif => `
         <div class="notification-item">
             <div class="notification-icon ${'info'}">

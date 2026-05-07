@@ -863,6 +863,105 @@ body {
     background: #dbeafe;
     color: #2563eb;
 }
+/* ── Панель кнопок редактирования ── */
+.profile-edit-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-edit-profile,
+.btn-save-profile,
+.btn-cancel-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.18s, opacity 0.18s;
+}
+
+.btn-edit-profile {
+    background: #2563eb;
+    color: #fff;
+}
+.btn-edit-profile:hover { background: #1d4ed8; }
+
+.btn-save-profile {
+    background: #16a34a;
+    color: #fff;
+}
+.btn-save-profile:hover { background: #15803d; }
+
+.btn-cancel-profile {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+.btn-cancel-profile:hover { background: #e5e7eb; }
+
+/* ── Поля ввода в карточке ── */
+.profile-input {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 14px;
+    color: #111827;
+    background: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    min-width: 0;
+}
+.profile-input:focus {
+    border-color: #2563eb;       
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+/* ── Заблокированные поля ── */
+.profile-card--readonly {
+    background: #f9fafb;
+    opacity: 0.85;
+}
+.profile-value--readonly {
+    color: #6b7280;
+}
+
+/* ── Бейдж "Только для чтения" рядом с заголовком секции ── */
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* ── Select выглядит как input ── */
+select.profile-input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b7280' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 34px;
+    cursor: pointer;
+}
+
+.readonly-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 2px 10px;
+    letter-spacing: 0.02em;
+}
 
 @media (max-width: 768px) {
     .profile-item {

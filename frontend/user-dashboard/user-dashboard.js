@@ -169,7 +169,9 @@ function displayDemoNotifications() {
     displayNotifications(demoNotifications);
 }
 
-// Notifications
+// Хранилище данных профиля (чтобы не дёргать API лишний раз)
+let cachedProfile = null;
+
 async function renderProfile() {
 
     const token = localStorage.getItem('acessToken');
@@ -189,12 +191,28 @@ async function renderProfile() {
     });
 
     const result = await response.json();
+    cachedProfile = result;
+    renderProfileView(result);
+}
+
+// Режим просмотра профиля
+function renderProfileView(p) {
     const container = document.getElementById('profileTab');
-    const p = result;
 
     container.innerHTML = `
         <div class="profile-container">
-            
+
+            <div class="profile-edit-bar">
+                <button class="btn-edit-profile" onclick="renderProfileEdit()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
+                               m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Редактировать профиль
+                </button>
+            </div>
+
             <div class="profile-section">
                 <h2 class="section-title">Личная информация</h2>
                 <div class="profile-card">
@@ -248,6 +266,189 @@ async function renderProfile() {
         </div>`;
 }
 
+// Режим редактирования профиля
+function renderProfileEdit() {
+    const p = cachedProfile;
+    if (!p) return;
+
+    const container = document.getElementById('profileTab');
+
+    container.innerHTML = `
+        <div class="profile-container">
+
+            <div class="profile-edit-bar">
+                <button class="btn-cancel-profile" onclick="renderProfileView(cachedProfile)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Отмена
+                </button>
+                <button class="btn-save-profile" onclick="saveProfile()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Сохранить
+                </button>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">Личная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <label class="profile-label" for="edit-name">Имя</label>
+                        <input class="profile-input" id="edit-name" type="text" value="${p.name}" placeholder="Введите имя"/>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" for="edit-lastName">Фамилия</label>
+                        <input class="profile-input" id="edit-lastName" type="text" value="${p.lastName}" placeholder="Введите фамилию"/>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" for="edit-surname">Отчество</label>
+                        <input class="profile-input" id="edit-surname" type="text" value="${p.surname}" placeholder="Введите отчество"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">Контактная информация</h2>
+                <div class="profile-card">
+                    <div class="profile-item">
+                        <label class="profile-label" for="edit-communication">Средство связи</label>
+                        <select class="profile-input" id="edit-communication" onchange="updateContactLabel()">
+                            <option value="">Выберите площадку</option>
+                            <option value="telegram" ${p.communication === 'telegram' ? 'selected' : ''}>Telegram</option>
+                            <option value="email" ${p.communication === 'email' ? 'selected' : ''}>Mail</option>
+                            <option value="vk" ${p.communication === 'vk' ? 'selected' : ''}>Vk</option>
+                        </select>
+                    </div>
+                    <div class="profile-item">
+                        <label class="profile-label" id="edit-username-label">Контактные данные</label>
+                        <input class="profile-input" id="edit-username" type="text" value="${p.username}" placeholder="Ваш контакт"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">
+                    Рабочая информация
+                    <span class="readonly-badge">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6
+                                   a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Только для чтения
+                    </span>
+                </h2>
+                <div class="profile-card profile-card--readonly">
+                    <div class="profile-item">
+                        <span class="profile-label">Грейд</span>
+                        <span class="profile-value profile-value--readonly">${p.grade}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Должность</span>
+                        <span class="profile-value profile-value--readonly">${p.position}</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Департамент</span>
+                        <span class="profile-value profile-value--readonly">${p.department}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>`;
+}
+
+// Обновление лейбла и плейсхолдера контактного поля
+function updateContactLabel() {
+    const value = document.getElementById('edit-communication').value;
+    const label = document.getElementById('edit-username-label');
+    const input = document.getElementById('edit-username');
+ 
+    let text, placeholder;
+ 
+    if (value === "") {
+        text = 'Контактные данные';
+        placeholder = 'Ваш контакт';
+    } else if (value === 'telegram') {
+        text = 'Username в Telegram';
+        placeholder = 'Введите username';
+    } else if (value === 'email') {
+        text = 'Электронная почта';
+        placeholder = 'Введите почту';
+    } else if (value === 'vk') {
+        text = 'VK ID';
+        placeholder = 'Введите id аккаунта';
+    }
+ 
+    label.textContent = text;
+    input.placeholder = placeholder;
+
+}
+
+// Сохранение изменений профиля
+async function saveProfile() {
+    const token = localStorage.getItem('acessToken');
+    const userId = getUserIdFromToken(token);
+ 
+    const updatedFields = {
+        name:          document.getElementById('edit-name').value.trim(),
+        lastName:      document.getElementById('edit-lastName').value.trim(),
+        surname:       document.getElementById('edit-surname').value.trim(),
+        communication: document.getElementById('edit-communication').value.trim(),
+        username:      document.getElementById('edit-username').value.trim(),
+    };
+ 
+    // Валидация: все поля обязательны
+    const fieldLabels = {
+        name:          'Имя',
+        lastName:      'Фамилия',
+        surname:       'Отчество',
+        communication: 'Средство связи',
+        username:      'Контактные данные',
+    };
+ 
+    for (const [field, label] of Object.entries(fieldLabels)) {
+        const value = updatedFields[field];
+        if (!value || value === null || value === '') {
+            showErrorModal('Ошибка валидации', `Поле "${label}" не может быть пустым.`);
+            // Подсвечиваем проблемное поле
+            const el = document.getElementById('edit-' + field) || document.getElementById('edit-' + (field === 'lastName' ? 'lastName' : field));
+            if (el) {
+                el.style.borderColor = '#dc2626';
+                el.focus();
+            }
+            return;
+        }
+    }
+ 
+    try {
+        const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedFields)
+        });
+ 
+        if (response.ok) {
+            cachedProfile = { ...cachedProfile, ...updatedFields };
+            renderProfileView(cachedProfile);
+            showSuccessModal('Готово!', 'Профиль успешно обновлён.');
+        } else if (response.status === 422) {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal(error);
+        } else {
+            const err = await response.json().catch(() => ({}));
+            showErrorModal('Ошибка сохранения', err.message || 'Не удалось сохранить изменения. Попробуйте позже.');
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения профиля:', error);
+        showErrorModal('Ошибка', 'Проблема с соединением. Проверьте сеть и попробуйте снова.');
+    }
+}
+
 // Отображение истории сообщений
 async function renderYoungMessages() {
     const container = document.getElementById('recentNotificationsList');
@@ -269,6 +470,19 @@ async function renderYoungMessages() {
     });
 
     const result = await response.json();
+
+    if (result.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                <h3>Последних уведомлений пока нет(</h3>
+                <p>-</p>
+            </div>
+        `;
+        return;
+    }
     
     container.innerHTML = result.map(notif => `
         <div class="notification-item">

@@ -1,19 +1,28 @@
 package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.departament.Department;
+import com.example.JavaMainService.departament.DepartmentJDBCRepository;
 import com.example.JavaMainService.departament.DepartmentRepository;
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
+import com.example.JavaMainService.user.UserJdbcRepository;
 import com.example.JavaMainService.user.userEntity.RequestStatus;
+import com.example.JavaMainService.user.userEntity.Role;
 import com.example.JavaMainService.user.userEntity.User;
 import com.example.JavaMainService.user.UserRepository;
 import com.example.JavaMainService.userProfile.model.*;
+import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
+import com.example.JavaMainService.userProfile.model.request.HeadUpdateUserProfileDTO;
 import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.model.request.UpdateProfileDTO;
+import com.example.JavaMainService.userProfile.model.response.AllUserData;
+import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +34,9 @@ public class ProfileService {
     private final ProfileMapper profileMapper;
 
     private final ProfileJdbcRepository profileJdbcRepository;
+    private final UserJdbcRepository userJdbcRepository;
+    private final DepartmentJDBCRepository departmentJDBCRepository;
+
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -46,6 +58,37 @@ public class ProfileService {
         user.setRequestStatusAdmin(RequestStatus.PENDING);
 
         userRepository.save(user);
+    }
+
+    public void updateProfileById(UUID userId, UpdateProfileDTO updateProfileDTO) {
+        String redisKey = PROFILE_DTO_REDIS_PREFIX_KEY + userId;
+        profileRedisTemplate.delete(redisKey);
+
+        profileJdbcRepository.updateProfileById(userId, updateProfileDTO);
+    }
+
+    public void headUpdateProfileByUserId(UUID userId, HeadUpdateUserProfileDTO userProfileDTO) {
+        String redisKey = PROFILE_DTO_REDIS_PREFIX_KEY + userId;
+        profileRedisTemplate.delete(redisKey);
+
+        profileJdbcRepository.headUpdateProfileByUserId(userId, userProfileDTO);
+    }
+
+    @Transactional
+    public void adminUpdateUserDataById(UUID userId, AdminUpdateUserData updateUserData) {
+        String redisKey = PROFILE_DTO_REDIS_PREFIX_KEY + userId;
+        profileRedisTemplate.delete(redisKey);
+
+        if (updateUserData.role() == Role.Head) {
+            departmentJDBCRepository.makeDepartmentHead(userId);
+        }
+
+        userJdbcRepository.adminUpdateUser(userId, updateUserData);
+        profileJdbcRepository.adminUpdateProfileByUserId(userId, updateUserData);
+    }
+
+    public List<AllUserData> getAllUsersData() {
+        return profileJdbcRepository.getAllUsersData();
     }
 
     public ProfileDTO getProfileByUserId(UUID userId, String requestRole, UUID requestDepartmentId, String requestLogin) {
@@ -89,5 +132,9 @@ public class ProfileService {
 
     public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
         return profileJdbcRepository.getHeadEmployeesForNotify();
+    }
+
+    public List<AllUsersForNotify> getUsersForNotify() {
+        return profileJdbcRepository.adminGetAllUsersForNotify();
     }
 }

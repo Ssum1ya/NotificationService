@@ -42,4 +42,9 @@ public class UserController {
     public void headDeclineRequest(@PathVariable("userId") UUID userId) {
         userService.headDeclineRequest(userId);
     }
+    
+    @PutMapping("/head/kick/{userId}")
+    public void headKickEmployee(@PathVariable("userId") UUID userId) {
+        userService.headKickEmployee(userId);
+    }
 }

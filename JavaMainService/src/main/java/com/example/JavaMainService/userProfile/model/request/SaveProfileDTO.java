@@ -9,7 +9,7 @@ public record SaveProfileDTO(
         String name,
         @NotBlank(message = "отчество обязательно")
         String surname,
-        @NotBlank(message = "коммуникация обязательна")
+        @NotBlank(message = "вид связи обязателен")
         String communication,
         @NotBlank(message = "контактные данные обязательны")
         String username,

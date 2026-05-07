@@ -1,11 +1,6 @@
 package com.example.JavaMainService.user;
 
-import com.example.JavaMainService.departament.Department;
 import com.example.JavaMainService.departament.DepartmentJDBCRepository;
-import com.example.JavaMainService.departament.DepartmentRepository;
-import com.example.JavaMainService.user.userEntity.RequestStatus;
-import com.example.JavaMainService.user.userEntity.Role;
-import com.example.JavaMainService.user.userEntity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,13 +42,13 @@ public class UserService {
 
     public void headApproveRequest(UUID userId) {
         userJDBCRepository.headApproveRequest(userId);
-//        User user = userRepository.getUserByProfileId(userId);
-//        user.setRequestStatusHead(RequestStatus.APPROVED);
-//
-//        userRepository.save(user);
     }
 
     public void headDeclineRequest(UUID userId) {
         userJDBCRepository.headDeclineRequest(userId);
+    }
+
+    public void headKickEmployee(UUID userId) {
+        userJDBCRepository.headKickEmployee(userId);
     }
 }
