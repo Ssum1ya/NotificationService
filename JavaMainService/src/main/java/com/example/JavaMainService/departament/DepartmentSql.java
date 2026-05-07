@@ -38,4 +38,9 @@ public class DepartmentSql {
             select head_id from departament
             where id = (select departement_id from users where uuid = ?)
             """;
+
+    public static final String deleteDepartmentById = """
+            delete from departament
+            where id = ?
+            """;
 }

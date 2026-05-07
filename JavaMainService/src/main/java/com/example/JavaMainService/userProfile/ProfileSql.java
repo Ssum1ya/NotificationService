@@ -117,7 +117,8 @@ public class ProfileSql {
             inner join departament d
             	on d.id = u.departement_id
             
-            where u.uuid != (select uuid from users where role = 'Admin')
+            where u.uuid != (select uuid from users where role = 'Admin') and u.request_status_admin = 'APPROVED' and
+            u.request_status_head = 'APPROVED'
             """;
 
 

@@ -52,4 +52,10 @@ public class UserSql {
             set departement_id = null
             where uuid = ?
             """;
+
+    public static final String deleteDepartmentFromUser = """
+            update users
+            set departement_id = null
+            where departement_id = ?
+            """;
 }

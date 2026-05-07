@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/departament")
@@ -28,5 +29,10 @@ public class DepartmentController {
     @PostMapping("/create")
     public void createDepartment(@RequestBody CreateDepartmentDTO request) {
         departmentService.createDepartment(request);
+    }
+
+    @DeleteMapping("/{departmentId}")
+    public void deleteDepartment(@PathVariable("departmentId") UUID departmentId) {
+        departmentService.deleteDepartment(departmentId);
     }
 }

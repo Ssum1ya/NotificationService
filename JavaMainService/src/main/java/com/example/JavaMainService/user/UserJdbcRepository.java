@@ -12,7 +12,6 @@ import java.util.UUID;
 public class UserJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
-
     public void adminApproveRequest(UUID userId) {
         jdbcTemplate.update(UserSql.adminApproveRequest, userId);
     }
@@ -45,5 +44,9 @@ public class UserJdbcRepository {
 
     public void headKickEmployee(UUID userId) {
         jdbcTemplate.update(UserSql.headKickEmployee, userId);
+    }
+
+    public void deleteDepartmentFromUser(UUID departmentId) {
+        jdbcTemplate.update(UserSql.deleteDepartmentFromUser, departmentId);
     }
 }

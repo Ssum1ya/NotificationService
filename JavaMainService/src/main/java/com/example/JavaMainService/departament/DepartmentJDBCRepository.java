@@ -67,4 +67,8 @@ public class DepartmentJDBCRepository {
             return Optional.empty();
         }
     }
+
+    public void deleteDepartmentById(UUID departmentId) {
+        jdbcTemplate.update(DepartmentSql.deleteDepartmentById, departmentId);
+    }
 }
