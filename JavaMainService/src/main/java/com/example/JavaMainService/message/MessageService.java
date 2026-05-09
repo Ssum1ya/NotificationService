@@ -1,5 +1,6 @@
 package com.example.JavaMainService.message;
 
+import com.example.JavaMainService.dtoLibrary.PageResponse;
 import com.example.JavaMainService.message.model.MessageHistoryDTO;
 import com.example.JavaMainService.message.model.NotificationHistoryDTO;
 import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
@@ -61,12 +62,20 @@ public class MessageService {
         }
     }
 
-    public List<MessageHistoryDTO> getSendingHistoryById(UUID userId) {
-        return messageJdbcRepository.getSendingHistoryById(userId);
+    public PageResponse<MessageHistoryDTO> getSendingHistoryById(UUID userId, int page, int size) {
+        int offset = page * size;
+        List<MessageHistoryDTO> notificationHistory =
+                messageJdbcRepository.getSendingHistoryById(userId, size, offset);
+        Long totalElements = messageJdbcRepository.countSendingHistoryById(userId);
+        return new PageResponse<>(notificationHistory, page, size, totalElements);
     }
 
-    public List<NotificationHistoryDTO> getNotificationHistoryByUserId(UUID userId) {
-        return messageJdbcRepository.getNotificationHistoryByUserId(userId);
+    public PageResponse<NotificationHistoryDTO> getNotificationHistoryByUserId(UUID userId, int page, int size) {
+        int offset = page * size;
+        List<NotificationHistoryDTO> notificationHistoryDTOList =
+                messageJdbcRepository.getNotificationHistoryByUserId(userId, size, offset);
+        Long total = messageJdbcRepository.countNotificationHistory(userId);
+        return new PageResponse<>(notificationHistoryDTOList, page, size, total);
     }
 
     public List<NotificationHistoryDTO> getYoungNotifications(UUID userId) {

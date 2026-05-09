@@ -1,9 +1,9 @@
 const API_URL = 'http://localhost:8080';
-
+ 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+ 
 // Парсинг JWT токена
 function parseJWT(token) {
     try {
@@ -18,17 +18,17 @@ function parseJWT(token) {
         return null;
     }
 }
-
+ 
 function getUserRoleFromToken(token) {
     const payload = parseJWT(token);
     return payload ? payload.role : null;
 }
-
+ 
 function getUserIdFromToken(token) {
     const payload = parseJWT(token);
     return payload ? payload.userId : null;
 }
-
+ 
 // Проверка авторизации при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('acessToken');
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '../index.html';
         return;
     }
-
+ 
     // Проверка роли из JWT
     const userRole = getUserRoleFromToken(token);
     if (userRole !== 'Admin') {
@@ -45,34 +45,34 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '../index.html';
         return;
     }
-
+ 
     // Загрузка департаментов
     loadDepartments();
-
+ 
     renderRecipients();
     renderMessageHistory();
     // renderNotifications();
     // updateNotificationsBadge();
-
+ 
     // Загрузка заявок
     loadRequests();
-
+ 
     // Загрузка всех пользователей
     loadAllUsers();
 });
-
+ 
 // Отображение истории сообщений
 async function renderMessageHistory() {
     const container = document.getElementById('messageHistoryList');
-
+ 
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
-
+ 
     if (!token) {
         console.error('No token found');
         return;
     }
-
+ 
     const response = await fetch(`${API_URL}/message/sending-history/${userId}`, {
         method: 'GET',
         headers: {
@@ -80,9 +80,9 @@ async function renderMessageHistory() {
             'Content-Type': 'application/json'
         }
     });
-
+ 
     const result = await response.json();
-
+ 
     if (result.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -95,7 +95,7 @@ async function renderMessageHistory() {
         `;
         return;
     }
-
+ 
     container.innerHTML = result.map(msg => `
         <div class="message-history-item">
             <div class="message-history-header">
@@ -116,13 +116,17 @@ async function renderMessageHistory() {
         </div>
     `).join('');
 }
+ 
+
+allRecipientsCache = []
+currentDeptFilter = ''
 
 // Кэш департаментов — заполняется при loadDepartments()
 let cachedDepartments = [];
-
+ 
 // Кэш редактируемого пользователя
 let currentAdminEditUserId = null;
-
+ 
 let allEmployees = [
     { id: 1, name: 'Кузнецов Алексей', position: 'Senior Developer', department: 'Разработка' },
     { id: 2, name: 'Смирнова Ольга', position: 'Team Lead', department: 'Разработка' },
@@ -130,92 +134,139 @@ let allEmployees = [
     { id: 4, name: 'Морозова Елена', position: 'QA Engineer', department: 'Тестирование' },
     { id: 5, name: 'Новиков Сергей', position: 'DevOps', department: 'Инфраструктура' }
 ];
-
+ 
 let selectedEmployees = [];
 let employees;
-
+ 
 let messageHistory = [];
 let notifications = [];
-
+ 
 function switchSection(event, sectionName) {
     event.preventDefault();
-
+ 
     // Убираем active у всех вкладок
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
-
+ 
     // Добавляем active к выбранной вкладке
     event.currentTarget.classList.add('active');
-
+ 
     // Скрываем все секции
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.remove('active');
     });
-
+ 
     console.log(sectionName)
-
+ 
     // Показываем выбранную секцию
     document.getElementById(sectionName + '-section').classList.add('active');
-
+ 
     // Загружаем данные для секции
     if (sectionName === 'requests') {
         loadRequests();
     } else if (sectionName === 'departments') {
         loadDepartments();
+    } else if (sectionName === 'users') {
+        loadAllUsers();
     }
 }
-
+ 
 // Отображение списка получателей
 async function renderRecipients() {
     try {
         const token = localStorage.getItem('acessToken');
-
+ 
         if (!token) {
             console.error('No token found');
             return;
         }
-
-        const response = await fetch(`${API_URL}/profile/head-employees-for-notification`, {
+ 
+        const response = await fetch(`${API_URL}/profile/admin/users-for-notification`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'
             }
         });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch employees');
+ 
+        if (!response.ok) throw new Error('Failed to fetch recipients');
+ 
+        const data = await response.json();
+ 
+        // Сохраняем полный список в кэш
+        allRecipientsCache = data;
+        employees = data;
+ 
+        // Заполняем фильтр по департаментам (уникальные)
+        const depts = [...new Set(data.map(e => e.department).filter(Boolean))].sort();
+        const filterSelect = document.getElementById('recipientsDeptFilter');
+        if (filterSelect) {
+            filterSelect.innerHTML =
+                '<option value="">Все департаменты</option>' +
+                depts.map(d => `<option value="${d}">${d}</option>`).join('');
         }
-
-        const employeesForNotification = await response.json();
-
-        employees = employeesForNotification;
-
-        const container = document.getElementById('recipientsList');
-        container.innerHTML = employeesForNotification.map(emp => `
-            <label class="recipient-item">
-                <input type="checkbox" value="${emp.id}" onchange="toggleRecipient('${emp.id}')">
-                <div class="employee-avatar">${getInitials(emp.name)}</div>
-                <div style="flex: 1;">
-                    <div style="color: #1e3a8a; font-weight: 500;">${emp.name}</div>
-                    <div style="color: #64748b; font-size: 14px;">${emp.department}</div>
-                </div>
-            </label>
-        `).join('');
-
+ 
+        renderRecipientsList(data);
+ 
     } catch (error) {
-        console.error('Error loading employees:', error);
-
-        const tbody = document.getElementById('staffTableBody');
-        tbody.innerHTML = `<tr><td colspan="5">Ошибка загрузки</td></tr>`;
+        console.error('Error loading recipients:', error);
+        document.getElementById('recipientsList').innerHTML =
+            '<div style="padding:12px;color:#ef4444;">Ошибка загрузки</div>';
     }
 }
 
+// Отрисовка списка получателей (с учётом фильтра)
+function renderRecipientsList(list) {
+    const container = document.getElementById('recipientsList');
+ 
+    if (!list || list.length === 0) {
+        container.innerHTML = '<div style="padding:12px;color:#6b7280;">Нет пользователей</div>';
+        return;
+    }
+ 
+    container.innerHTML = list.map(emp => `
+        <label class="recipient-item">
+            <input type="checkbox"
+                value="${emp.id}"
+                onchange="toggleRecipient('${emp.id}')"
+                ${selectedEmployees.includes(emp.id) ? 'checked' : ''}>
+            <div class="employee-avatar ${emp.role === 'Head' ? 'avatar--head' : ''}">${getInitials(emp.name)}</div>
+            <div class="recipient-info">
+                <div class="recipient-name-row">
+                    <span class="recipient-name">${emp.name}</span>
+                    ${emp.role === 'Head'
+                        ? '<span class="recipient-role-badge">Глава отдела</span>'
+                        : ''}
+                </div>
+                <div class="recipient-position">${emp.position || '—'}</div>
+                <div class="recipient-dept">${emp.department || '—'}</div>
+            </div>
+        </label>
+    `).join('');
+}
+
+// Фильтрация получателей по департаменту
+function filterRecipientsByDept() {
+    const select = document.getElementById('recipientsDeptFilter');
+    currentDeptFilter = select.value;
+ 
+    const filtered = currentDeptFilter
+        ? allRecipientsCache.filter(e => e.department === currentDeptFilter)
+        : allRecipientsCache;
+ 
+    // Обновляем employees чтобы toggleSelectAll работал корректно
+    employees = filtered;
+    selectedEmployees = [];
+    updateSelectedCount();
+ 
+    renderRecipientsList(filtered);
+}
+ 
 function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('');
 }
-
+ 
 function toggleRecipient(id) {
     if (selectedEmployees.includes(id)) {
         selectedEmployees = selectedEmployees.filter(empId => empId !== id);
@@ -224,7 +275,7 @@ function toggleRecipient(id) {
     }
     updateSelectedCount();
 }
-
+ 
 function toggleSelectAll() {
     const checkboxes = document.querySelectorAll('#recipientsList input[type="checkbox"]');
     if (selectedEmployees.length === employees.length) {
@@ -238,7 +289,7 @@ function toggleSelectAll() {
     }
     updateSelectedCount();
 }
-
+ 
 function updateSelectedCount() {
     const countDiv = document.getElementById('selectedCount');
     const countValue = document.getElementById('selectedCountValue');
@@ -249,7 +300,7 @@ function updateSelectedCount() {
     } else {
         countDiv.style.display = 'none';
     }
-
+ 
     const btn = document.querySelector('.select-all-btn');
     if (selectedEmployees.length === employees.length) {
         btn.textContent = 'Снять все';
@@ -257,32 +308,32 @@ function updateSelectedCount() {
         btn.textContent = 'Выбрать всех';
     }
 }
-
+ 
 async function sendMessage() {
     const messageText = document.getElementById('messageText').value;
-
+ 
     if (selectedEmployees.length === 0) {
         showModal('Ошибка', 'Выберите хотя бы одного сотрудника');
         return;
     }
-
+ 
     if (!messageText.trim()) {
         showModal('Ошибка', 'Введите текст сообщения');
         return;
     }
-
+ 
     console.log(messageText)
     console.log(selectedEmployees)
-
+ 
     try {
         const token = localStorage.getItem('acessToken');
         const fromId = getUserIdFromToken(token);
-
+ 
         if (!token) {
             console.error('No token found');
             return;
         }
-
+ 
         const response = await fetch(`${API_URL}/notify`, {
             method: 'POST',
             headers: {
@@ -295,18 +346,18 @@ async function sendMessage() {
                 listUserIds: selectedEmployees
             })
         });
-
+ 
         if (!response.ok) {
             throw new Error('Failed to fetch employees');
         }
-
+ 
         showSuccessModal('Сообщения успешно отправлены', '');
         timeout(2000);
-
+ 
     } catch (error) {
         console.error('Error sending message', error);
     }
-
+ 
     // Reset
     selectedEmployees = [];
     document.getElementById('messageText').value = '';
@@ -315,11 +366,11 @@ async function sendMessage() {
     updateSelectedCount();
     renderMessageHistory();
 }
-
+ 
 // Загрузка департаментов
 function loadDepartments() {
     const token = localStorage.getItem('acessToken');
-
+ 
     // Пример запроса на бэкенд
     fetch(`${API_URL}/departament/get-all`, {
         method: 'GET',
@@ -357,11 +408,11 @@ function loadDepartments() {
         ]);
     });
 }
-
+ 
 // Отображение департаментов
 function displayDepartments(departments) {
     cachedDepartments = departments; // сохраняем для использования в других вкладках
-
+ 
     // Заполняем фильтр департаментов во вкладке пользователей
     const deptFilter = document.getElementById('usersDeptFilter');
     if (deptFilter) {
@@ -369,9 +420,9 @@ function displayDepartments(departments) {
         deptFilter.innerHTML = '<option value="">Все департаменты</option>' +
             departments.map(d => `<option value="${d.id}" ${current === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('');
     }
-
+ 
     const grid = document.getElementById('departmentsGrid');
-
+ 
     if (departments.length === 0) {
         grid.innerHTML = `
             <div class="empty-state">
@@ -383,7 +434,7 @@ function displayDepartments(departments) {
         `;
         return;
     }
-
+ 
     grid.innerHTML = departments.map(dept => `
         <div class="department-card">
             <div class="department-card-header">
@@ -391,7 +442,7 @@ function displayDepartments(departments) {
                     <div class="department-name">${dept.name}</div>
                 </div>
             </div>
-
+ 
             ${dept.headName ? `
                 <div class="department-head">
                     👤 Глава: ${dept.headName}
@@ -401,7 +452,7 @@ function displayDepartments(departments) {
                     ⚠️ Глава не назначен
                 </div>
             `}
-
+ 
             <div class="department-stats">
                 <div class="stat-item">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,12 +461,12 @@ function displayDepartments(departments) {
                     ${dept.employeeCount || 0} сотрудников
                 </div>
             </div>
-
+ 
             <div class="department-actions">
                 <button class="btn-small" onclick="viewEmployees('${dept.id}', '${dept.name}')">
                     Сотрудники
                 </button>
-                <button class="btn-delete" onclick="deleteDepartment'(${dept.id}', '${dept.name}')">
+                <button class="btn-delete" onclick="deleteDepartment('${dept.id}', '${dept.name}')">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -424,25 +475,25 @@ function displayDepartments(departments) {
         </div>
     `).join('');
 }
-
+ 
 // Открытие модального окна добавления департамента
 function openAddDepartmentModal() {
     document.getElementById('addDepartmentModal').classList.add('show');
 }
-
+ 
 // Закрытие модального окна добавления департамента
 function closeAddDepartmentModal() {
     document.getElementById('addDepartmentModal').classList.remove('show');
     document.getElementById('addDepartmentForm').reset();
 }
-
+ 
 // Обработка формы добавления департамента
 document.getElementById('addDepartmentForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
+ 
     const name = document.getElementById('departmentName').value;
     const token = localStorage.getItem('acessToken');
-
+ 
     try {
         const response = await fetch(`${API_URL}/departament/create`, {
             method: 'POST',
@@ -454,47 +505,47 @@ document.getElementById('addDepartmentForm').addEventListener('submit', async fu
                 name: name
             })
         });
-
+ 
         let data;
-
+ 
         try {
             data = await response.json();
         } catch {
             data = { message: 'Ошибка обработки ответа сервера' };
         }
-
+ 
         if (!response.ok) {
             console.error('Ошибка от сервера:', data);
             throw new Error(data.message || `Ошибка ${response.status}`);
         }
-
+ 
         if (data.code === 'VALIDATION_FAILED') {
             showErrorModal(data);
             return;
         }
-
+ 
         closeAddDepartmentModal();
         showSuccessModal(
             'Департамент создан!',
             'Новый департамент успешно добавлен в систему.'
         );
-
+ 
         setTimeout(() => {
             loadDepartments();
         }, 1500);
-
+ 
     } catch (error) {
         console.error('Ошибка:', error);
         showErrorModal({ message: error.message });
     }
 });
-
+ 
 // Просмотр сотрудников департамента
 function viewEmployees(departmentId, departmentName) {
     const token = localStorage.getItem('acessToken');
-
+ 
     document.getElementById('employeesModalTitle').textContent = `Сотрудники: ${departmentName}`;
-
+ 
     // Запрос на бэкенд
     fetch(`${API_URL}/profile/admin/departament-employees/${departmentId}`, {
         method: 'GET',
@@ -534,14 +585,14 @@ function viewEmployees(departmentId, departmentName) {
             }
         ], departmentId);
     });
-
+ 
     document.getElementById('employeesModal').classList.add('show');
 }
-
+ 
 // Отображение сотрудников
 function displayEmployees(employees, departmentId) {
     const list = document.getElementById('employeesList');
-
+ 
     if (employees.length === 0) {
         list.innerHTML = `
             <div class="empty-state">
@@ -550,7 +601,7 @@ function displayEmployees(employees, departmentId) {
         `;
         return;
     }
-
+ 
     list.innerHTML = employees.map(emp => `
         <div class="employee-card">
             <div class="employee-info">
@@ -564,34 +615,34 @@ function displayEmployees(employees, departmentId) {
         </div>
     `).join('');
 }
-
+ 
 // Закрытие модального окна сотрудников
 function closeEmployeesModal() {
     document.getElementById('employeesModal').classList.remove('show');
 }
-
+ 
 // Модальные окна
 function showSuccessModal(title, message) {
     document.getElementById('successTitle').textContent = title;
     document.getElementById('successMessage').textContent = message;
     document.getElementById('successModal').classList.add('show');
 }
-
+ 
 function closeSuccessModal() {
     document.getElementById('successModal').classList.remove('show');
 }
-
+ 
 function showErrorModal(errorResponse) {
     const modal = document.getElementById('errorModal');
     const errorTitle = document.getElementById('errorTitle');
     const errorMessage = document.getElementById('errorMessage');
     const errorList = document.getElementById('errorList');
-
+ 
     errorTitle.textContent = errorResponse.message || 'Ошибка';
     errorMessage.textContent = 'Пожалуйста, исправьте следующие ошибки:';
-
+ 
     errorList.innerHTML = '';
-
+ 
     if (errorResponse.fieldErrors && errorResponse.fieldErrors.length > 0) {
         errorResponse.fieldErrors.forEach(error => {
             const li = document.createElement('li');
@@ -599,18 +650,18 @@ function showErrorModal(errorResponse) {
             errorList.appendChild(li);
         });
     }
-
+ 
     modal.classList.add('show');
 }
-
+ 
 function closeErrorModal() {
     document.getElementById('errorModal').classList.remove('show');
 }
-
+ 
 // Просмотр профиля пользователя
 function viewProfile(userId) {
     const token = localStorage.getItem('acessToken');
-
+ 
     // Запрос на бэкенд
     fetch(`${API_URL}/profile/${userId}`, {
         method: 'GET',
@@ -639,18 +690,18 @@ function viewProfile(userId) {
         });
     });
 }
-
+ 
 // Отображение профиля
 function displayProfile(profile) {
     const content = document.getElementById('profileContent');
-
+ 
     const registeredDate = new Date(profile.registeredAt);
     const formattedDate = registeredDate.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: 'long',
         year: 'numeric'
     });
-
+ 
     content.innerHTML = `
         <div class="profile-section">
             <div class="profile-section-title">Личная информация</div>
@@ -671,7 +722,7 @@ function displayProfile(profile) {
                 ` : ''}
             </div>
         </div>
-
+ 
         <div class="profile-section">
             <div class="profile-section-title">Контактная информация</div>
             <div class="profile-grid">
@@ -687,7 +738,7 @@ function displayProfile(profile) {
                 </div>
             </div>
         </div>
-
+ 
         <div class="profile-section">
             <div class="profile-section-title">Рабочая информация</div>
             <div class="profile-grid">
@@ -708,19 +759,19 @@ function displayProfile(profile) {
             </div>
         </div>
     `;
-
+ 
     document.getElementById('profileModalTitle').textContent = `Профиль: ${profile.lastName} ${profile.name}`;
     document.getElementById('profileModal').classList.add('show');
 }
-
+ 
 // Закрытие модального окна профиля
 function closeProfileModal() {
     document.getElementById('profileModal').classList.remove('show');
 }
-
+ 
 // Закрытие модальных окон при клике вне их
 window.addEventListener('click', function(event) {
-    const modals = ['addDepartmentModal', 'employeesModal', 'successModal', 'errorModal', 'profileModal'];
+    const modals = ['addDepartmentModal', 'employeesModal', 'successModal', 'errorModal', 'profileModal', 'adminProfileModal'];
     modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (event.target === modal) {
@@ -728,9 +779,7 @@ window.addEventListener('click', function(event) {
         }
     });
 });
-
-
-
+ 
 // ── Все пользователи ────────────────────────────────────────────────────────
  
 let allUsersCache = [];
@@ -744,7 +793,7 @@ async function loadAllUsers() {
     container.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
  
     try {
-        const response = await fetch(`${API_URL}/profile/all-user-profiles`, {
+        const response = await fetch(`${API_URL}/profile/admin/all-user-profiles`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -776,14 +825,28 @@ function renderUsersList(users) {
         return;
     }
  
+    const statusLabel = { APPROVED: 'Одобрено', DECLINED: 'Отклонено', PENDING: 'Ожидает' };
+    const statusClass = { APPROVED: 'status-approved', DECLINED: 'status-declined', PENDING: 'status-pending' };
+ 
     container.innerHTML = users.map(u => `
         <div class="user-card" data-id="${u.id}">
             <div class="user-card-main">
-                <div class="user-avatar">${getAdminInitials(u.lastName, u.name)}</div>
+                <div class="user-avatar ${u.role === 'Head' ? 'user-avatar--head' : ''}">${getAdminInitials(u.lastName, u.name)}</div>
                 <div class="user-card-info">
-                    <div class="user-card-name">${u.lastName} ${u.name}${u.surname ? ' ' + u.surname : ''}</div>
+                    <div class="user-card-name-row">
+                        <span class="user-card-name">${u.lastName} ${u.name}${u.surname ? ' ' + u.surname : ''}</span>
+                        ${u.role === 'Head' ? '<span class="role-badge role-head">Глава отдела</span>' : ''}
+                    </div>
                     <div class="user-card-meta">${u.position} · ${u.grade}</div>
                     <div class="user-card-dept">${u.departmentName || '—'}</div>
+                    <div class="user-card-statuses">
+                        <span class="status-badge ${statusClass[u.requestStatusAdmin] || ''}">
+                            Админ: ${statusLabel[u.requestStatusAdmin] || u.requestStatusAdmin}
+                        </span>
+                        <span class="status-badge ${statusClass[u.requestStatusHead] || ''}">
+                            Глава: ${statusLabel[u.requestStatusHead] || u.requestStatusHead}
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="user-card-actions">
@@ -799,11 +862,14 @@ function renderUsersList(users) {
 }
  
 function filterUsersByDepartment() {
-    const deptId = document.getElementById('usersDeptFilter').value;
+    const select = document.getElementById('usersDeptFilter');
+    const deptName = select.options[select.selectedIndex].text;
+    const deptId = select.value;
+ 
     if (!deptId) {
         renderUsersList(allUsersCache);
     } else {
-        const filtered = allUsersCache.filter(u => String(u.departmentId) === String(deptId));
+        const filtered = allUsersCache.filter(u => u.departmentName === deptName);
         renderUsersList(filtered);
     }
 }
@@ -816,26 +882,16 @@ function getAdminInitials(lastName, name) {
  
 // ── Открытие профиля пользователя для редактирования (Админ) ──
  
-async function openAdminUserProfile(userId) {
-    const token = localStorage.getItem('acessToken');
-    currentAdminEditUserId = userId;
+function openAdminUserProfile(userId) {
+    const user = allUsersCache.find(u => u.id === userId);
  
-    try {
-        const response = await fetch(`${API_URL}/profile/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
-        });
- 
-        if (!response.ok) throw new Error('Ошибка загрузки профиля');
-        const data = await response.json();
-        renderAdminUserProfileEdit(data);
-    } catch (error) {
-        console.error('Ошибка:', error);
-        showErrorModal({ message: 'Не удалось загрузить профиль пользователя.' });
+    if (!user) {
+        showErrorModal({ message: 'Пользователь не найден в списке. Обновите страницу.' });
+        return;
     }
+ 
+    currentAdminEditUserId = userId;
+    renderAdminUserProfileEdit(user);
 }
  
 function renderAdminUserProfileEdit(p) {
@@ -844,19 +900,26 @@ function renderAdminUserProfileEdit(p) {
     const gradeOptions = ['Junior', 'Middle', 'Senior', 'Lead']
         .map(g => `<option value="${g}" ${p.grade === g ? 'selected' : ''}>${g}</option>`)
         .join('');
+
+    const positionOptions = ['Developer', 'Tester', 'Analyst', 'Designer', 'Manager', 'Devops', 'DataScientist']
+        .map(p => `<option value="${p}" ${p.position === p ? 'selected' : ''}>${p}</option>`)
+        .join('');
  
     const roleOptions = ['User', 'Head', 'Admin']
         .map(r => `<option value="${r}" ${p.role === r ? 'selected' : ''}>${r}</option>`)
         .join('');
  
+    // communication в кэше приходит в верхнем регистре (EMAIL, TELEGRAM, VK)
+    const commNormalized = p.communication ? p.communication.toLowerCase() : '';
+ 
     const commOptions = [
         { value: 'telegram', label: 'Telegram' },
         { value: 'email',    label: 'Mail' },
         { value: 'vk',       label: 'Vk' },
-    ].map(c => `<option value="${c.value}" ${p.communication === c.value ? 'selected' : ''}>${c.label}</option>`).join('');
+    ].map(c => `<option value="${c.value}" ${commNormalized === c.value ? 'selected' : ''}>${c.label}</option>`).join('');
  
     const deptOptions = cachedDepartments.length > 0
-        ? cachedDepartments.map(d => `<option value="${d.id}" ${p.departmentId === d.id ? 'selected' : ''}>${d.name}</option>`).join('')
+        ? cachedDepartments.map(d => `<option value="${d.id}" ${p.departmentName === d.name ? 'selected' : ''}>${d.name}</option>`).join('')
         : `<option value="">Загрузка...</option>`;
  
     const reqStatusAdminOptions = ['APPROVED', 'DECLINED', 'PENDING']
@@ -905,7 +968,7 @@ function renderAdminUserProfileEdit(p) {
                 <div class="ap-section-title">Рабочая информация</div>
                 <div class="ap-field">
                     <label class="ap-label">Должность</label>
-                    <input class="ap-input" id="ap-position" type="text" value="${p.position || ''}" oninput="clearApError(this)"/>
+                    <select class="ap-input" id="ap-position">${positionOptions}</select>
                 </div>
                 <div class="ap-field">
                     <label class="ap-label">Грейд</label>
@@ -952,7 +1015,7 @@ async function saveAdminUserProfile() {
         lastName:            document.getElementById('ap-lastName').value.trim(),
         name:                document.getElementById('ap-name').value.trim(),
         surname:             document.getElementById('ap-surname').value.trim(),
-        communication:       document.getElementById('ap-communication').value,
+        communication:       document.getElementById('ap-communication').value.toUpperCase(),
         username:            document.getElementById('ap-username').value.trim(),
         position:            document.getElementById('ap-position').value.trim(),
         grade:               document.getElementById('ap-grade').value,
@@ -974,7 +1037,7 @@ async function saveAdminUserProfile() {
     }
  
     try {
-        const response = await fetch(`${API_URL}/profile/admin/update/${currentAdminEditUserId}`, {
+        const response = await fetch(`${API_URL}/profile/admin/${currentAdminEditUserId}`, {
             method: 'PUT',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -1025,24 +1088,25 @@ function closeAdminProfileModal() {
     document.getElementById('adminProfileModal').classList.remove('show');
     currentAdminEditUserId = null;
 }
-
+ 
+// ────────────────────────────────────────────────────────────────────────────
 // Выход
 function logout() {
     localStorage.removeItem('acessToken');
     localStorage.removeItem('refreshToken');
     window.location.href = '../index.html';
 }
-
+ 
 // Удаление департамента
 function deleteDepartment(departmentId, departmentName) {
     if (!confirm(`Вы уверены, что хотите удалить департамент "${departmentName}"?\n\nВсе сотрудники будут откреплены от департамента.`)) {
         return;
     }
-
+ 
     const token = localStorage.getItem('acessToken');
-
+ 
     // Запрос на бэкенд
-    fetch(`/api/departments/${departmentId}`, {
+    fetch(`${API_URL}/departament/${departmentId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -1069,11 +1133,11 @@ function deleteDepartment(departmentId, departmentName) {
         }, 1500);
     });
 }
-
+ 
 // Загрузка заявок на вступление
 function loadRequests() {
     const token = localStorage.getItem('acessToken');
-
+ 
     // Запрос на бэкенд
     fetch(`${API_URL}/profile/admin/departament-requests`, {
         method: 'GET',
@@ -1117,11 +1181,11 @@ function loadRequests() {
         updateRequestsBadge(demoRequests.length);
     });
 }
-
+ 
 // Отображение заявок
 function displayRequests(requests) {
     const list = document.getElementById('requestsList');
-
+ 
     if (requests.length === 0) {
         list.innerHTML = `
             <div class="empty-state">
@@ -1133,11 +1197,11 @@ function displayRequests(requests) {
         `;
         return;
     }
-
+ 
     list.innerHTML = requests.map(req => {
         const headStatus = req.requestStatus;
         let status;
-
+ 
         if (headStatus === 'APPROVED') {
             status = "Одобрено главой отдела";
         } else if (headStatus === 'DECLINED') {
@@ -1145,8 +1209,8 @@ function displayRequests(requests) {
         } else {
             status = "В ожидании просмотра главы"
         }
-
-
+ 
+ 
         return `
             <div class="request-card">
                 <div class="request-info">
@@ -1201,7 +1265,7 @@ function displayRequests(requests) {
         `;
     }).join('');
 }
-
+ 
 // Обновление счетчика заявок
 function updateRequestsBadge(count) {
     const badge = document.getElementById('requestsBadge');
@@ -1210,10 +1274,10 @@ function updateRequestsBadge(count) {
         badge.style.display = count > 0 ? 'inline-block' : 'none';
     }
 }
-
+ 
 async function makeHead(userId, departmentName) {
     const token = localStorage.getItem('acessToken');
-
+ 
     try {
         const response = await fetch(`${API_URL}/user/admin/makeHead/${userId}`, {
             method: 'PUT',
@@ -1222,33 +1286,33 @@ async function makeHead(userId, departmentName) {
                 'Content-Type': 'application/json'
             }
         })
-
+ 
         let data;
-
+ 
         try {
             data = await response.json();
         } catch {
             data = { message: 'Ошибка ответа сервера' };
         }
-
+ 
         if (!response.ok) {
             console.error('Ошибка от сервера:', data);
             throw new Error(data.message);
         }
-
+ 
         showSuccessModal('Пользователь успешно назначен главой отдела', '');
             setTimeout(() => {
                 loadRequests();
             }, 1500);
-
+ 
     } catch (error) {
         console.error('Ошибка:', error);
         showErrorModal({ message: error.message });
     }
-
-
-
-
+ 
+ 
+ 
+ 
     // fetch(`${API_URL}/user/admin/makeHead/${userId}`, {
     //     method: "PUT",
     //     headers: {
@@ -1260,7 +1324,7 @@ async function makeHead(userId, departmentName) {
     //     if (!response.ok) {
     //         throw new Error("Ошибка запроса: " + response.status);
     //     }
-
+ 
     //     return;
     // })
     // .then(() => {
@@ -1275,11 +1339,11 @@ async function makeHead(userId, departmentName) {
     //     showErrorModal("Ошибка");
     // });
 }
-
+ 
 // Одобрение заявки
 function approveRequest(userId, userName, departmentName) {
     const token = localStorage.getItem('acessToken');
-
+ 
     // Запрос на бэкенд
     fetch(`${API_URL}/user/admin/approveRequest/${userId}`, {
         method: 'PUT',
@@ -1308,15 +1372,15 @@ function approveRequest(userId, userName, departmentName) {
         }, 1500);
     });
 }
-
+ 
 // Отклонение заявки
 async function rejectRequest(requestId, userName) {
     if (!confirm(`Отклонить заявку от ${userName}?`)) {
         return;
     }
-
+ 
     const token = localStorage.getItem('acessToken');
-
+ 
     // Запрос на бэкенд
     fetch(`${API_URL}/user/admin/declineRequest/${requestId}`, {
         method: 'PUT',

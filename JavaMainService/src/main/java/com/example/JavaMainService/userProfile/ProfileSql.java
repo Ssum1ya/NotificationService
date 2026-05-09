@@ -16,6 +16,16 @@ public class ProfileSql {
             	on u.departement_id = d.id
             
             where u.role != 'Admin'
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countAllUsersData = """
+            select count(*)
+            from user_profiles up
+            full outer join users u
+            	on u.profile_id = up.id
+            where u.role != 'Admin'
             """;
 
     public static final String getProfileByUserId = """
@@ -42,6 +52,22 @@ public class ProfileSql {
             where d.id = ? and
             u.request_status_admin = 'APPROVED' and
             u.request_status_head = 'APPROVED'
+            ORDER BY u.uuid 
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countGetEmployeesByDepartment = """
+            select count(*) from user_profiles p
+            
+            left join users u
+            	on u.profile_id = p.id
+            
+            left join departament d
+            	on d.id = u.departement_id
+            
+            where d.id = ? and
+            u.request_status_admin = 'APPROVED' and
+            u.request_status_head = 'APPROVED'
             """;
 
     public static final String adminGetDepartmentRequests = """
@@ -52,6 +78,17 @@ public class ProfileSql {
             
             left join departament d
             	on d.id = u.departement_id
+            
+            where u.request_status_admin = 'PENDING'
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countDepartmentRequests = """
+            select count(*) from user_profiles p
+            
+            left join users u
+            	on u.profile_id = p.id
             
             where u.request_status_admin = 'PENDING'
             """;
@@ -110,6 +147,21 @@ public class ProfileSql {
             d.name as department_name
             
             from user_profiles p
+            
+            inner join users u
+            	on u.profile_id = p.id
+            
+            inner join departament d
+            	on d.id = u.departement_id
+            
+            where u.uuid != (select uuid from users where role = 'Admin') and u.request_status_admin = 'APPROVED' and
+            u.request_status_head = 'APPROVED'
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countUsersForNotify = """
+            select count(*) from user_profiles p
             
             inner join users u
             	on u.profile_id = p.id

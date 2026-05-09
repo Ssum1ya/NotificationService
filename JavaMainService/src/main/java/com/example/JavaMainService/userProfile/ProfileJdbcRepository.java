@@ -1,6 +1,7 @@
 package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
+import com.example.JavaMainService.message.MessageSql;
 import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.notifications.model.ConsumerCommunicationDTO;
 import com.example.JavaMainService.notifications.model.ProfileProducerDTO;
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class ProfileJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public List<AllUserData> getAllUsersData() {
+    public List<AllUserData> getAllUsersData(int size, int offset) {
         return jdbcTemplate.query(ProfileSql.getAllUsersData, (rs, rowNum) ->
                         new AllUserData(
                                 rs.getString("last_name"),
@@ -44,7 +45,15 @@ public class ProfileJdbcRepository {
                                 RequestStatus.valueOf(rs.getString("request_status_head")),
                                 RequestStatus.valueOf(rs.getString("request_status_admin")),
                                 UUID.fromString(rs.getString("id"))
-                        )
+                        ),
+                size,
+                offset
+        );
+    }
+
+    public Long countAllUsersData() {
+        return jdbcTemplate.queryForObject(ProfileSql.countAllUsersData, (rs, rowNum) ->
+                        rs.getLong("count")
         );
     }
 
@@ -67,7 +76,7 @@ public class ProfileJdbcRepository {
         );
     }
 
-    public List<DepartmentEmployeeDTO> adminGetEmployeesByDepartment(UUID departmentId) {
+    public List<DepartmentEmployeeDTO> adminGetEmployeesByDepartment(UUID departmentId, int size, int offset) {
         return jdbcTemplate.query(ProfileSql.adminGetEmployeesByDepartment, (rs, rowNum) ->
                 new DepartmentEmployeeDTO(
                         UUID.fromString(rs.getString("uuid")),
@@ -76,11 +85,20 @@ public class ProfileJdbcRepository {
                         rs.getString("grade") + " " + rs.getString("position"),
                         rs.getString("role").equals("Head")
                 ),
+                departmentId,
+                size,
+                offset
+        );
+    }
+
+    public Long countEmployeesByDepartment(UUID departmentId) {
+        return jdbcTemplate.queryForObject(ProfileSql.countGetEmployeesByDepartment, (rs, rowNum) ->
+                rs.getLong("count"),
                 departmentId
         );
     }
 
-    public List<DepartmentRequestDTO> adminGetDepartmentRequests() {
+    public List<DepartmentRequestDTO> adminGetDepartmentRequests(int size, int offset) {
         return jdbcTemplate.query(ProfileSql.adminGetDepartmentRequests, (rs, rowNum) ->
                         new DepartmentRequestDTO(
                                 UUID.fromString(rs.getString("user_id")),
@@ -89,7 +107,15 @@ public class ProfileJdbcRepository {
                                 rs.getString("department_name"),
                                 rs.getString("grade") + " " + rs.getString("position"),
                                 RequestStatus.valueOf(rs.getString("request_status_head"))
-                        )
+                        ),
+                size,
+                offset
+        );
+    }
+
+    public Long countDepartmentRequests() {
+        return jdbcTemplate.queryForObject(ProfileSql.countDepartmentRequests, (rs, rowNum) ->
+                rs.getLong("count")
         );
     }
 
@@ -134,7 +160,7 @@ public class ProfileJdbcRepository {
         );
     }
 
-    public List<AllUsersForNotify> adminGetAllUsersForNotify() {
+    public List<AllUsersForNotify> adminGetAllUsersForNotify(int size, int offset) {
         return jdbcTemplate.query(ProfileSql.adminGetUsersForNotify, (rs, rowNum) ->
                         new AllUsersForNotify(
                                 UUID.fromString(rs.getString("user_id")),
@@ -142,7 +168,15 @@ public class ProfileJdbcRepository {
                                 rs.getString("department_name"),
                                 Role.valueOf(rs.getString("role")),
                                 rs.getString("grade") + " " + rs.getString("position")
-                        )
+                        ),
+                size,
+                offset
+        );
+    }
+
+    public Long countAllUsersForNotify() {
+        return jdbcTemplate.queryForObject(ProfileSql.countUsersForNotify, (rs, rowNum) ->
+                rs.getLong("count")
         );
     }
 

@@ -79,9 +79,8 @@
                     <h1>Заявки на вступление</h1>
                 </div>
  
-                <div class="requests-list" id="requestsList">
-                    <!-- Заявки будут загружены здесь -->
-                </div>
+                <div class="requests-list" id="requestsList"></div>
+                <div id="requestsPagination"></div>
             </div>
  
             <!-- Секция отправки сообщений -->
@@ -99,6 +98,7 @@
                         </div>
  
                         <div class="recipients-list" id="recipientsList"></div>
+                        <div id="recipientsPagination"></div>
  
                         <div id="selectedCount" class="selected-count" style="display: none;">
                             Выбрано сотрудников: <span id="selectedCountValue">0</span>
@@ -131,6 +131,7 @@
                 </div>
  
                 <div id="messageHistoryList"></div>
+                <div id="historyPagination"></div>
             </div>
  
                 <!-- <div id="messageHistoryList"></div>
@@ -149,9 +150,8 @@
                     <span id="usersCountLabel" class="users-count-label"></span>
                 </div>
  
-                <div id="usersListContainer" class="users-list">
-                    <!-- Пользователи загружаются здесь -->
-                </div>
+                <div id="usersListContainer" class="users-list"></div>
+                <div id="usersPagination"></div>
             </div>
         </main>
     </div>
@@ -177,14 +177,13 @@
  
     <!-- Модальное окно просмотра сотрудников -->
     <div id="employeesModal" class="modal">
-        <div class="modal-content modal-large">
+        <div class="modal-content modal-xlarge">
             <div class="modal-header">
                 <h3 id="employeesModalTitle">Сотрудники департамента</h3>
             </div>
             <div class="modal-body">
-                <div class="employees-list" id="employeesList">
-                    <!-- Сотрудники будут загружены здесь -->
-                </div>
+                <div class="employees-list" id="employeesList"></div>
+                <div id="employeesPagination"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-primary" onclick="closeEmployeesModal()">Закрыть</button>
@@ -405,5 +404,49 @@
     </style>
  
     <script src="admin-panel.js"></script>
+ 
+    <style>
+        /* ── Пагинация ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 16px;
+            padding-bottom: 4px;
+        }
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .page-btn--active { background: #2563eb; border-color: #2563eb; color: #fff; }
+        .page-btn--active:hover { background: #1d4ed8 !important; color: #fff !important; }
+        .page-btn--disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-dots { font-size: 14px; color: #9ca3af; padding: 0 2px; user-select: none; }
+ 
+        /* ── Расширенное модальное окно сотрудников ── */
+        .modal-xlarge { max-width: 700px; width: 95%; }
+        .modal-xlarge .employees-list { max-height: 420px; overflow-y: auto; }
+ 
+        /* ── Панель получателей — фиксированная высота для 5 ── */
+        .recipients-list { max-height: 360px; overflow-y: auto; }
+ 
+        /* ── Пагинация внутри панели получателей ── */
+        #recipientsPagination .pagination { margin-top: 8px; }
+        #recipientsPagination .page-btn { min-width: 28px; height: 28px; font-size: 12px; }
+    </style>
 </body>
 </html>

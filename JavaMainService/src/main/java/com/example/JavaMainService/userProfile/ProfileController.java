@@ -1,5 +1,6 @@
 package com.example.JavaMainService.userProfile;
 
+import com.example.JavaMainService.dtoLibrary.PageResponse;
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
 import com.example.JavaMainService.userProfile.model.*;
 import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
@@ -49,8 +50,10 @@ public class ProfileController {
     }
 
     @GetMapping("/admin/all-user-profiles")
-    public ResponseEntity<List<AllUserData>> getAllUsersData() {
-        return ResponseEntity.ok(profileService.getAllUsersData());
+    public ResponseEntity<PageResponse<AllUserData>> getAllUsersData(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return ResponseEntity.ok(profileService.getAllUsersData(page, size));
     }
 
     @GetMapping("/{profileId}")
@@ -65,8 +68,12 @@ public class ProfileController {
     }
 
     @GetMapping("/admin/departament-employees/{departmentId}")
-    public ResponseEntity<List<DepartmentEmployeeDTO>> adminGetEmployeesByDepartmentId(@PathVariable("departmentId") UUID departmentId) {
-        return ResponseEntity.ok(profileService.adminGetEmployeesByDepartment(departmentId));
+    public ResponseEntity<PageResponse<DepartmentEmployeeDTO>> adminGetEmployeesByDepartmentId(
+            @PathVariable("departmentId") UUID departmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        return ResponseEntity.ok(profileService.adminGetEmployeesByDepartment(departmentId, page, size));
     }
 
     @GetMapping("/head/departament-employees/{departmentId}")
@@ -77,12 +84,17 @@ public class ProfileController {
     }
 
     @GetMapping("/admin/departament-requests")
-    public ResponseEntity<List<DepartmentRequestDTO>> getDepartmentRequests() {
-        return ResponseEntity.ok(profileService.adminGetDepartmentRequests());
+    public ResponseEntity<PageResponse<DepartmentRequestDTO>> getDepartmentRequests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(profileService.adminGetDepartmentRequests(page, size));
     }
 
     @GetMapping("/head/departament-requests/{departmentId}")
-    public ResponseEntity<List<DepartmentRequestDTO>> getRequests(@PathVariable("departmentId") UUID depId) {
+    public ResponseEntity<List<DepartmentRequestDTO>> getRequests(
+            @PathVariable("departmentId") UUID depId
+            ) {
         return ResponseEntity.ok(profileService.headGetDepartmentRequests(depId));
     }
 
@@ -94,7 +106,10 @@ public class ProfileController {
     }
 
     @GetMapping("/admin/users-for-notification")
-    public ResponseEntity<List<AllUsersForNotify>> getUsersForNotify() {
-        return ResponseEntity.ok(profileService.getUsersForNotify());
+    public ResponseEntity<PageResponse<AllUsersForNotify>> getUsersForNotify(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(profileService.getUsersForNotify(page, size));
     }
 }

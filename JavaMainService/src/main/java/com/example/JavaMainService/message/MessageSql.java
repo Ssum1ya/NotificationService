@@ -22,7 +22,14 @@ public class MessageSql {
                 ON up.id = u.profile_id
             WHERE m.from_id = ?
             GROUP BY m.batch_id, m.message_time, m.message
-            ORDER BY m.message_time DESC;
+            ORDER BY m.message_time DESC
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countSendingHistoryById = """
+            SELECT count(DISTINCT m.batch_id)
+            FROM messages m
+            WHERE m.from_id = ?
             """;
 
     public static final String getNotificationHistory = """
@@ -37,5 +44,12 @@ public class MessageSql {
             
             where m.to_id = ?
             ORDER BY m.message_time DESC
+            LIMIT ? OFFSET ?
+            """;
+
+    public static String countNotificationHistory = """
+            select count(*)
+            from messages m
+            where m.to_id = ?
             """;
 }

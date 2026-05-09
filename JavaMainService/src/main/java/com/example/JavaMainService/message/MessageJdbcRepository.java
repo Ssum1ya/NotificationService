@@ -30,7 +30,7 @@ public class MessageJdbcRepository {
         );
     }
 
-    public List<MessageHistoryDTO> getSendingHistoryById(UUID fromId) {
+    public List<MessageHistoryDTO> getSendingHistoryById(UUID fromId, int size, int offset) {
         return jdbcTemplate.query(MessageSql.getSendingHistoryById, (rs, rowNum) ->
                         new MessageHistoryDTO(
                                 rs.getObject("message_time", OffsetDateTime.class)
@@ -39,11 +39,20 @@ public class MessageJdbcRepository {
                                 (String[]) rs.getArray("recipients").getArray(),
                                 rs.getString("message")
                         ),
+                fromId,
+                size,
+                offset
+        );
+    }
+
+    public Long countSendingHistoryById(UUID fromId) {
+        return jdbcTemplate.queryForObject(MessageSql.countSendingHistoryById, (rs, rowNum) ->
+                        rs.getLong("count"),
                 fromId
         );
     }
 
-    public List<NotificationHistoryDTO> getNotificationHistoryByUserId(UUID toId) {
+    public List<NotificationHistoryDTO> getNotificationHistoryByUserId(UUID toId, int size, int offset) {
         return jdbcTemplate.query(MessageSql.getNotificationHistory, (rs, rowNum) ->
                         new NotificationHistoryDTO(
                                 rs.getString("message"),
@@ -52,7 +61,16 @@ public class MessageJdbcRepository {
                                         .atZoneSameInstant(ZoneId.of("Asia/Yekaterinburg"))
                                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                         ),
-                toId
+                toId,
+                size,
+                offset
+        );
+    }
+
+    public Long countNotificationHistory(UUID fromId) {
+        return jdbcTemplate.queryForObject(MessageSql.countNotificationHistory, (rs, rowNum) ->
+                        rs.getLong("count"),
+                fromId
         );
     }
 }

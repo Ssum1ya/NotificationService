@@ -3,6 +3,7 @@ package com.example.JavaMainService.userProfile;
 import com.example.JavaMainService.departament.Department;
 import com.example.JavaMainService.departament.DepartmentJDBCRepository;
 import com.example.JavaMainService.departament.DepartmentRepository;
+import com.example.JavaMainService.dtoLibrary.PageResponse;
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
 import com.example.JavaMainService.user.UserJdbcRepository;
 import com.example.JavaMainService.user.userEntity.RequestStatus;
@@ -19,6 +20,7 @@ import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
 import com.example.JavaMainService.userProfile.profileEntity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -87,8 +89,11 @@ public class ProfileService {
         profileJdbcRepository.adminUpdateProfileByUserId(userId, updateUserData);
     }
 
-    public List<AllUserData> getAllUsersData() {
-        return profileJdbcRepository.getAllUsersData();
+    public PageResponse<AllUserData> getAllUsersData(int page, int size) {
+        int offset = page * size;
+        List<AllUserData> allUserData = profileJdbcRepository.getAllUsersData(size, offset);
+        Long total = profileJdbcRepository.countAllUsersData();
+        return new PageResponse<>(allUserData, page, size, total);
     }
 
     public ProfileDTO getProfileByUserId(UUID userId, String requestRole, UUID requestDepartmentId, String requestLogin) {
@@ -110,16 +115,24 @@ public class ProfileService {
         return getProfileById.profileDTO();
     }
 
-    public List<DepartmentEmployeeDTO> adminGetEmployeesByDepartment(UUID depId) {
-        return profileJdbcRepository.adminGetEmployeesByDepartment(depId);
+    public PageResponse<DepartmentEmployeeDTO> adminGetEmployeesByDepartment(UUID depId, int page, int size) {
+        int offset = page * size;
+        List<DepartmentEmployeeDTO> departmentEmployees =
+                profileJdbcRepository.adminGetEmployeesByDepartment(depId, size, offset);
+        Long total = profileJdbcRepository.countEmployeesByDepartment(depId);
+        return new PageResponse<>(departmentEmployees, page, size, total);
     }
 
     public List<GetEmployeesDTO> headGetEmployeesByDepartment(UUID depId, String login) {
         return profileJdbcRepository.headGetEmployees(depId, login);
     }
 
-    public List<DepartmentRequestDTO> adminGetDepartmentRequests() {
-        return profileJdbcRepository.adminGetDepartmentRequests();
+    public PageResponse<DepartmentRequestDTO> adminGetDepartmentRequests(int page, int size) {
+        int offset = page * size;
+        List<DepartmentRequestDTO> allUserData = profileJdbcRepository.adminGetDepartmentRequests(size, offset);
+        Long total = profileJdbcRepository.countDepartmentRequests();
+
+        return new PageResponse<>(allUserData, page, size, total);
     }
 
     public List<DepartmentRequestDTO> headGetDepartmentRequests(UUID depId) {
@@ -134,7 +147,10 @@ public class ProfileService {
         return profileJdbcRepository.getHeadEmployeesForNotify();
     }
 
-    public List<AllUsersForNotify> getUsersForNotify() {
-        return profileJdbcRepository.adminGetAllUsersForNotify();
+    public PageResponse<AllUsersForNotify> getUsersForNotify(int page, int size) {
+        int offset = page * size;
+        List<AllUsersForNotify> allUsersForNotify = profileJdbcRepository.adminGetAllUsersForNotify(size, offset);
+        Long total = profileJdbcRepository.countAllUsersForNotify();
+        return new PageResponse<>(allUsersForNotify, page, size, total);
     }
 }

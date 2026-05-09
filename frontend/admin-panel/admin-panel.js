@@ -62,65 +62,70 @@ document.addEventListener('DOMContentLoaded', function() {
 });
  
 // Отображение истории сообщений
-async function renderMessageHistory() {
+async function renderMessageHistory(page = 0) {
+    pageHistory = page;
     const container = document.getElementById('messageHistoryList');
- 
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
+    if (!token) return;
  
-    if (!token) {
-        console.error('No token found');
-        return;
-    }
+    container.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
  
-    const response = await fetch(`${API_URL}/message/sending-history/${userId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    });
+    try {
+        const response = await fetch(
+            `${API_URL}/message/sending-history/${userId}?page=${page}&size=${PAGE_SIZE_HISTORY}`,
+            {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            }
+        );
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
  
-    const result = await response.json();
- 
-    if (result.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                </svg>
-                <h3>Нет отправленных сообщений</h3>
-                <p>История сообщений пуста</p>
-            </div>
-        `;
-        return;
-    }
- 
-    container.innerHTML = result.map(msg => `
-        <div class="message-history-item">
-            <div class="message-history-header">
-                <div class="message-history-date">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        if (!result.content || result.content.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
-                    ${msg.messageTime}
+                    <h3>Нет отправленных сообщений</h3>
+                    <p>История сообщений пуста</p>
+                </div>`;
+            document.getElementById('historyPagination').innerHTML = '';
+            return;
+        }
+ 
+        container.innerHTML = result.content.map(msg => `
+            <div class="message-history-item">
+                <div class="message-history-header">
+                    <div class="message-history-date">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        ${msg.messageTime}
+                    </div>
                 </div>
+                <div class="message-recipients">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2563eb;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    ${msg.usernames.map(r => `<span class="recipient-tag">${r}</span>`).join('')}
+                </div>
+                <div class="message-history-text">${msg.message}</div>
             </div>
-            <div class="message-recipients">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2563eb;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                ${msg.usernames.map(r => `<span class="recipient-tag">${r}</span>`).join('')}
-            </div>
-            <div class="message-history-text">${msg.message}</div>
-        </div>
-    `).join('');
+        `).join('');
+ 
+        renderPagination('historyPagination', page, result.totalPages, 'renderMessageHistory');
+    } catch (error) {
+        console.error('Ошибка загрузки истории:', error);
+        container.innerHTML = '<div class="empty-state"><p>Ошибка загрузки</p></div>';
+    }
 }
  
-
+ 
 allRecipientsCache = []
 currentDeptFilter = ''
-
+ 
 // Кэш департаментов — заполняется при loadDepartments()
 let cachedDepartments = [];
  
@@ -138,8 +143,69 @@ let allEmployees = [
 let selectedEmployees = [];
 let employees;
  
+// ── Состояние пагинации ──────────────────────────────────────────────────────
+const PAGE_SIZE_REQUESTS   = 6;
+const PAGE_SIZE_USERS      = 6;
+const PAGE_SIZE_HISTORY    = 5;
+const PAGE_SIZE_RECIPIENTS = 5;
+const PAGE_SIZE_EMPLOYEES  = 5;
+ 
+// Текущие страницы
+let pageRequests   = 0;
+let pageUsers      = 0;
+let pageHistory    = 0;
+let pageRecipients = 0;
+ 
+// departmentId открытого модала сотрудников
+let currentDeptModalId   = null;
+let currentDeptModalName = null;
+let pageEmployees        = 0;
+ 
+// Фильтр пользователей
+let usersActiveDeptFilter = '';
+// ────────────────────────────────────────────────────────────────────────────
+ 
 let messageHistory = [];
 let notifications = [];
+ 
+ 
+// ── Универсальный рендер пагинации ──────────────────────────────────────────
+function renderPagination(containerId, currentPage, totalPages, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+ 
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+ 
+    let btns = '';
+ 
+    btns += `<button class="page-btn ${currentPage === 0 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage > 0 ? `${onPageChange}(${currentPage - 1})` : ''}"
+        ${currentPage === 0 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>`;
+ 
+    for (let i = 0; i < totalPages; i++) {
+        if (i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 1) {
+            btns += `<button class="page-btn ${i === currentPage ? 'page-btn--active' : ''}"
+                onclick="${onPageChange}(${i})">${i + 1}</button>`;
+        } else if (Math.abs(i - currentPage) === 2) {
+            btns += `<span class="page-dots">…</span>`;
+        }
+    }
+ 
+    btns += `<button class="page-btn ${currentPage === totalPages - 1 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage < totalPages - 1 ? `${onPageChange}(${currentPage + 1})` : ''}"
+        ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>`;
+ 
+    container.innerHTML = `<div class="pagination">${btns}</div>`;
+}
+// ────────────────────────────────────────────────────────────────────────────
  
 function switchSection(event, sectionName) {
     event.preventDefault();
@@ -173,50 +239,52 @@ function switchSection(event, sectionName) {
 }
  
 // Отображение списка получателей
-async function renderRecipients() {
+async function renderRecipients(page = 0) {
+    pageRecipients = page;
+    const token = localStorage.getItem('acessToken');
+    if (!token) return;
+ 
+    const container = document.getElementById('recipientsList');
+ 
     try {
-        const token = localStorage.getItem('acessToken');
+        const deptFilter = document.getElementById('recipientsDeptFilter');
+        const dept = deptFilter ? deptFilter.value : '';
  
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
+        let url = `${API_URL}/profile/admin/users-for-notification?page=${page}&size=${PAGE_SIZE_RECIPIENTS}`;
+        if (dept) url += `&departmentName=${encodeURIComponent(dept)}`;
  
-        const response = await fetch(`${API_URL}/profile/admin/users-for-notification`, {
+        const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         });
  
         if (!response.ok) throw new Error('Failed to fetch recipients');
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
  
-        const data = await response.json();
+        // Кэшируем для toggleSelectAll
+        allRecipientsCache = result.content;
+        employees = result.content;
  
-        // Сохраняем полный список в кэш
-        allRecipientsCache = data;
-        employees = data;
- 
-        // Заполняем фильтр по департаментам (уникальные)
-        const depts = [...new Set(data.map(e => e.department).filter(Boolean))].sort();
-        const filterSelect = document.getElementById('recipientsDeptFilter');
-        if (filterSelect) {
-            filterSelect.innerHTML =
-                '<option value="">Все департаменты</option>' +
-                depts.map(d => `<option value="${d}">${d}</option>`).join('');
+        // Заполняем фильтр по департаментам из cachedDepartments (один раз)
+        if (page === 0 && deptFilter && cachedDepartments.length > 0) {
+            const cur = deptFilter.value;
+            deptFilter.innerHTML = '<option value="">Все департаменты</option>' +
+                cachedDepartments.map(d =>
+                    `<option value="${d.name}" ${cur === d.name ? 'selected' : ''}>${d.name}</option>`
+                ).join('');
         }
  
-        renderRecipientsList(data);
+        renderRecipientsList(result.content);
+        renderPagination('recipientsPagination', page, result.totalPages, 'renderRecipients');
  
     } catch (error) {
         console.error('Error loading recipients:', error);
-        document.getElementById('recipientsList').innerHTML =
-            '<div style="padding:12px;color:#ef4444;">Ошибка загрузки</div>';
+        container.innerHTML = '<div style="padding:12px;color:#ef4444;">Ошибка загрузки</div>';
     }
 }
-
-// Отрисовка списка получателей (с учётом фильтра)
+ 
+// Отрисовка списка получателей
 function renderRecipientsList(list) {
     const container = document.getElementById('recipientsList');
  
@@ -235,9 +303,7 @@ function renderRecipientsList(list) {
             <div class="recipient-info">
                 <div class="recipient-name-row">
                     <span class="recipient-name">${emp.name}</span>
-                    ${emp.role === 'Head'
-                        ? '<span class="recipient-role-badge">Глава отдела</span>'
-                        : ''}
+                    ${emp.role === 'Head' ? '<span class="recipient-role-badge">Глава отдела</span>' : ''}
                 </div>
                 <div class="recipient-position">${emp.position || '—'}</div>
                 <div class="recipient-dept">${emp.department || '—'}</div>
@@ -245,22 +311,12 @@ function renderRecipientsList(list) {
         </label>
     `).join('');
 }
-
-// Фильтрация получателей по департаменту
+ 
+// Фильтрация получателей — сбрасываем на страницу 0
 function filterRecipientsByDept() {
-    const select = document.getElementById('recipientsDeptFilter');
-    currentDeptFilter = select.value;
- 
-    const filtered = currentDeptFilter
-        ? allRecipientsCache.filter(e => e.department === currentDeptFilter)
-        : allRecipientsCache;
- 
-    // Обновляем employees чтобы toggleSelectAll работал корректно
-    employees = filtered;
     selectedEmployees = [];
     updateSelectedCount();
- 
-    renderRecipientsList(filtered);
+    renderRecipients(0);
 }
  
 function getInitials(name) {
@@ -542,76 +598,57 @@ document.getElementById('addDepartmentForm').addEventListener('submit', async fu
  
 // Просмотр сотрудников департамента
 function viewEmployees(departmentId, departmentName) {
-    const token = localStorage.getItem('acessToken');
- 
-    document.getElementById('employeesModalTitle').textContent = `Сотрудники: ${departmentName}`;
- 
-    // Запрос на бэкенд
-    fetch(`${API_URL}/profile/admin/departament-employees/${departmentId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        displayEmployees(data, departmentId);
-    })
-    .catch(error => {
-        console.error('Ошибка загрузки сотрудников:', error);
-        // Демо данные
-        displayEmployees([
-            {
-                id: 1,
-                firstName: 'Иван',
-                lastName: 'Иванов',
-                position: 'Senior Developer',
-                isHead: true
-            },
-            {
-                id: 2,
-                firstName: 'Петр',
-                lastName: 'Петров',
-                position: 'Middle Developer',
-                isHead: false
-            },
-            {
-                id: 3,
-                firstName: 'Мария',
-                lastName: 'Сидорова',
-                position: 'Junior Developer',
-                isHead: false
-            }
-        ], departmentId);
-    });
- 
+    currentDeptModalId   = departmentId;
+    currentDeptModalName = departmentName;
+    pageEmployees        = 0;
     document.getElementById('employeesModal').classList.add('show');
+    loadEmployees(0);
+}
+ 
+async function loadEmployees(page = 0) {
+    pageEmployees = page;
+    const token = localStorage.getItem('acessToken');
+    const list = document.getElementById('employeesList');
+ 
+    document.getElementById('employeesModalTitle').textContent =
+        `Сотрудники: ${currentDeptModalName}`;
+    list.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
+ 
+    try {
+        const response = await fetch(
+            `${API_URL}/profile/admin/departament-employees/${currentDeptModalId}?page=${page}&size=${PAGE_SIZE_EMPLOYEES}`,
+            {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            }
+        );
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
+ 
+        displayEmployees(result.content);
+        renderPagination('employeesPagination', page, result.totalPages, 'loadEmployees');
+    } catch (error) {
+        console.error('Ошибка загрузки сотрудников:', error);
+        list.innerHTML = '<div class="empty-state"><p>Ошибка загрузки</p></div>';
+    }
 }
  
 // Отображение сотрудников
-function displayEmployees(employees, departmentId) {
+function displayEmployees(emps) {
     const list = document.getElementById('employeesList');
  
-    if (employees.length === 0) {
-        list.innerHTML = `
-            <div class="empty-state">
-                <p>В этом департаменте пока нет сотрудников</p>
-            </div>
-        `;
+    if (!emps || emps.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>В этом департаменте пока нет сотрудников</p></div>';
         return;
     }
  
-    list.innerHTML = employees.map(emp => `
+    list.innerHTML = emps.map(emp => `
         <div class="employee-card">
             <div class="employee-info">
                 <div class="employee-name">${emp.lastName} ${emp.firstName}</div>
                 <div class="employee-position">${emp.position}</div>
             </div>
-            ${emp.isHead ? `
-                <span class="employee-badge">Глава департамента</span>
-            ` : `
-            `}
+            ${emp.isHead ? '<span class="employee-badge">Глава департамента</span>' : ''}
         </div>
     `).join('');
 }
@@ -785,26 +822,42 @@ window.addEventListener('click', function(event) {
 let allUsersCache = [];
 let filteredUsersCache = [];
  
-async function loadAllUsers() {
+async function loadAllUsers(page = 0) {
+    pageUsers = page;
     const token = localStorage.getItem('acessToken');
     const container = document.getElementById('usersListContainer');
     if (!container) return;
  
     container.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
  
+    let url = `${API_URL}/profile/admin/all-user-profiles?page=${page}&size=${PAGE_SIZE_USERS}`;
+    if (usersActiveDeptFilter) {
+        url += `&departmentName=${encodeURIComponent(usersActiveDeptFilter)}`;
+    }
+ 
     try {
-        const response = await fetch(`${API_URL}/profile/admin/all-user-profiles`, {
+        const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         });
  
         if (!response.ok) throw new Error('Ошибка загрузки');
-        const data = await response.json();
-        allUsersCache = data;
-        renderUsersList(data);
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
+        allUsersCache = result.content;
+ 
+        // Заполняем фильтр департаментов из cachedDepartments
+        const deptFilter = document.getElementById('usersDeptFilter');
+        if (deptFilter && cachedDepartments.length > 0) {
+            const cur = deptFilter.value;
+            deptFilter.innerHTML = '<option value="">Все департаменты</option>' +
+                cachedDepartments.map(d =>
+                    `<option value="${d.name}" ${cur === d.name ? 'selected' : ''}>${d.name}</option>`
+                ).join('');
+        }
+ 
+        renderUsersList(result.content);
+        renderPagination('usersPagination', page, result.totalPages, 'loadAllUsers');
     } catch (error) {
         console.error('Ошибка загрузки пользователей:', error);
         container.innerHTML = '<div class="empty-state"><p>Ошибка загрузки пользователей</p></div>';
@@ -866,8 +919,11 @@ function filterUsersByDepartment() {
     const deptName = select.options[select.selectedIndex].text;
     const deptId = select.value;
  
+    usersActiveDeptFilter = deptId ? deptName : '';
+    loadAllUsers(0); // всегда на первую страницу при смене фильтра
+ 
     if (!deptId) {
-        renderUsersList(allUsersCache);
+        return; // loadAllUsers уже всё сделает
     } else {
         const filtered = allUsersCache.filter(u => u.departmentName === deptName);
         renderUsersList(filtered);
@@ -900,7 +956,7 @@ function renderAdminUserProfileEdit(p) {
     const gradeOptions = ['Junior', 'Middle', 'Senior', 'Lead']
         .map(g => `<option value="${g}" ${p.grade === g ? 'selected' : ''}>${g}</option>`)
         .join('');
-
+ 
     const positionOptions = ['Developer', 'Tester', 'Analyst', 'Designer', 'Manager', 'Devops', 'DataScientist']
         .map(p => `<option value="${p}" ${p.position === p ? 'selected' : ''}>${p}</option>`)
         .join('');
@@ -1135,51 +1191,29 @@ function deleteDepartment(departmentId, departmentName) {
 }
  
 // Загрузка заявок на вступление
-function loadRequests() {
+async function loadRequests(page = 0) {
+    pageRequests = page;
     const token = localStorage.getItem('acessToken');
+    const list = document.getElementById('requestsList');
+    list.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
  
-    // Запрос на бэкенд
-    fetch(`${API_URL}/profile/admin/departament-requests`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        displayRequests(data);
-        updateRequestsBadge(data.length);
-    })
-    .catch(error => {
-        console.error('Ошибка загрузки заявок:', error);
-        // Демо данные
-        const demoRequests = [
+    try {
+        const response = await fetch(
+            `${API_URL}/profile/admin/departament-requests?page=${page}&size=${PAGE_SIZE_REQUESTS}`,
             {
-                userId: 101,
-                userName: 'Петров Петр Петрович',
-                departmentId: 1,
-                departmentName: 'Разработка',
-                position: 'Middle Developer'
-            },
-            {
-                userId: 102,
-                userName: 'Сидорова Анна Ивановна',
-                departmentId: 2,
-                departmentName: 'Тестирование',
-                position: 'Senior QA Engineer'
-            },
-            {
-                userId: 103,
-                userName: 'Козлов Дмитрий Сергеевич',
-                departmentId: 1,
-                departmentName: 'Разработка',
-                position: 'Junior Developer'
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
             }
-        ];
-        displayRequests(demoRequests);
-        updateRequestsBadge(demoRequests.length);
-    });
+        );
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
+        updateRequestsBadge(result.totalElements);
+        displayRequests(result.content);
+        renderPagination('requestsPagination', page, result.totalPages, 'loadRequests');
+    } catch (error) {
+        console.error('Ошибка загрузки заявок:', error);
+        list.innerHTML = '<div class="empty-state"><p>Ошибка загрузки заявок</p></div>';
+    }
 }
  
 // Отображение заявок
