@@ -1,4 +1,6 @@
-package com.example.JavaMainService.userProfile.model;
+package com.example.JavaMainService.userProfile.dto;
+
+import com.example.JavaMainService.userProfile.dto.response.ProfileDTO;
 
 import java.util.UUID;
 

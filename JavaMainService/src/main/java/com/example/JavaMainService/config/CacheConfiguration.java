@@ -1,7 +1,6 @@
 package com.example.JavaMainService.config;
 
-import com.example.JavaMainService.userProfile.model.GetProfileById;
-import com.example.JavaMainService.userProfile.model.ProfileDTO;
+import com.example.JavaMainService.userProfile.dto.GetProfileById;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import tools.jackson.databind.ObjectMapper;

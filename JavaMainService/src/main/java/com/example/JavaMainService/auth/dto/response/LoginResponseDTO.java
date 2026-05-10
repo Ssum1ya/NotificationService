@@ -1,4 +1,4 @@
-package com.example.JavaMainService.auth.model.response;
+package com.example.JavaMainService.auth.dto.response;
 
 import com.example.JavaMainService.user.domain.entity.RequestStatus;
 import com.example.JavaMainService.user.domain.entity.Role;

@@ -1,10 +1,11 @@
 package com.example.JavaMainService.message;
 
 import com.example.JavaMainService.dtoLibrary.PageResponse;
-import com.example.JavaMainService.message.model.MessageHistoryDTO;
-import com.example.JavaMainService.message.model.NotificationHistoryDTO;
-import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
-import com.example.JavaMainService.userProfile.ProfileJdbcRepository;
+import com.example.JavaMainService.message.domain.MessageJdbcRepository;
+import com.example.JavaMainService.message.dto.MessageHistoryDTO;
+import com.example.JavaMainService.message.dto.NotificationHistoryDTO;
+import com.example.JavaMainService.notifications.dto.request.NotifyRequestDTO;
+import com.example.JavaMainService.userProfile.domain.ProfileJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,6 +1,6 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department.domain.entity;
 
-import com.example.JavaMainService.user.userEntity.User;
+import com.example.JavaMainService.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

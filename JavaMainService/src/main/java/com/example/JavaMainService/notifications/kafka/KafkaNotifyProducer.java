@@ -1,6 +1,6 @@
-package com.example.JavaMainService.notifications;
+package com.example.JavaMainService.notifications.kafka;
 
-import com.example.JavaMainService.notifications.model.NotificationDTO;
+import com.example.JavaMainService.notifications.dto.response.NotificationDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

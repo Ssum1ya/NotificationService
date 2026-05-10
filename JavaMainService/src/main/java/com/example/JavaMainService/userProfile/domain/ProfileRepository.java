@@ -1,7 +1,7 @@
-package com.example.JavaMainService.userProfile;
+package com.example.JavaMainService.userProfile.domain;
 
 import com.example.JavaMainService.user.domain.entity.RequestStatus;
-import com.example.JavaMainService.userProfile.profileEntity.Profile;
+import com.example.JavaMainService.userProfile.domain.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

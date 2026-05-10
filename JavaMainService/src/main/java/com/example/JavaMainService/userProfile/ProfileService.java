@@ -1,23 +1,22 @@
 package com.example.JavaMainService.userProfile;
 
-import com.example.JavaMainService.departament.Department;
-import com.example.JavaMainService.departament.DepartmentJDBCRepository;
-import com.example.JavaMainService.departament.DepartmentRepository;
+import com.example.JavaMainService.department.domain.entity.Department;
+import com.example.JavaMainService.department.domain.DepartmentJDBCRepository;
+import com.example.JavaMainService.department.domain.DepartmentRepository;
 import com.example.JavaMainService.dtoLibrary.PageResponse;
-import com.example.JavaMainService.head.model.GetEmployeesDTO;
-import com.example.JavaMainService.user.UserJdbcRepository;
-import com.example.JavaMainService.user.userEntity.RequestStatus;
-import com.example.JavaMainService.user.userEntity.Role;
-import com.example.JavaMainService.user.userEntity.User;
-import com.example.JavaMainService.user.UserRepository;
-import com.example.JavaMainService.userProfile.model.*;
-import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
-import com.example.JavaMainService.userProfile.model.request.HeadUpdateUserProfileDTO;
-import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
-import com.example.JavaMainService.userProfile.model.request.UpdateProfileDTO;
-import com.example.JavaMainService.userProfile.model.response.AllUserData;
-import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
-import com.example.JavaMainService.userProfile.profileEntity.Profile;
+import com.example.JavaMainService.userProfile.domain.ProfileJdbcRepository;
+import com.example.JavaMainService.userProfile.dto.response.*;
+import com.example.JavaMainService.user.domain.UserJdbcRepository;
+import com.example.JavaMainService.user.domain.entity.RequestStatus;
+import com.example.JavaMainService.user.domain.entity.Role;
+import com.example.JavaMainService.user.domain.entity.User;
+import com.example.JavaMainService.user.domain.UserRepository;
+import com.example.JavaMainService.userProfile.dto.*;
+import com.example.JavaMainService.userProfile.dto.request.AdminUpdateUserData;
+import com.example.JavaMainService.userProfile.dto.request.HeadUpdateUserProfileDTO;
+import com.example.JavaMainService.userProfile.dto.request.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.dto.request.UpdateProfileDTO;
+import com.example.JavaMainService.userProfile.domain.entity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -129,31 +128,12 @@ public class ProfileService {
         return new PageResponse<>(employees, page, size, total);
     }
 
-    public PageResponse<DepartmentRequestDTO> adminGetDepartmentRequests(int page, int size) {
-        int offset = page * size;
-        List<DepartmentRequestDTO> allUserData = profileJdbcRepository.adminGetDepartmentRequests(size, offset);
-        Long total = profileJdbcRepository.countAdminGetDepartmentRequests();
-
-        return new PageResponse<>(allUserData, page, size, total);
-    }
-
-    public PageResponse<DepartmentRequestDTO> headGetDepartmentRequests(UUID depId, int page, int size) {
-        int offset = page * size;
-        List<DepartmentRequestDTO> departmentRequests = profileJdbcRepository.headGetDepartmentRequests(depId, size, offset);
-        Long total = profileJdbcRepository.countHeadGetDepartmentRequests(depId);
-        return new PageResponse<>(departmentRequests, page, size, total);
-    }
-
     public PageResponse<EmployeeForNotificationDTO> headGetEmployeesForNotify(UUID departmentId, int page, int size) {
         int offset = page * size;
         List<EmployeeForNotificationDTO> employeesForNotification =
                 profileJdbcRepository.headGetEmployeesForNotification(departmentId, size, offset);
         Long total = profileJdbcRepository.countHeadGetEmployeesForNotification(departmentId);
         return new PageResponse<>(employeesForNotification, page, size, total);
-    }
-
-    public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
-        return profileJdbcRepository.getHeadEmployeesForNotify();
     }
 
     public PageResponse<AllUsersForNotify> getUsersForNotify(int page, int size) {

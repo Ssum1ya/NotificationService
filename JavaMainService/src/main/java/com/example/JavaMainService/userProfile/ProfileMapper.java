@@ -1,11 +1,11 @@
 package com.example.JavaMainService.userProfile;
 
-import com.example.JavaMainService.notifications.model.Communication;
-import com.example.JavaMainService.user.userEntity.User;
-import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
-import com.example.JavaMainService.userProfile.profileEntity.Grade;
-import com.example.JavaMainService.userProfile.profileEntity.Position;
-import com.example.JavaMainService.userProfile.profileEntity.Profile;
+import com.example.JavaMainService.userProfile.domain.entity.Communication;
+import com.example.JavaMainService.user.domain.entity.User;
+import com.example.JavaMainService.userProfile.dto.request.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.domain.entity.Grade;
+import com.example.JavaMainService.userProfile.domain.entity.Position;
+import com.example.JavaMainService.userProfile.domain.entity.Profile;
 import org.springframework.stereotype.Component;
 
 @Component

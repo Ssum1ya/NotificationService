@@ -1,7 +1,7 @@
-package com.example.JavaMainService.requests;
+package com.example.JavaMainService.requests.domain;
 
 import com.example.JavaMainService.requests.dto.DepartmentRequestDTO;
-import com.example.JavaMainService.user.userEntity.RequestStatus;
+import com.example.JavaMainService.user.domain.entity.RequestStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +14,7 @@ import java.util.UUID;
 public class RequestJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    // Admin
     public List<DepartmentRequestDTO> adminGetDepartmentRequests(int size, int offset) {
         return jdbcTemplate.query(RequestSql.adminGetDepartmentRequests, (rs, rowNum) ->
                         new DepartmentRequestDTO(
@@ -30,11 +31,20 @@ public class RequestJdbcRepository {
     }
 
     public Long countAdminGetDepartmentRequests() {
-        return jdbcTemplate.queryForObject(RequestSql.countDepartmentRequests, (rs, rowNum) ->
+        return jdbcTemplate.queryForObject(RequestSql.countAdminGetDepartmentRequests, (rs, rowNum) ->
                 rs.getLong("count")
         );
     }
 
+    public void adminApproveRequest(UUID userId) {
+        jdbcTemplate.update(RequestSql.adminApproveRequest, userId);
+    }
+
+    public void adminDeclineRequest(UUID userId) {
+        jdbcTemplate.update(RequestSql.adminDeclineRequest, userId);
+    }
+
+    // Head
     public List<DepartmentRequestDTO> headGetDepartmentRequests(UUID depId, int size, int offset) {
         return jdbcTemplate.query(RequestSql.headGetDepartmentRequests, (rs, rowNum) ->
                         new DepartmentRequestDTO(
@@ -56,5 +66,13 @@ public class RequestJdbcRepository {
                         rs.getLong("count"),
                 depId
         );
+    }
+
+    public void headApproveRequest(UUID userId) {
+        jdbcTemplate.update(RequestSql.headApproveRequest, userId);
+    }
+
+    public void headDeclineRequest(UUID userId) {
+        jdbcTemplate.update(RequestSql.headDeclineRequest, userId);
     }
 }

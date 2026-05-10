@@ -1,5 +1,6 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department.domain;
 
+import com.example.JavaMainService.department.domain.entity.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

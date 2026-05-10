@@ -1,5 +1,6 @@
-package com.example.JavaMainService.department;
+package com.example.JavaMainService.department.exception;
 
+import com.example.JavaMainService.department.DepartmentService;
 import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;

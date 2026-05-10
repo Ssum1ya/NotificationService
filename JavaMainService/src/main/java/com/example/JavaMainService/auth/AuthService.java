@@ -1,15 +1,16 @@
 package com.example.JavaMainService.auth;
 
-import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
-import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
-import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
-import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
-import com.example.JavaMainService.auth.model.response.UpdateTokenResponseDTO;
+import com.example.JavaMainService.auth.dto.request.LoginRequestDTO;
+import com.example.JavaMainService.auth.dto.request.RegisterRequestDTO;
+import com.example.JavaMainService.auth.dto.request.UpdateTokenRequestDTO;
+import com.example.JavaMainService.auth.dto.response.LoginResponseDTO;
+import com.example.JavaMainService.auth.dto.response.UpdateTokenResponseDTO;
+import com.example.JavaMainService.auth.mapper.AuthMapper;
 import com.example.JavaMainService.security.MyUserDetails;
 import com.example.JavaMainService.security.MyUserDetailsService;
 import com.example.JavaMainService.security.jwt.JwtService;
-import com.example.JavaMainService.user.userEntity.User;
-import com.example.JavaMainService.user.UserRepository;
+import com.example.JavaMainService.user.domain.entity.User;
+import com.example.JavaMainService.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;

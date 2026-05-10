@@ -1,4 +1,4 @@
-package com.example.JavaMainService.userProfile.model.request;
+package com.example.JavaMainService.userProfile.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

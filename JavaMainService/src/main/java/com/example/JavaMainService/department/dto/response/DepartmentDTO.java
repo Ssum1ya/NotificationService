@@ -1,4 +1,4 @@
-package com.example.JavaMainService.departament.model.response;
+package com.example.JavaMainService.department.dto.response;
 
 import java.util.UUID;
 

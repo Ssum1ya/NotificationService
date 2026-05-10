@@ -1,11 +1,14 @@
 package com.example.JavaMainService.notifications;
 
-import com.example.JavaMainService.notifications.model.*;
-import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
-import com.example.JavaMainService.userProfile.ProfileJdbcRepository;
+import com.example.JavaMainService.notifications.dto.*;
+import com.example.JavaMainService.notifications.dto.request.NotifyRequestDTO;
+import com.example.JavaMainService.notifications.dto.response.NotificationDTO;
+import com.example.JavaMainService.notifications.kafka.KafkaNotifyProducer;
+import com.example.JavaMainService.notifications.kafka.KafkaTopics;
+import com.example.JavaMainService.userProfile.domain.ProfileJdbcRepository;
+import com.example.JavaMainService.userProfile.domain.entity.Communication;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +21,6 @@ public class NotificationService {
     private final ProfileJdbcRepository profileJdbcRepository;
 
     private void produceNotification(NotificationDTO notificationMail, NotificationDTO notificationTelegram, NotificationDTO notificationVk) {
-
         if (!notificationMail.usernameList().isEmpty()) {
             kafkaNotifyProducer.sendNotify(notificationMail, KafkaTopics.emailTopic);
         }

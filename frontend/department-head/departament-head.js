@@ -95,7 +95,7 @@ function getIsHeadFromToken(token) {
 }
 
 const PAGE_SIZE_NOTIFICATIONS = 8;
-const PAGE_SIZE_REQUESTS   = 4;
+const PAGE_SIZE_REQUESTS   = 7;
 const PAGE_SIZE_USERS      = 4;
 const PAGE_SIZE_HISTORY    = 5;
 const PAGE_SIZE_RECIPIENTS = 4;
@@ -667,7 +667,7 @@ async function renderApplications(page = 0) {
 
     const depId = getUserDepIdFromToken(token);
 
-    const response = await fetch(`${API_URL}/profile/head/departament-requests/${depId}?page=${page}&size=${PAGE_SIZE_REQUESTS}`, {
+    const response = await fetch(`${API_URL}/requests/head/department-requests/${depId}?page=${page}&size=${PAGE_SIZE_REQUESTS}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -759,7 +759,7 @@ async function rejectRequest(requestId, userName) {
     const token = localStorage.getItem('acessToken');
 
     // Запрос на бэкенд
-    fetch(`${API_URL}/user/head/declineRequest/${requestId}`, {
+    fetch(`${API_URL}/requests/head/declineRequest/${requestId}`, {
         method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -790,7 +790,7 @@ async function rejectRequest(requestId, userName) {
 function approveRequest(userId) {
     const token = localStorage.getItem('acessToken');
 
-    fetch(`${API_URL}/user/head/approveRequest/${userId}`, {
+    fetch(`${API_URL}/requests/head/approveRequest/${userId}`, {
         method: "PUT",
         headers: {
             'Authorization': 'Bearer ' + token,

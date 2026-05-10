@@ -1,4 +1,4 @@
-package com.example.JavaMainService.notifications.model;
+package com.example.JavaMainService.notifications.dto;
 
 import java.util.UUID;
 

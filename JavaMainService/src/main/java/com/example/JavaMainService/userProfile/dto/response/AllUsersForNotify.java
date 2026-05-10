@@ -1,4 +1,4 @@
-package com.example.JavaMainService.userProfile.model.response;
+package com.example.JavaMainService.userProfile.dto.response;
 
 import com.example.JavaMainService.user.domain.entity.Role;
 

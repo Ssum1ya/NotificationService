@@ -1,9 +1,12 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department;
 
-import com.example.JavaMainService.departament.model.request.CreateDepartmentDTO;
-import com.example.JavaMainService.departament.model.response.DepartmentDTO;
-import com.example.JavaMainService.departament.model.response.DepartmentUserSelectDTO;
-import com.example.JavaMainService.user.UserJdbcRepository;
+import com.example.JavaMainService.department.domain.DepartmentJDBCRepository;
+import com.example.JavaMainService.department.domain.DepartmentRepository;
+import com.example.JavaMainService.department.domain.entity.Department;
+import com.example.JavaMainService.department.dto.request.CreateDepartmentDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentUserSelectDTO;
+import com.example.JavaMainService.user.domain.UserJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

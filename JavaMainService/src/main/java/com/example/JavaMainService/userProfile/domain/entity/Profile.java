@@ -1,6 +1,5 @@
-package com.example.JavaMainService.userProfile.profileEntity;
+package com.example.JavaMainService.userProfile.domain.entity;
 
-import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.user.domain.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.example.JavaMainService.auth;
+package com.example.JavaMainService.auth.mapper;
 
 import com.example.JavaMainService.auth.dto.request.RegisterRequestDTO;
 import com.example.JavaMainService.auth.dto.response.LoginResponseDTO;

@@ -1,4 +1,4 @@
-package com.example.JavaMainService.auth.model.request;
+package com.example.JavaMainService.auth.dto.request;
 
 public record UpdateTokenRequestDTO(
         String refreshToken

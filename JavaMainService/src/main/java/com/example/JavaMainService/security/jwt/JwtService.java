@@ -1,7 +1,7 @@
 package com.example.JavaMainService.security.jwt;
 
-import com.example.JavaMainService.departament.Department;
-import com.example.JavaMainService.user.userEntity.User;
+import com.example.JavaMainService.department.domain.entity.Department;
+import com.example.JavaMainService.user.domain.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

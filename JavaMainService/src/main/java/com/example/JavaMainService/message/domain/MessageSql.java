@@ -1,4 +1,4 @@
-package com.example.JavaMainService.message;
+package com.example.JavaMainService.message.domain;
 
 public class MessageSql {
 

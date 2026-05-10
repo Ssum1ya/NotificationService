@@ -1,7 +1,7 @@
 package com.example.JavaMainService.notifications;
 
 import com.example.JavaMainService.message.MessageService;
-import com.example.JavaMainService.notifications.model.request.NotifyRequestDTO;
+import com.example.JavaMainService.notifications.dto.request.NotifyRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

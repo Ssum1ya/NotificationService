@@ -1,4 +1,4 @@
-package com.example.JavaMainService.message;
+package com.example.JavaMainService.message.domain.entity;
 
 import com.example.JavaMainService.user.domain.entity.User;
 import jakarta.persistence.*;

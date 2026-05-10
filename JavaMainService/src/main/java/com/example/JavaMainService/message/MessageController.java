@@ -1,8 +1,8 @@
 package com.example.JavaMainService.message;
 
 import com.example.JavaMainService.dtoLibrary.PageResponse;
-import com.example.JavaMainService.message.model.MessageHistoryDTO;
-import com.example.JavaMainService.message.model.NotificationHistoryDTO;
+import com.example.JavaMainService.message.dto.MessageHistoryDTO;
+import com.example.JavaMainService.message.dto.NotificationHistoryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.example.JavaMainService.security;
+package com.example.JavaMainService.security.customExceptionHandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

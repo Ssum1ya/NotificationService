@@ -1,4 +1,4 @@
-package com.example.JavaMainService.userProfile.profileEntity;
+package com.example.JavaMainService.userProfile.domain.entity;
 
 public enum Grade {
     Intern,

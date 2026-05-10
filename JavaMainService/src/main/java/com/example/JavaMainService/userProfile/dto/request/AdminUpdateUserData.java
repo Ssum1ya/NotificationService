@@ -1,10 +1,10 @@
-package com.example.JavaMainService.userProfile.model.request;
+package com.example.JavaMainService.userProfile.dto.request;
 
-import com.example.JavaMainService.notifications.model.Communication;
+import com.example.JavaMainService.userProfile.domain.entity.Communication;
 import com.example.JavaMainService.user.domain.entity.RequestStatus;
 import com.example.JavaMainService.user.domain.entity.Role;
-import com.example.JavaMainService.userProfile.profileEntity.Grade;
-import com.example.JavaMainService.userProfile.profileEntity.Position;
+import com.example.JavaMainService.userProfile.domain.entity.Grade;
+import com.example.JavaMainService.userProfile.domain.entity.Position;
 
 import java.util.UUID;
 

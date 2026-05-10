@@ -1,8 +1,8 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department;
 
-import com.example.JavaMainService.departament.model.request.CreateDepartmentDTO;
-import com.example.JavaMainService.departament.model.response.DepartmentDTO;
-import com.example.JavaMainService.departament.model.response.DepartmentUserSelectDTO;
+import com.example.JavaMainService.department.dto.request.CreateDepartmentDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentUserSelectDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

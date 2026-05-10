@@ -1194,7 +1194,7 @@ async function loadRequests(page = 0) {
  
     try {
         const response = await fetch(
-            `${API_URL}/profile/admin/departament-requests?page=${page}&size=${PAGE_SIZE_REQUESTS}`,
+            `${API_URL}/requests/admin/department-requests?page=${page}&size=${PAGE_SIZE_REQUESTS}`,
             {
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
@@ -1374,7 +1374,7 @@ function approveRequest(userId, userName, departmentName) {
     const token = localStorage.getItem('acessToken');
  
     // Запрос на бэкенд
-    fetch(`${API_URL}/user/admin/approveRequest/${userId}`, {
+    fetch(`${API_URL}/requests/admin/approveRequest/${userId}`, {
         method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -1411,7 +1411,7 @@ async function rejectRequest(requestId, userName) {
     const token = localStorage.getItem('acessToken');
  
     // Запрос на бэкенд
-    fetch(`${API_URL}/user/admin/declineRequest/${requestId}`, {
+    fetch(`${API_URL}/requests/admin/declineRequest/${requestId}`, {
         method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,

@@ -1,6 +1,6 @@
-package com.example.JavaMainService.userProfile.dto;
+package com.example.JavaMainService.userProfile.dto.response;
 
-import com.example.JavaMainService.notifications.model.Communication;
+import com.example.JavaMainService.userProfile.domain.entity.Communication;
 import com.example.JavaMainService.userProfile.domain.entity.Grade;
 import com.example.JavaMainService.userProfile.domain.entity.Position;
 

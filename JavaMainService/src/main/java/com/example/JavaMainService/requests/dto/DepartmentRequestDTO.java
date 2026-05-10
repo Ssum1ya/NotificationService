@@ -1,6 +1,6 @@
-package com.example.JavaMainService.requests.model;
+package com.example.JavaMainService.requests.dto;
 
-import com.example.JavaMainService.user.userEntity.RequestStatus;
+import com.example.JavaMainService.user.domain.entity.RequestStatus;
 
 import java.util.UUID;
 

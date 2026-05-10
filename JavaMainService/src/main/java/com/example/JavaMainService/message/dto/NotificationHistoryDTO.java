@@ -1,4 +1,4 @@
-package com.example.JavaMainService.message.model;
+package com.example.JavaMainService.message.dto;
 
 public record NotificationHistoryDTO(
         String message,

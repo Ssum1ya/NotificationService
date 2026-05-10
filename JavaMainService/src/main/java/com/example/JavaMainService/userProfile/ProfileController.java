@@ -1,21 +1,17 @@
 package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.dtoLibrary.PageResponse;
-import com.example.JavaMainService.head.model.GetEmployeesDTO;
-import com.example.JavaMainService.userProfile.model.*;
-import com.example.JavaMainService.userProfile.model.request.AdminUpdateUserData;
-import com.example.JavaMainService.userProfile.model.request.HeadUpdateUserProfileDTO;
-import com.example.JavaMainService.userProfile.model.request.SaveProfileDTO;
-import com.example.JavaMainService.userProfile.model.request.UpdateProfileDTO;
-import com.example.JavaMainService.userProfile.model.response.AllUserData;
-import com.example.JavaMainService.userProfile.model.response.AllUsersForNotify;
+import com.example.JavaMainService.userProfile.dto.response.*;
+import com.example.JavaMainService.userProfile.dto.request.AdminUpdateUserData;
+import com.example.JavaMainService.userProfile.dto.request.HeadUpdateUserProfileDTO;
+import com.example.JavaMainService.userProfile.dto.request.SaveProfileDTO;
+import com.example.JavaMainService.userProfile.dto.request.UpdateProfileDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -67,6 +63,7 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getProfileByUserId(userId, requestRole, requestDepartmentId, requestLogin));
     }
 
+
     @GetMapping("/admin/departament-employees/{departmentId}")
     public ResponseEntity<PageResponse<DepartmentEmployeeDTO>> adminGetEmployeesByDepartmentId(
             @PathVariable("departmentId") UUID departmentId,
@@ -83,23 +80,6 @@ public class ProfileController {
             @PathVariable("departmentId") UUID departmentId
     ) {
         return ResponseEntity.ok(profileService.headGetEmployeesByDepartment(departmentId, page, size));
-    }
-
-    @GetMapping("/admin/departament-requests")
-    public ResponseEntity<PageResponse<DepartmentRequestDTO>> getDepartmentRequests(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size
-    ) {
-        return ResponseEntity.ok(profileService.adminGetDepartmentRequests(page, size));
-    }
-
-    @GetMapping("/head/departament-requests/{departmentId}")
-    public ResponseEntity<PageResponse<DepartmentRequestDTO>> getRequests(
-            @PathVariable("departmentId") UUID depId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size
-            ) {
-        return ResponseEntity.ok(profileService.headGetDepartmentRequests(depId, page, size));
     }
 
     @GetMapping("/head/departament-employees-for-notification/{departmentId}")

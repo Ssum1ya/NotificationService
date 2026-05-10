@@ -1,8 +1,8 @@
-package com.example.JavaMainService.user.userEntity;
+package com.example.JavaMainService.user.domain.entity;
 
 import com.example.JavaMainService.department.domain.entity.Department;
-import com.example.JavaMainService.message.Message;
-import com.example.JavaMainService.userProfile.profileEntity.Profile;
+import com.example.JavaMainService.message.domain.entity.Message;
+import com.example.JavaMainService.userProfile.domain.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

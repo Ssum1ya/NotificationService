@@ -1,4 +1,4 @@
-package com.example.JavaMainService.message;
+package com.example.JavaMainService.message.domain;
 
 import com.example.JavaMainService.message.dto.MessageHistoryDTO;
 import com.example.JavaMainService.message.dto.NotificationHistoryDTO;

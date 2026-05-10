@@ -1,4 +1,4 @@
-package com.example.JavaMainService.userProfile;
+package com.example.JavaMainService.userProfile.domain;
 
 public class ProfileSql {
     public static final String getAllUsersData = """

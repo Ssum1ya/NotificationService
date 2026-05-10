@@ -1,4 +1,4 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department.domain;
 
 public class DepartmentSql {
     public static final String getAllDepartments =

@@ -1,6 +1,7 @@
-package com.example.JavaMainService.user;
+package com.example.JavaMainService.user.exception;
 
 import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
+import com.example.JavaMainService.user.UserService;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

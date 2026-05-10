@@ -1,4 +1,4 @@
-package com.example.JavaMainService.userProfile.dto;
+package com.example.JavaMainService.userProfile.dto.response;
 
 import java.util.UUID;
 

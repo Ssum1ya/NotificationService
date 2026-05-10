@@ -1,10 +1,10 @@
 package com.example.JavaMainService.auth;
 
-import com.example.JavaMainService.auth.model.request.LoginRequestDTO;
-import com.example.JavaMainService.auth.model.request.RegisterRequestDTO;
-import com.example.JavaMainService.auth.model.request.UpdateTokenRequestDTO;
-import com.example.JavaMainService.auth.model.response.LoginResponseDTO;
-import com.example.JavaMainService.auth.model.response.UpdateTokenResponseDTO;
+import com.example.JavaMainService.auth.dto.request.LoginRequestDTO;
+import com.example.JavaMainService.auth.dto.request.RegisterRequestDTO;
+import com.example.JavaMainService.auth.dto.request.UpdateTokenRequestDTO;
+import com.example.JavaMainService.auth.dto.response.LoginResponseDTO;
+import com.example.JavaMainService.auth.dto.response.UpdateTokenResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

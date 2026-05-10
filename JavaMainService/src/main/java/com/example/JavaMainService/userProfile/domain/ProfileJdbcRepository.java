@@ -1,19 +1,17 @@
-package com.example.JavaMainService.userProfile;
+package com.example.JavaMainService.userProfile.domain;
 
-import com.example.JavaMainService.userProfile.dto.GetEmployeesDTO;
-import com.example.JavaMainService.notifications.model.Communication;
-import com.example.JavaMainService.notifications.model.ConsumerCommunicationDTO;
-import com.example.JavaMainService.notifications.model.ProfileProducerDTO;
+import com.example.JavaMainService.userProfile.dto.response.*;
+import com.example.JavaMainService.userProfile.domain.entity.Communication;
+import com.example.JavaMainService.notifications.dto.ConsumerCommunicationDTO;
+import com.example.JavaMainService.notifications.dto.ProfileProducerDTO;
 import com.example.JavaMainService.user.domain.entity.RequestStatus;
 import com.example.JavaMainService.user.domain.entity.Role;
 import com.example.JavaMainService.userProfile.dto.*;
 import com.example.JavaMainService.userProfile.dto.request.AdminUpdateUserData;
 import com.example.JavaMainService.userProfile.dto.request.HeadUpdateUserProfileDTO;
 import com.example.JavaMainService.userProfile.dto.request.UpdateProfileDTO;
-import com.example.JavaMainService.userProfile.dto.response.AllUserData;
-import com.example.JavaMainService.userProfile.dto.response.AllUsersForNotify;
-import com.example.JavaMainService.userProfile.profileEntity.Grade;
-import com.example.JavaMainService.userProfile.profileEntity.Position;
+import com.example.JavaMainService.userProfile.domain.entity.Grade;
+import com.example.JavaMainService.userProfile.domain.entity.Position;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -157,16 +155,6 @@ public class ProfileJdbcRepository {
     public Long countAllUsersForNotify() {
         return jdbcTemplate.queryForObject(ProfileSql.countUsersForNotify, (rs, rowNum) ->
                 rs.getLong("count")
-        );
-    }
-
-    public List<HeadEmployeeForNotifyDTO> getHeadEmployeesForNotify() {
-        return jdbcTemplate.query(ProfileSql.getHeadEmployeesForNotify, (rs, rowNum) ->
-                        new HeadEmployeeForNotifyDTO(
-                                UUID.fromString(rs.getString("user_id")),
-                                rs.getString("last_name") + " " + rs.getString("name") + " " + rs.getString("surname"),
-                                rs.getString("department_name")
-                        )
         );
     }
 

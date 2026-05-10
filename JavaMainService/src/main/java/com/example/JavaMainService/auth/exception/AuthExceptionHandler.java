@@ -1,5 +1,6 @@
-package com.example.JavaMainService.auth;
+package com.example.JavaMainService.auth.exception;
 
+import com.example.JavaMainService.auth.AuthService;
 import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;

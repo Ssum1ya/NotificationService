@@ -1,4 +1,4 @@
-package com.example.JavaMainService.notifications;
+package com.example.JavaMainService.notifications.kafka;
 
 public class KafkaTopics {
     public static final String emailTopic = "notifications-email";

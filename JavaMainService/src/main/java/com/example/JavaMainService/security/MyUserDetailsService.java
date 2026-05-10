@@ -1,6 +1,6 @@
 package com.example.JavaMainService.security;
 
-import com.example.JavaMainService.user.UserRepository;
+import com.example.JavaMainService.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

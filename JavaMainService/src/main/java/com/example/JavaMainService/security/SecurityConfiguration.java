@@ -1,5 +1,7 @@
 package com.example.JavaMainService.security;
 
+import com.example.JavaMainService.security.customExceptionHandling.CustomAccessDeniedHandler;
+import com.example.JavaMainService.security.customExceptionHandling.CustomAuthenticationEntryPoint;
 import com.example.JavaMainService.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/ping/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
+
+                        .requestMatchers("/requests/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/requests/head/**").hasAuthority("Head")
 
                         .requestMatchers("/message/history/**").hasAnyRole("Admin", "Head")
 

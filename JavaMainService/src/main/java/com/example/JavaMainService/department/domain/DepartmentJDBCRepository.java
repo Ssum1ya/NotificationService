@@ -1,9 +1,8 @@
-package com.example.JavaMainService.departament;
+package com.example.JavaMainService.department.domain;
 
-import com.example.JavaMainService.departament.model.response.DepartmentDTO;
-import com.example.JavaMainService.departament.model.response.DepartmentUserSelectDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentDTO;
+import com.example.JavaMainService.department.dto.response.DepartmentUserSelectDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

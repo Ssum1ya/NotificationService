@@ -1,11 +1,10 @@
 package com.example.JavaMainService;
 
-import com.example.JavaMainService.user.userEntity.RequestStatus;
-import com.example.JavaMainService.user.userEntity.Role;
-import com.example.JavaMainService.user.userEntity.User;
-import com.example.JavaMainService.user.UserRepository;
-import com.example.JavaMainService.userProfile.ProfileRepository;
-import com.example.JavaMainService.userProfile.profileEntity.Profile;
+import com.example.JavaMainService.user.domain.entity.RequestStatus;
+import com.example.JavaMainService.user.domain.entity.Role;
+import com.example.JavaMainService.user.domain.entity.User;
+import com.example.JavaMainService.user.domain.UserRepository;
+import com.example.JavaMainService.userProfile.domain.entity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
-    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${ADMIN_LOGIN}")
