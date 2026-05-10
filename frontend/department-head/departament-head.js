@@ -96,7 +96,7 @@ function getIsHeadFromToken(token) {
 
 const PAGE_SIZE_NOTIFICATIONS = 8;
 const PAGE_SIZE_REQUESTS   = 7;
-const PAGE_SIZE_USERS      = 4;
+const PAGE_SIZE_USERS      = 9;
 const PAGE_SIZE_HISTORY    = 5;
 const PAGE_SIZE_RECIPIENTS = 4;
 const PAGE_SIZE_EMPLOYEES  = 5;

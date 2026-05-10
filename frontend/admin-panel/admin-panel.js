@@ -147,7 +147,7 @@ let employees;
 const PAGE_SIZE_REQUESTS   = 6;
 const PAGE_SIZE_USERS      = 6;
 const PAGE_SIZE_HISTORY    = 5;
-const PAGE_SIZE_RECIPIENTS = 9;
+const PAGE_SIZE_RECIPIENTS = 8;
 const PAGE_SIZE_EMPLOYEES  = 5;
  
 // Текущие страницы
