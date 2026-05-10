@@ -79,6 +79,7 @@
                 </div>
 
                 <div id="notificationsList"></div>
+                <div id="notificationsPagination"></div>
             </div>
         </main>
     </div>
@@ -124,5 +125,48 @@
     </div>
 
     <script src="user-dashboard.js"></script>
+    <style>
+        /* ── Пагинация ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 16px;
+            padding-bottom: 4px;
+        }
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .page-btn--active { background: #2563eb; border-color: #2563eb; color: #fff; }
+        .page-btn--active:hover { background: #1d4ed8 !important; color: #fff !important; }
+        .page-btn--disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-dots { font-size: 14px; color: #9ca3af; padding: 0 2px; user-select: none; }
+ 
+        /* ── Расширенное модальное окно сотрудников ── */
+        .modal-xlarge { max-width: 700px; width: 95%; }
+        .modal-xlarge .employees-list { max-height: 420px; overflow-y: auto; }
+ 
+        /* ── Панель получателей — фиксированная высота для 5 ── */
+        .recipients-list { max-height: 360px; overflow-y: auto; }
+ 
+        /* ── Пагинация внутри панели получателей ── */
+        #recipientsPagination .pagination { margin-top: 8px; }
+        #recipientsPagination .page-btn { min-width: 28px; height: 28px; font-size: 12px; }
+    </style>
 </body>
 </html>

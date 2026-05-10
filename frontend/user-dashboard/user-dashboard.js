@@ -107,6 +107,46 @@ function switchTab(tabName) {
     document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
+const PAGE_SIZE_NOTIFICATIONS = 8;
+
+let pageNotifications = 0;
+
+function renderPagination(containerId, currentPage, totalPages, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+ 
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+ 
+    let btns = '';
+ 
+    btns += `<button class="page-btn ${currentPage === 0 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage > 0 ? `${onPageChange}(${currentPage - 1})` : ''}"
+        ${currentPage === 0 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>`;
+ 
+    for (let i = 0; i < totalPages; i++) {
+        if (i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 1) {
+            btns += `<button class="page-btn ${i === currentPage ? 'page-btn--active' : ''}"
+                onclick="${onPageChange}(${i})">${i + 1}</button>`;
+        } else if (Math.abs(i - currentPage) === 2) {
+            btns += `<span class="page-dots">…</span>`;
+        }
+    }
+ 
+    btns += `<button class="page-btn ${currentPage === totalPages - 1 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage < totalPages - 1 ? `${onPageChange}(${currentPage + 1})` : ''}"
+        ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>`;
+ 
+    container.innerHTML = `<div class="pagination">${btns}</div>`;
+}
+
 // Загрузка уведомлений
 async function loadNotifications() {
     const token = localStorage.getItem('acessToken');
@@ -503,8 +543,8 @@ async function renderYoungMessages() {
 }
 
 // Notifications
-async function renderNotifications() {
-
+async function renderNotifications(page = 0) {
+    pageNotifications = page;
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
 
@@ -513,7 +553,7 @@ async function renderNotifications() {
         return;
     }
 
-    const response = await fetch(`${API_BASE_URL}/message/notification-history/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/message/notification-history/${userId}?page=${page}&size=${PAGE_SIZE_NOTIFICATIONS}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -524,7 +564,7 @@ async function renderNotifications() {
     const result = await response.json();
 
     const container = document.getElementById('notificationsList');
-    container.innerHTML = result.map(notif => `
+    container.innerHTML = result.content.map(notif => `
         <div class="notification-item">
             <div class="notification-icon ${'info'}">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -540,6 +580,7 @@ async function renderNotifications() {
             </div>
         </div>
     `).join('');
+    renderPagination('notificationsPagination', page, result.totalPages, 'renderNotifications');
 }
 
 // Отображение уведомлений

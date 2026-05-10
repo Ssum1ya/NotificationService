@@ -77,10 +77,12 @@ public class ProfileController {
     }
 
     @GetMapping("/head/departament-employees/{departmentId}")
-    public ResponseEntity<List<GetEmployeesDTO>> getEmployees(@PathVariable("departmentId") UUID departmentId, Authentication auth) {
-        String login = auth.getName();
-
-        return ResponseEntity.ok(profileService.headGetEmployeesByDepartment(departmentId, login));
+    public ResponseEntity<PageResponse<GetEmployeesDTO>> getEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable("departmentId") UUID departmentId
+    ) {
+        return ResponseEntity.ok(profileService.headGetEmployeesByDepartment(departmentId, page, size));
     }
 
     @GetMapping("/admin/departament-requests")
@@ -92,17 +94,20 @@ public class ProfileController {
     }
 
     @GetMapping("/head/departament-requests/{departmentId}")
-    public ResponseEntity<List<DepartmentRequestDTO>> getRequests(
-            @PathVariable("departmentId") UUID depId
+    public ResponseEntity<PageResponse<DepartmentRequestDTO>> getRequests(
+            @PathVariable("departmentId") UUID depId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
             ) {
-        return ResponseEntity.ok(profileService.headGetDepartmentRequests(depId));
+        return ResponseEntity.ok(profileService.headGetDepartmentRequests(depId, page, size));
     }
 
     @GetMapping("/head/departament-employees-for-notification/{departmentId}")
-    public ResponseEntity<List<EmployeeForNotificationDTO>> getEmployeesForNotifications(@PathVariable("departmentId") UUID departmentId, Authentication auth) {
-        String fromLogin = auth.getName();
-
-        return ResponseEntity.ok(profileService.headGetEmployeesForNotify(departmentId, fromLogin));
+    public ResponseEntity<PageResponse<EmployeeForNotificationDTO>> getEmployeesForNotifications(
+            @PathVariable("departmentId") UUID departmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return ResponseEntity.ok(profileService.headGetEmployeesForNotify(departmentId, page, size));
     }
 
     @GetMapping("/admin/users-for-notification")

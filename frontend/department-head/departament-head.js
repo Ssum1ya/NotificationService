@@ -94,6 +94,57 @@ function getIsHeadFromToken(token) {
     return payload ? payload.isHead : null;
 }
 
+const PAGE_SIZE_NOTIFICATIONS = 8;
+const PAGE_SIZE_REQUESTS   = 4;
+const PAGE_SIZE_USERS      = 4;
+const PAGE_SIZE_HISTORY    = 5;
+const PAGE_SIZE_RECIPIENTS = 4;
+const PAGE_SIZE_EMPLOYEES  = 5;
+
+const PAGE_SIZE_YOUNG_MESSAGES = 3;
+ 
+// Текущие страницы
+let pageRequests   = 0;
+let pageUsers      = 0;
+let pageHistory    = 0;
+let pageRecipients = 0;
+
+function renderPagination(containerId, currentPage, totalPages, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+ 
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+ 
+    let btns = '';
+ 
+    btns += `<button class="page-btn ${currentPage === 0 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage > 0 ? `${onPageChange}(${currentPage - 1})` : ''}"
+        ${currentPage === 0 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>`;
+ 
+    for (let i = 0; i < totalPages; i++) {
+        if (i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 1) {
+            btns += `<button class="page-btn ${i === currentPage ? 'page-btn--active' : ''}"
+                onclick="${onPageChange}(${i})">${i + 1}</button>`;
+        } else if (Math.abs(i - currentPage) === 2) {
+            btns += `<span class="page-dots">…</span>`;
+        }
+    }
+ 
+    btns += `<button class="page-btn ${currentPage === totalPages - 1 ? 'page-btn--disabled' : ''}"
+        onclick="${currentPage < totalPages - 1 ? `${onPageChange}(${currentPage + 1})` : ''}"
+        ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>`;
+ 
+    container.innerHTML = `<div class="pagination">${btns}</div>`;
+}
+
 let messageHistory = [
     {
         id: 1,
@@ -116,7 +167,7 @@ let messageHistory = [
 ];
 
 // Отображение истории сообщений
-async function renderYoungMessages() {
+async function renderYoungMessages(page = 0) {
     const container = document.getElementById('recentNotificationsList');
 
     const token = localStorage.getItem('acessToken');
@@ -169,9 +220,9 @@ async function renderYoungMessages() {
 }
 
 // Отображение истории сообщений
-async function renderMessageHistory() {
+async function renderMessageHistory(page = 0) {
+    pageHistory = page;
     const container = document.getElementById('messageHistoryList');
-
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
 
@@ -180,7 +231,7 @@ async function renderMessageHistory() {
         return;
     }
 
-    const response = await fetch(`${API_URL}/message/sending-history/${userId}`, {
+    const response = await fetch(`${API_URL}/message/sending-history/${userId}?page=${page}&size=${PAGE_SIZE_HISTORY}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -200,10 +251,11 @@ async function renderMessageHistory() {
                 <p>История сообщений пуста</p>
             </div>
         `;
+        document.getElementById('historyPagination').innerHTML = '';
         return;
     }
 
-    container.innerHTML = result.map(msg => `
+    container.innerHTML = result.content.map(msg => `
         <div class="message-history-item">
             <div class="message-history-header">
                 <div class="message-history-date">
@@ -222,6 +274,8 @@ async function renderMessageHistory() {
             <div class="message-history-text">${msg.message}</div>
         </div>
     `).join('');
+
+    renderPagination('historyPagination', page, result.totalPages, 'renderMessageHistory');
 }
 
 // При отправке сообщения добавить в историю
@@ -601,10 +655,9 @@ function clearHeadFieldError(el) {
 
 
 // Applications
-async function renderApplications() {
-
+async function renderApplications(page = 0) {
+    pageRequests = page;
     const token = localStorage.getItem('acessToken');
-
     const container = document.getElementById('applicationsList');
 
     if (!token) {
@@ -614,7 +667,7 @@ async function renderApplications() {
 
     const depId = getUserDepIdFromToken(token);
 
-    const response = await fetch(`${API_URL}/profile/head/departament-requests/${depId}`, {
+    const response = await fetch(`${API_URL}/profile/head/departament-requests/${depId}?page=${page}&size=${PAGE_SIZE_REQUESTS}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -634,10 +687,11 @@ async function renderApplications() {
                 <p>-</p>
             </div>
         `;
+        document.getElementById('requestsPagination').innerHTML = '';
         return;
     }
 
-    const requestsLength = result.length;
+    const requestsLength = result.totalElements;
 
     document.getElementById('statApplications').textContent = requestsLength;
     document.getElementById('applicationsBadge').textContent = requestsLength;
@@ -648,7 +702,7 @@ async function renderApplications() {
         document.getElementById('applicationsBadge').style.display = 'inline-block';
     }
 
-    container.innerHTML = result.map(app => {
+    container.innerHTML = result.content.map(app => {
         const headStatus = app.requestStatus;
         let status;
 
@@ -693,6 +747,7 @@ async function renderApplications() {
             </div>
         `;
         }).join('');
+    renderPagination('requestsPagination', page, result.totalPages, 'renderApplications');    
 }
 
 // Отклонение заявки
@@ -882,7 +937,8 @@ function handleApplication(id, action) {
     }
 }
 
-async function renderStaff() {
+async function renderStaff(page = 0) {
+    pageRecipients = page;
     try {
         const token = localStorage.getItem('acessToken');
         const depId = getUserDepIdFromToken(token);
@@ -892,7 +948,7 @@ async function renderStaff() {
             return;
         }
  
-        const response = await fetch(`${API_URL}/profile/head/departament-employees/${depId}`, {
+        const response = await fetch(`${API_URL}/profile/head/departament-employees/${depId}?page=${page}&size=${PAGE_SIZE_USERS}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -906,7 +962,7 @@ async function renderStaff() {
  
         const employees = await response.json();
  
-        document.getElementById('statEmployees').textContent = employees.length;
+        document.getElementById('statEmployees').textContent = employees.totalElements;
  
         const container = document.getElementById('staffList');
  
@@ -919,10 +975,11 @@ async function renderStaff() {
                     <h3>Сотрудников пока нет</h3>
                     <p>-</p>
                 </div>`;
+            document.getElementById('usersPagination').innerHTML = '';
             return;
         }
  
-        container.innerHTML = employees.map(emp => `
+        container.innerHTML = employees.content.map(emp => `
             <div class="staff-card" data-id=${emp.id}>
                 <div class="staff-card-info">
                     <div class="employee-avatar">${getInitials(emp.name)}</div>
@@ -947,6 +1004,7 @@ async function renderStaff() {
                 </div>
             </div>
         `).join('');
+        renderPagination('usersPagination', page, employees.totalPages, 'renderStaff'); 
  
     } catch (error) {
         console.error('Error loading employees:', error);
@@ -1131,8 +1189,8 @@ async function kickEmployee(userId, userName) {
 }
 
 // Messages
-async function renderRecipients() {
-
+async function renderRecipients(page = 0) {
+    pageRecipients = page;
     try {
         const token = localStorage.getItem('acessToken');
         const depId = getUserDepIdFromToken(token);
@@ -1142,7 +1200,7 @@ async function renderRecipients() {
             return;
         }
 
-        const response = await fetch(`${API_URL}/profile/head/departament-employees-for-notification/${depId}`, {
+        const response = await fetch(`${API_URL}/profile/head/departament-employees-for-notification/${depId}?page=${page}&size=${PAGE_SIZE_RECIPIENTS}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -1159,7 +1217,7 @@ async function renderRecipients() {
         employees = employeesForNotification;
 
         const container = document.getElementById('recipientsList');
-        container.innerHTML = employeesForNotification.map(emp => `
+        container.innerHTML = employeesForNotification.content.map(emp => `
             <label class="recipient-item">
                 <input type="checkbox" value="${emp.id}" onchange="toggleRecipient('${emp.id}')">
                 <div class="employee-avatar">${getInitials(emp.name)}</div>
@@ -1169,7 +1227,7 @@ async function renderRecipients() {
                 </div>
             </label>
         `).join('');
-
+        renderPagination('recipientsPagination', page, employeesForNotification.totalPages, 'renderRecipients');
 
     } catch (error) {
         console.error('Error loading employees:', error);
@@ -1279,8 +1337,8 @@ async function sendMessage() {
 }
 
 // Notifications
-async function renderNotifications() {
-
+async function renderNotifications(page = 0) {
+    pageHistory = page;
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
 
@@ -1291,7 +1349,7 @@ async function renderNotifications() {
         return;
     }
 
-    const response = await fetch(`${API_URL}/message/notification-history/${userId}`, {
+    const response = await fetch(`${API_URL}/message/notification-history/${userId}?page=${page}&size=${PAGE_SIZE_NOTIFICATIONS}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -1311,12 +1369,13 @@ async function renderNotifications() {
                 <p>-</p>
             </div>
         `;
+        document.getElementById('notificationsPagination').innerHTML = '';
         return;
     }
 
     // ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})
 
-    container.innerHTML = result.map(notif => `
+    container.innerHTML = result.content.map(notif => `
         <div class="notification-item">
             <div class="notification-icon ${'info'}">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1332,6 +1391,7 @@ async function renderNotifications() {
             </div>
         </div>
     `).join('');
+    renderPagination('notificationsPagination', page, result.totalPages, 'renderNotifications');
 }
 
 function markAsRead(id) {

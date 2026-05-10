@@ -103,6 +103,15 @@ public class ProfileSql {
             	on d.id = u.departement_id
             
             where u.request_status_head = 'PENDING' and u.departement_id = ?
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countHeadGetDepartmentRequests = """
+            select count(*) from user_profiles p
+            left join users u
+            	on u.profile_id = p.id
+            where u.request_status_head = 'PENDING' and u.departement_id = ?
             """;
 
     public static final String headGetEmployees = """
@@ -114,7 +123,22 @@ public class ProfileSql {
             left join departament d
             	on d.id = u.departement_id
             
-            where u.login != ? and d.id = ? and u.request_status_admin = 'APPROVED' and
+            where u.role != 'Head' and d.id = ? and u.request_status_admin = 'APPROVED' and
+            u.request_status_head = 'APPROVED'
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countHeadGetEmployees = """
+            select count(*) from user_profiles p
+            
+            left join users u
+            	on u.profile_id = p.id
+            
+            left join departament d
+            	on d.id = u.departement_id
+            
+            where u.role != 'Head' and d.id = ? and u.request_status_admin = 'APPROVED' and
             u.request_status_head = 'APPROVED'
             """;
 
@@ -127,7 +151,22 @@ public class ProfileSql {
             left join departament d
             	on d.id = u.departement_id
             
-            where u.login != ? and d.id = ?  and u.request_status_admin = 'APPROVED' and
+            where u.role != 'Head' and d.id = ?  and u.request_status_admin = 'APPROVED' and
+            u.request_status_head = 'APPROVED'
+            ORDER BY u.uuid
+            LIMIT ? OFFSET ?
+            """;
+
+    public static final String countHeadGetEmployeesForNotification = """
+            select count(*) from user_profiles p
+            
+            left join users u
+            	on u.profile_id = p.id
+            
+            left join departament d
+            	on d.id = u.departement_id
+            
+            where u.role != 'Head' and d.id = ? and u.request_status_admin = 'APPROVED' and
             u.request_status_head = 'APPROVED'
             """;
 

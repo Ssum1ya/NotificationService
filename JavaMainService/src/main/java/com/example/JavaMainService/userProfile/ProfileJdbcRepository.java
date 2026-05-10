@@ -1,7 +1,6 @@
 package com.example.JavaMainService.userProfile;
 
 import com.example.JavaMainService.head.model.GetEmployeesDTO;
-import com.example.JavaMainService.message.MessageSql;
 import com.example.JavaMainService.notifications.model.Communication;
 import com.example.JavaMainService.notifications.model.ConsumerCommunicationDTO;
 import com.example.JavaMainService.notifications.model.ProfileProducerDTO;
@@ -113,13 +112,13 @@ public class ProfileJdbcRepository {
         );
     }
 
-    public Long countDepartmentRequests() {
+    public Long countAdminGetDepartmentRequests() {
         return jdbcTemplate.queryForObject(ProfileSql.countDepartmentRequests, (rs, rowNum) ->
                 rs.getLong("count")
         );
     }
 
-    public List<DepartmentRequestDTO> headGetDepartmentRequests(UUID depId) {
+    public List<DepartmentRequestDTO> headGetDepartmentRequests(UUID depId, int size, int offset) {
         return jdbcTemplate.query(ProfileSql.headGetDepartmentRequests, (rs, rowNum) ->
                 new DepartmentRequestDTO(
                         UUID.fromString(rs.getString("user_id")),
@@ -129,11 +128,20 @@ public class ProfileJdbcRepository {
                         rs.getString("grade") + " " + rs.getString("position"),
                         RequestStatus.valueOf(rs.getString("request_status_admin"))
                 ),
+                depId,
+                size,
+                offset
+        );
+    }
+
+    public Long countHeadGetDepartmentRequests(UUID depId) {
+        return jdbcTemplate.queryForObject(ProfileSql.countHeadGetDepartmentRequests, (rs, rowNum) ->
+                rs.getLong("count"),
                 depId
         );
     }
 
-    public List<GetEmployeesDTO> headGetEmployees(UUID depId, String login) {
+    public List<GetEmployeesDTO> headGetEmployees(UUID depId, int size, int offset) {
         return jdbcTemplate.query(ProfileSql.headGetEmployees, (rs, rowNum) ->
                         new GetEmployeesDTO(
                                 UUID.fromString(rs.getString("user_id")),
@@ -143,19 +151,35 @@ public class ProfileJdbcRepository {
                                 rs.getString("communication"),
                                 rs.getString("username")
                         ),
-                login,
+                depId,
+                size,
+                offset
+        );
+    }
+
+    public Long countHeadGetEmployees(UUID depId) {
+        return jdbcTemplate.queryForObject(ProfileSql.countHeadGetEmployees, (rs, rowNum) ->
+                        rs.getLong("count"),
                 depId
         );
     }
 
-    public List<EmployeeForNotificationDTO> headGetEmployeesForNotification(UUID depId, String fromLogin) {
+    public List<EmployeeForNotificationDTO> headGetEmployeesForNotification(UUID depId, int size, int offset) {
         return jdbcTemplate.query(ProfileSql.headGetEmployeesForNotification, (rs, rowNum) ->
                         new EmployeeForNotificationDTO(
                                 UUID.fromString(rs.getString("user_id")),
                                 rs.getString("last_name") + " " + rs.getString("name") + " " + rs.getString("surname"),
                                 rs.getString("grade") + " " + rs.getString("position")
                         ),
-                fromLogin,
+                depId,
+                size,
+                offset
+        );
+    }
+
+    public Long countHeadGetEmployeesForNotification(UUID depId) {
+        return jdbcTemplate.queryForObject(ProfileSql.countHeadGetEmployeesForNotification, (rs, rowNum) ->
+                        rs.getLong("count"),
                 depId
         );
     }
