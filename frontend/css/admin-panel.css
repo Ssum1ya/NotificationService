@@ -3,18 +3,18 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+ 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background: #f8fafc;
     color: #1e3a8a;
 }
-
+ 
 .admin-container {
     display: flex;
     min-height: 100vh;
 }
-
+ 
 /* Боковая панель */
 .sidebar {
     width: 260px;
@@ -23,23 +23,23 @@ body {
     display: flex;
     flex-direction: column;
 }
-
+ 
 .sidebar-header {
     padding: 24px 20px;
     border-bottom: 1px solid #bfdbfe;
 }
-
+ 
 .sidebar-header h2 {
     color: #1e3a8a;
     font-size: 20px;
     font-weight: 600;
 }
-
+ 
 .sidebar-nav {
     padding: 16px 0;
     flex: 1;
 }
-
+ 
 .nav-item {
     display: flex;
     align-items: center;
@@ -50,22 +50,22 @@ body {
     transition: all 0.2s;
     cursor: pointer;
 }
-
+ 
 .nav-item:hover {
     background: #eff6ff;
     color: #2563eb;
 }
-
+ 
 .nav-item.active {
     background: #dbeafe;
     color: #2563eb;
     border-right: 3px solid #2563eb;
 }
-
+ 
 .nav-item svg {
     flex-shrink: 0;
 }
-
+ 
 .badge {
     background: #dc2626;
     color: white;
@@ -75,42 +75,42 @@ body {
     font-weight: 600;
     margin-left: auto;
 }
-
+ 
 /* Основной контент */
 .main-content {
     flex: 1;
     overflow-y: auto;
 }
-
+ 
 .content-section {
     display: none;
     padding: 32px;
 }
-
+ 
 .content-section.active {
     display: block;
 }
-
+ 
 .content-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
 }
-
+ 
 .content-header h1 {
     color: #1e3a8a;
     font-size: 32px;
     font-weight: 600;
 }
-
+ 
 /* Сетка департаментов */
 .departments-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
 }
-
+ 
 .department-card {
     background: white;
     border: 1px solid #bfdbfe;
@@ -118,33 +118,33 @@ body {
     padding: 24px;
     transition: all 0.2s;
 }
-
+ 
 .department-card:hover {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
     border-color: #3b82f6;
 }
-
+ 
 .department-card-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
     margin-bottom: 16px;
 }
-
+ 
 .department-name {
     font-size: 20px;
     font-weight: 600;
     color: #1e3a8a;
     margin-bottom: 8px;
 }
-
+ 
 .department-description {
     color: #64748b;
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 16px;
 }
-
+ 
 .department-head {
     background: #eff6ff;
     padding: 8px 12px;
@@ -153,7 +153,7 @@ body {
     color: #1e3a8a;
     margin-bottom: 16px;
 }
-
+ 
 .department-stats {
     display: flex;
     gap: 16px;
@@ -161,7 +161,7 @@ body {
     padding-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
-
+ 
 .stat-item {
     display: flex;
     align-items: center;
@@ -169,16 +169,16 @@ body {
     color: #64748b;
     font-size: 14px;
 }
-
+ 
 .stat-item svg {
     color: #3b82f6;
 }
-
+ 
 .department-actions {
     display: flex;
     gap: 8px;
 }
-
+ 
 .btn-small {
     flex: 1;
     padding: 8px 12px;
@@ -191,12 +191,12 @@ body {
     cursor: pointer;
     transition: all 0.2s;
 }
-
+ 
 .btn-small:hover {
     background: #eff6ff;
     border-color: #3b82f6;
 }
-
+ 
 .btn-delete {
     padding: 8px 12px;
     border: 1px solid #fecaca;
@@ -208,12 +208,12 @@ body {
     cursor: pointer;
     transition: all 0.2s;
 }
-
+ 
 .btn-delete:hover {
     background: #fef2f2;
     border-color: #ef4444;
 }
-
+ 
 /* Кнопки */
 .btn-primary {
     display: inline-flex;
@@ -229,11 +229,11 @@ body {
     cursor: pointer;
     transition: background 0.2s;
 }
-
+ 
 .btn-primary:hover {
     background: #1d4ed8;
 }
-
+ 
 .btn-secondary {
     padding: 12px 20px;
     background: #f1f5f9;
@@ -245,11 +245,11 @@ body {
     cursor: pointer;
     transition: background 0.2s;
 }
-
+ 
 .btn-secondary:hover {
     background: #e2e8f0;
 }
-
+ 
 /* Модальные окна */
 .modal {
     display: none;
@@ -262,14 +262,14 @@ body {
     z-index: 1000;
     animation: fadeInModal 0.3s ease;
 }
-
+ 
 .modal.show {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
 }
-
+ 
 @keyframes fadeInModal {
     from {
         opacity: 0;
@@ -278,7 +278,7 @@ body {
         opacity: 1;
     }
 }
-
+ 
 .modal-content {
     background: white;
     border-radius: 16px;
@@ -288,11 +288,11 @@ body {
     animation: slideUp 0.3s ease;
     border: 1px solid #bfdbfe;
 }
-
+ 
 .modal-large {
     max-width: 700px;
 }
-
+ 
 @keyframes slideUp {
     from {
         transform: translateY(30px);
@@ -303,37 +303,37 @@ body {
         opacity: 1;
     }
 }
-
+ 
 .modal-header {
     padding: 24px 24px 16px 24px;
     text-align: center;
 }
-
+ 
 .modal-header h3 {
     color: #1e3a8a;
     font-size: 22px;
     font-weight: 600;
 }
-
+ 
 .modal-body {
     padding: 0 24px 24px 24px;
 }
-
+ 
 .modal-footer {
     padding: 0 24px 24px 24px;
     display: flex;
     gap: 12px;
 }
-
+ 
 .modal-footer button {
     flex: 1;
 }
-
+ 
 /* Формы */
 .form-group {
     margin-bottom: 20px;
 }
-
+ 
 label {
     display: block;
     color: #1e3a8a;
@@ -341,11 +341,11 @@ label {
     font-weight: 500;
     margin-bottom: 8px;
 }
-
+ 
 .required {
     color: #dc2626;
 }
-
+ 
 input, textarea, select {
     width: 100%;
     padding: 12px 16px;
@@ -358,23 +358,23 @@ input, textarea, select {
     color: #1e3a8a;
     font-family: inherit;
 }
-
+ 
 input:focus, textarea:focus, select:focus {
     border-color: #3b82f6;
     background: white;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-
+ 
 textarea {
     resize: vertical;
 }
-
+ 
 /* Список сотрудников */
 .employees-list {
     max-height: 400px;
     overflow-y: auto;
 }
-
+ 
 .employee-card {
     display: flex;
     justify-content: space-between;
@@ -385,28 +385,28 @@ textarea {
     margin-bottom: 12px;
     transition: all 0.2s;
 }
-
+ 
 .employee-card:hover {
     border-color: #bfdbfe;
     background: #f8fafc;
 }
-
+ 
 .employee-info {
     flex: 1;
 }
-
+ 
 .employee-name {
     font-weight: 600;
     color: #1e3a8a;
     font-size: 16px;
     margin-bottom: 4px;
 }
-
+ 
 .employee-position {
     color: #64748b;
     font-size: 14px;
 }
-
+ 
 .employee-badge {
     background: #dcfce7;
     color: #16a34a;
@@ -416,7 +416,7 @@ textarea {
     font-weight: 600;
     margin-right: 12px;
 }
-
+ 
 .btn-make-head {
     padding: 8px 16px;
     background: #2563eb;
@@ -428,16 +428,16 @@ textarea {
     cursor: pointer;
     transition: background 0.2s;
 }
-
+ 
 .btn-make-head:hover {
     background: #1d4ed8;
 }
-
+ 
 .btn-make-head:disabled {
     background: #cbd5e1;
     cursor: not-allowed;
 }
-
+ 
 /* Иконки */
 .success-icon {
     width: 56px;
@@ -449,13 +449,13 @@ textarea {
     justify-content: center;
     margin-bottom: 12px;
 }
-
+ 
 .success-icon svg {
     color: #16a34a;
     width: 28px;
     height: 28px;
 }
-
+ 
 .error-icon {
     width: 56px;
     height: 56px;
@@ -466,24 +466,24 @@ textarea {
     justify-content: center;
     margin-bottom: 12px;
 }
-
+ 
 .error-icon svg {
     color: #dc2626;
 }
-
+ 
 .modal-body p {
     color: #64748b;
     font-size: 14px;
     margin-bottom: 16px;
     text-align: center;
 }
-
+ 
 #errorList {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-
+ 
 #errorList li {
     background: #fef2f2;
     border-left: 3px solid #dc2626;
@@ -494,12 +494,12 @@ textarea {
     font-size: 14px;
     line-height: 1.5;
 }
-
+ 
 #errorList li strong {
     color: #7f1d1d;
     font-weight: 600;
 }
-
+ 
 .btn-close {
     width: 100%;
     height: 48px;
@@ -512,52 +512,52 @@ textarea {
     cursor: pointer;
     transition: background 0.2s;
 }
-
+ 
 .btn-close:hover {
     background: #1d4ed8;
 }
-
+ 
 .empty-state {
     text-align: center;
     padding: 48px 24px;
     color: #64748b;
 }
-
+ 
 .empty-state svg {
     width: 64px;
     height: 64px;
     margin-bottom: 16px;
     color: #cbd5e1;
 }
-
+ 
 /* Адаптивность */
 @media (max-width: 768px) {
     .sidebar {
         width: 200px;
     }
-
+ 
     .content-section {
         padding: 20px;
     }
-
+ 
     .departments-grid {
         grid-template-columns: 1fr;
     }
-
+ 
     .content-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
 }
-
+ 
 /* Заявки */
 .requests-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
-
+ 
 .request-card {
     background: white;
     border: 1px solid #bfdbfe;
@@ -568,23 +568,23 @@ textarea {
     align-items: center;
     transition: all 0.2s;
 }
-
+ 
 .request-card:hover {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
     border-color: #3b82f6;
 }
-
+ 
 .request-info {
     flex: 1;
 }
-
+ 
 .request-header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
 }
-
+ 
 .request-status {
     padding: 4px 10px;
     border-radius: 12px;
@@ -592,34 +592,34 @@ textarea {
     font-weight: 600;
     display: inline-block;
 }
-
+ 
 .status-approved {
     background-color: #d1fae5;
     color: #065f46;
 }
-
+ 
 .status-pending {
     background-color: #fef3c7;
     color: #92400e;
 }
-
+ 
 .request-user {
     font-size: 18px;
     font-weight: 600;
     color: #1e3a8a;
 }
-
+ 
 .request-date {
     color: #64748b;
     font-size: 13px;
 }
-
+ 
 .request-details {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-
+ 
 .request-detail-item {
     display: flex;
     align-items: center;
@@ -627,17 +627,17 @@ textarea {
     color: #64748b;
     font-size: 14px;
 }
-
+ 
 .request-detail-item svg {
     color: #3b82f6;
     flex-shrink: 0;
 }
-
+ 
 .request-actions {
     display: flex;
     gap: 8px;
 }
-
+ 
 .btn-approve {
     padding: 10px 20px;
     background: #16a34a;
@@ -652,11 +652,11 @@ textarea {
     align-items: center;
     gap: 6px;
 }
-
+ 
 .btn-approve:hover {
     background: #15803d;
 }
-
+ 
 .btn-reject {
     padding: 10px 20px;
     background: #dc2626;
@@ -671,27 +671,27 @@ textarea {
     align-items: center;
     gap: 6px;
 }
-
+ 
 .btn-reject:hover {
     background: #b91c1c;
 }
-
+ 
 @media (max-width: 768px) {
     .request-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
-
+ 
     .request-actions {
         width: 100%;
     }
-
+ 
     .btn-approve, .btn-reject {
         flex: 1;
     }
 }
-
+ 
 /* Профиль пользователя */
 .profile-grid {
     display: grid;
@@ -699,29 +699,29 @@ textarea {
     gap: 20px;
     margin-top: 20px;
 }
-
+ 
 .profile-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-
+ 
 .profile-label {
     font-size: 13px;
     color: #64748b;
     font-weight: 500;
 }
-
+ 
 .profile-value {
     font-size: 16px;
     color: #1e3a8a;
     font-weight: 500;
 }
-
+ 
 .profile-section {
     margin-bottom: 24px;
 }
-
+ 
 .profile-section-title {
     font-size: 18px;
     font-weight: 600;
@@ -730,47 +730,58 @@ textarea {
     padding-bottom: 8px;
     border-bottom: 2px solid #bfdbfe;
 }
-
+ 
 .profile-full-width {
     grid-column: 1 / -1;
 }
-
+ 
 @media (max-width: 640px) {
     .profile-grid {
         grid-template-columns: 1fr;
     }
 }
-
+ 
 /* Дополнительные стили для новых компонентов */
-
+ 
 /* Messages Grid */
 .messages-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    align-items: start;
 }
-
-.recipients-panel,
+ 
+.recipients-panel {
+    background: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 24px;
+    height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+ 
 .message-panel {
     background: white;
     border: 1px solid #bfdbfe;
     border-radius: 12px;
     padding: 24px;
 }
-
+ 
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 }
-
+ 
 .panel-header h2 {
     color: #1e3a8a;
     font-size: 20px;
     font-weight: 600;
 }
-
+ 
 .select-all-btn {
     color: #2563eb;
     background: none;
@@ -780,36 +791,42 @@ textarea {
     cursor: pointer;
     transition: color 0.2s;
 }
-
+ 
 .select-all-btn:hover {
     color: #1d4ed8;
 }
-
+ 
 .recipients-list {
-    max-height: 500px;
-    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    /* явно задаём высоту чтобы JS мог правильно посчитать clientHeight */
+    height: calc(100vh - 340px);
 }
-
+ 
 .recipient-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 10px 12px;
     border-radius: 8px;
+    background: #f8fafc;
     transition: background 0.2s;
     cursor: pointer;
+    box-sizing: border-box;
+    /* высота будет задана через JS */
 }
-
+ 
 .recipient-item:hover {
     background: #f8fafc;
 }
-
+ 
 .recipient-item input[type="checkbox"] {
     width: 20px;
     height: 20px;
     cursor: pointer;
 }
-
+ 
 .selected-count {
     margin-top: 16px;
     padding: 12px;
@@ -819,14 +836,14 @@ textarea {
     font-weight: 500;
     font-size: 14px;
 }
-
+ 
 .message-panel h2 {
     color: #1e3a8a;
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 16px;
 }
-
+ 
 .message-textarea {
     width: 100%;
     height: 400px;
@@ -839,13 +856,13 @@ textarea {
     resize: none;
     transition: all 0.2s;
 }
-
+ 
 .message-textarea:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
+ 
 .send-btn {
     width: 100%;
     margin-top: 16px;
@@ -863,12 +880,12 @@ textarea {
     justify-content: center;
     gap: 8px;
 }
-
+ 
 .send-btn:hover {
     background: #1d4ed8;
     box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
 }
-
+ 
 /* Message History */
 .message-history-item {
     background: white;
@@ -878,31 +895,31 @@ textarea {
     margin-bottom: 16px;
     transition: all 0.2s;
 }
-
+ 
 .message-history-item:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     border-color: #93c5fd;
 }
-
+ 
 .message-history-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
     margin-bottom: 12px;
 }
-
+ 
 .message-history-date {
     color: #94a3b8;
     font-size: 13px;
 }
-
+ 
 .message-recipients {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 12px;
 }
-
+ 
 .recipient-tag {
     display: inline-flex;
     align-items: center;
@@ -914,7 +931,7 @@ textarea {
     font-size: 12px;
     font-weight: 500;
 }
-
+ 
 .message-history-text {
     background: #f8fafc;
     padding: 12px 16px;
@@ -924,7 +941,7 @@ textarea {
     font-size: 14px;
     line-height: 1.6;
 }
-
+ 
 /* Notifications */
 .notification-item {
     background: white;
@@ -937,16 +954,16 @@ textarea {
     cursor: pointer;
     transition: all 0.2s;
 }
-
+ 
 .notification-item:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     border-color: #93c5fd;
 }
-
+ 
 .notification-item.unread {
     border-left: 4px solid #2563eb;
 }
-
+ 
 .notification-icon {
     width: 48px;
     height: 48px;
@@ -956,55 +973,55 @@ textarea {
     justify-content: center;
     flex-shrink: 0;
 }
-
+ 
 .notification-icon.info {
     background: #dbeafe;
     color: #2563eb;
 }
-
+ 
 .notification-icon.success {
     background: #dcfce7;
     color: #16a34a;
 }
-
+ 
 .notification-icon.warning {
     background: #fef3c7;
     color: #ca8a04;
 }
-
+ 
 .notification-icon.error {
     background: #fee2e2;
     color: #dc2626;
 }
-
+ 
 .notification-content {
     flex: 1;
 }
-
+ 
 .notification-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
     margin-bottom: 8px;
 }
-
+ 
 .notification-title {
     color: #1e3a8a;
     font-weight: 600;
     font-size: 16px;
 }
-
+ 
 .notification-time {
     color: #94a3b8;
     font-size: 13px;
 }
-
+ 
 .notification-text {
     color: #64748b;
     font-size: 14px;
     line-height: 1.5;
 }
-
+ 
 /* Employee Avatar */
 .employee-avatar {
     width: 40px;
@@ -1019,7 +1036,7 @@ textarea {
     font-size: 14px;
     flex-shrink: 0;
 }
-
+ 
 /* Empty State */
 .empty-state {
     background: white;
@@ -1029,37 +1046,37 @@ textarea {
     text-align: center;
     color: #94a3b8;
 }
-
+ 
 .empty-state svg {
     width: 64px;
     height: 64px;
     margin: 0 auto 16px;
     opacity: 0.3;
 }
-
+ 
 .empty-state h3 {
     font-size: 18px;
     margin-bottom: 8px;
 }
-
+ 
 .empty-state p {
     font-size: 14px;
 }
-
+ 
 .subtitle {
     color: #64748b;
     font-size: 16px;
 }
-
+ 
 /* Tab Content */
 .tab-content {
     display: none;
 }
-
+ 
 .tab-content.active {
     display: block;
 }
-
+ 
  /* ── Фильтр-бар ── */
 .users-filter-bar {
     display: flex;
@@ -1086,7 +1103,7 @@ textarea {
 }
 .users-dept-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 .users-count-label { font-size: 13px; color: #6b7280; }
-
+ 
 /* ── Карточки пользователей ── */
 .users-list { display: flex; flex-direction: column; gap: 10px; }
 .user-card {
@@ -1122,7 +1139,7 @@ textarea {
     padding: 1px 10px;
 }
 .user-card-actions { display: flex; gap: 8px; }
-
+ 
 /* ── Сетка полей в модалке профиля (Админ) ── */
 .admin-profile-grid {
     display: grid;
@@ -1173,7 +1190,7 @@ select.ap-input {
     padding-right: 34px;
     cursor: pointer;
 }
-
+ 
 /* ── Фильтр получателей ── */
 .recipients-filter {
     padding: 8px 12px;
@@ -1199,14 +1216,14 @@ select.ap-input {
 .recipients-filter select:focus {
     border-color: #2563eb;
 }
-
+ 
 /* ── Карточка получателя ── */
 .recipient-info { flex: 1; min-width: 0; }
 .recipient-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .recipient-name { font-weight: 600; color: #1e3a8a; font-size: 14px; }
 .recipient-position { font-size: 12px; color: #64748b; margin-top: 2px; }
 .recipient-dept { font-size: 12px; color: #2563eb; margin-top: 2px; }
-
+ 
 /* ── Бейдж роли ── */
 .recipient-role-badge {
     font-size: 10px;
@@ -1218,27 +1235,27 @@ select.ap-input {
     padding: 1px 7px;
     white-space: nowrap;
 }
-
+ 
 /* ── Аватар главы ── */
 .avatar--head {
     background: #fef3c7 !important;
     color: #92400e !important;
 }
-
-
+ 
+ 
 /* Responsive */
 @media (max-width: 1024px) {
     .messages-grid {
         grid-template-columns: 1fr;
     }
 }
-
+ 
 @media (max-width: 768px) {
     .message-history-header {
         flex-direction: column;
         gap: 8px;
     }
-
+ 
     .notification-item {
         flex-direction: column;
     }

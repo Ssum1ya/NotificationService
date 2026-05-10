@@ -147,7 +147,7 @@ let employees;
 const PAGE_SIZE_REQUESTS   = 6;
 const PAGE_SIZE_USERS      = 6;
 const PAGE_SIZE_HISTORY    = 5;
-const PAGE_SIZE_RECIPIENTS = 4;
+const PAGE_SIZE_RECIPIENTS = 9;
 const PAGE_SIZE_EMPLOYEES  = 5;
  
 // Текущие страницы
@@ -310,6 +310,8 @@ function renderRecipientsList(list) {
             </div>
         </label>
     `).join('');
+ 
+ 
 }
  
 // Фильтрация получателей — сбрасываем на страницу 0
@@ -920,14 +922,7 @@ function filterUsersByDepartment() {
     const deptId = select.value;
  
     usersActiveDeptFilter = deptId ? deptName : '';
-    loadAllUsers(0); // всегда на первую страницу при смене фильтра
- 
-    if (!deptId) {
-        return; // loadAllUsers уже всё сделает
-    } else {
-        const filtered = allUsersCache.filter(u => u.departmentName === deptName);
-        renderUsersList(filtered);
-    }
+    loadAllUsers(0);
 }
  
 function getAdminInitials(lastName, name) {
