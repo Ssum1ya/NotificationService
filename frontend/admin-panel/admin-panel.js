@@ -147,7 +147,7 @@ let employees;
 const PAGE_SIZE_REQUESTS   = 6;
 const PAGE_SIZE_USERS      = 6;
 const PAGE_SIZE_HISTORY    = 5;
-const PAGE_SIZE_RECIPIENTS = 8;
+const PAGE_SIZE_RECIPIENTS = 7;
 const PAGE_SIZE_EMPLOYEES  = 5;
  
 // Текущие страницы
@@ -222,8 +222,6 @@ function switchSection(event, sectionName) {
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.remove('active');
     });
- 
-    console.log(sectionName)
  
     // Показываем выбранную секцию
     document.getElementById(sectionName + '-section').classList.add('active');
@@ -476,7 +474,7 @@ function displayDepartments(departments) {
     if (deptFilter) {
         const current = deptFilter.value;
         deptFilter.innerHTML = '<option value="">Все департаменты</option>' +
-            departments.map(d => `<option value="${d.id}" ${current === String(d.id) ? 'selected' : ''}>${d.name}</option>`).join('');
+            departments.map(d => `<option value="${d.name}" ${current === d.name ? 'selected' : ''}>${d.name}</option>`).join('');
     }
  
     const grid = document.getElementById('departmentsGrid');
@@ -832,6 +830,7 @@ async function loadAllUsers(page = 0) {
  
     container.innerHTML = '<div class="empty-state"><p>Загрузка...</p></div>';
  
+    console.log(`Loading all users, page ${page}, filter: ${usersActiveDeptFilter}`);
     let url = `${API_URL}/profile/admin/all-user-profiles?page=${page}&size=${PAGE_SIZE_USERS}`;
     if (usersActiveDeptFilter) {
         url += `&departmentName=${encodeURIComponent(usersActiveDeptFilter)}`;
@@ -847,17 +846,10 @@ async function loadAllUsers(page = 0) {
         const result = await response.json();
         // result: { content: [...], page, size, totalElements, totalPages }
         allUsersCache = result.content;
- 
-        // Заполняем фильтр департаментов из cachedDepartments
-        const deptFilter = document.getElementById('usersDeptFilter');
-        if (deptFilter && cachedDepartments.length > 0) {
-            const cur = deptFilter.value;
-            deptFilter.innerHTML = '<option value="">Все департаменты</option>' +
-                cachedDepartments.map(d =>
-                    `<option value="${d.name}" ${cur === d.name ? 'selected' : ''}>${d.name}</option>`
-                ).join('');
-        }
- 
+
+        // Select заполняется только в displayDepartments — здесь не трогаем
+        // чтобы не сбрасывать выбранный пользователем департамент
+
         renderUsersList(result.content);
         renderPagination('usersPagination', page, result.totalPages, 'loadAllUsers');
     } catch (error) {

@@ -98,7 +98,7 @@ const PAGE_SIZE_NOTIFICATIONS = 8;
 const PAGE_SIZE_REQUESTS   = 7;
 const PAGE_SIZE_USERS      = 9;
 const PAGE_SIZE_HISTORY    = 5;
-const PAGE_SIZE_RECIPIENTS = 4;
+const PAGE_SIZE_RECIPIENTS = 9;
 const PAGE_SIZE_EMPLOYEES  = 5;
 
 const PAGE_SIZE_YOUNG_MESSAGES = 3;
@@ -1191,49 +1191,67 @@ async function kickEmployee(userId, userName) {
 // Messages
 async function renderRecipients(page = 0) {
     pageRecipients = page;
+    const container = document.getElementById('recipientsList');
+
     try {
         const token = localStorage.getItem('acessToken');
         const depId = getUserDepIdFromToken(token);
+        if (!token) return;
 
-        if (!token) {
-            console.error('No token found');
+        const response = await fetch(
+            `${API_URL}/profile/head/departament-employees-for-notification/${depId}?page=${page}&size=${PAGE_SIZE_RECIPIENTS}`,
+            {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch employees');
+
+        const result = await response.json();
+        // result: { content: [...], page, size, totalElements, totalPages }
+
+        employees = result.content;
+
+        if (!result.content || result.content.length === 0) {
+            container.innerHTML = '<div style="padding:12px;color:#6b7280;">Нет сотрудников</div>';
+            document.getElementById('recipientsPagination').innerHTML = '';
             return;
         }
 
-        const response = await fetch(`${API_URL}/profile/head/departament-employees-for-notification/${depId}?page=${page}&size=${PAGE_SIZE_RECIPIENTS}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch employees');
-        }
-
-        const employeesForNotification = await response.json();
-
-        employees = employeesForNotification;
-
-        const container = document.getElementById('recipientsList');
-        container.innerHTML = employeesForNotification.content.map(emp => `
+        container.innerHTML = result.content.map(emp => `
             <label class="recipient-item">
-                <input type="checkbox" value="${emp.id}" onchange="toggleRecipient('${emp.id}')">
+                <input type="checkbox"
+                    value="${emp.id}"
+                    onchange="toggleRecipient('${emp.id}')"
+                    ${selectedEmployees.includes(emp.id) ? 'checked' : ''}>
                 <div class="employee-avatar">${getInitials(emp.name)}</div>
                 <div style="flex: 1;">
                     <div class="employee-name">${emp.name}</div>
-                    <div style="color: #64748b; font-size: 14px;">${emp.position}</div>
+                    <div style="color: #64748b; font-size: 13px;">${emp.position}</div>
                 </div>
             </label>
         `).join('');
-        renderPagination('recipientsPagination', page, employeesForNotification.totalPages, 'renderRecipients');
+
+        renderPagination('recipientsPagination', page, result.totalPages, 'renderRecipients');
+
+        // Рассчитываем высоту элементов по реальной высоте списка
+        requestAnimationFrame(() => {
+            const listHeight = container.clientHeight;
+            const count = result.content.length;
+            const gap = 6;
+            const itemHeight = Math.floor((listHeight - gap * (count - 1)) / count);
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.gap = gap + 'px';
+            container.querySelectorAll('.recipient-item').forEach(item => {
+                item.style.height = itemHeight + 'px';
+            });
+        });
 
     } catch (error) {
         console.error('Error loading employees:', error);
-
-        const tbody = document.getElementById('staffTableBody');
-        tbody.innerHTML = `<tr><td colspan="5">Ошибка загрузки</td></tr>`;
+        container.innerHTML = '<div style="padding:12px;color:#ef4444;">Ошибка загрузки</div>';
     }
 }
 

@@ -87,10 +87,10 @@ public class ProfileService {
         profileJdbcRepository.adminUpdateProfileByUserId(userId, updateUserData);
     }
 
-    public PageResponse<AllUserData> getAllUsersData(int page, int size) {
+    public PageResponse<AllUserData> getAllUsersData(int page, int size, String departmentName) {
         int offset = page * size;
-        List<AllUserData> allUserData = profileJdbcRepository.getAllUsersData(size, offset);
-        Long total = profileJdbcRepository.countAllUsersData();
+        List<AllUserData> allUserData = profileJdbcRepository.getAllUsersData(size, offset, departmentName);
+        long total = profileJdbcRepository.countAllUsersData(departmentName);
         return new PageResponse<>(allUserData, page, size, total);
     }
 

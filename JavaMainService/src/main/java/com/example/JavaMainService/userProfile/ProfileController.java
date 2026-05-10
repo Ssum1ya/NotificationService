@@ -48,8 +48,9 @@ public class ProfileController {
     @GetMapping("/admin/all-user-profiles")
     public ResponseEntity<PageResponse<AllUserData>> getAllUsersData(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
-        return ResponseEntity.ok(profileService.getAllUsersData(page, size));
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String departmentName) {
+        return ResponseEntity.ok(profileService.getAllUsersData(page, size, departmentName));
     }
 
     @GetMapping("/{profileId}")

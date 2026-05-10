@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Array;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,8 +28,36 @@ import java.util.UUID;
 public class ProfileJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public List<AllUserData> getAllUsersData(int size, int offset) {
-        return jdbcTemplate.query(ProfileSql.getAllUsersData, (rs, rowNum) ->
+    public List<AllUserData> getAllUsersData(int size, int offset, String departmentName) {
+        StringBuilder sql = new StringBuilder("""
+        select up.last_name, up.name, up.surname,
+            up.grade, up.position,
+            d.name as department_name,
+            up.communication, up.username,
+            u.role, u.request_status_head, u.request_status_admin, u.uuid as id
+            from user_profiles up
+            
+            full outer join users u
+            	on u.profile_id = up.id
+            
+            full outer join departament d
+            	on u.departement_id = d.id
+            
+            where u.role != 'Admin'
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (departmentName != null && !departmentName.isBlank()) {
+            sql.append(" AND d.name = ?");
+            params.add(departmentName);
+        }
+
+        sql.append(" ORDER BY u.uuid LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(offset);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) ->
                         new AllUserData(
                                 rs.getString("last_name"),
                                 rs.getString("name"),
@@ -43,16 +72,36 @@ public class ProfileJdbcRepository {
                                 RequestStatus.valueOf(rs.getString("request_status_admin")),
                                 UUID.fromString(rs.getString("id"))
                         ),
-                size,
-                offset
+                params.toArray()
         );
     }
 
-    public Long countAllUsersData() {
-        return jdbcTemplate.queryForObject(ProfileSql.countAllUsersData, (rs, rowNum) ->
-                        rs.getLong("count")
-        );
+    public long countAllUsersData(String departmentName) {
+        StringBuilder sql = new StringBuilder("""
+        select count(*)
+        from user_profiles up
+        full outer join users u
+            on u.profile_id = up.id
+        full outer join departament d
+            on u.departement_id = d.id
+        where u.role != 'Admin'
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (departmentName != null && !departmentName.isBlank()) {
+            sql.append(" AND d.name = ?");
+            params.add(departmentName);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
     }
+
+//    public Long countAllUsersData() {
+//        return jdbcTemplate.queryForObject(ProfileSql.countAllUsersData, (rs, rowNum) ->
+//                        rs.getLong("count")
+//        );
+//    }
 
     public Optional<GetProfileById> getProfileByIdDTO(UUID userId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(ProfileSql.getProfileByUserId, (rs, rowNum) ->

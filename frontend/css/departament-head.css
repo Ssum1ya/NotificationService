@@ -430,9 +430,20 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    align-items: start;
 }
 
-.recipients-panel,
+.recipients-panel {
+    background: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 24px;
+    height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 .message-panel {
     background: white;
     border: 1px solid #bfdbfe;
@@ -467,19 +478,16 @@ body {
     color: #1d4ed8;
 }
 
-.recipients-list {
-    max-height: 500px;
-    overflow-y: auto;
-}
-
 .recipient-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 10px 12px;
     border-radius: 8px;
+    background: #f8fafc;
     transition: background 0.2s;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .recipient-item:hover {
@@ -1134,8 +1142,11 @@ body {
 }
 
 .recipients-list {
-    max-height: 500px;
-    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    /* явно задаём высоту чтобы JS мог правильно посчитать clientHeight */
+    height: calc(100vh - 340px);
 }
 
 .recipient-item {
