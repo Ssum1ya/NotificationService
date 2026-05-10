@@ -1,0 +1,27 @@
+package com.example.JavaMainService.department;
+
+import com.example.JavaMainService.globalException.exceptionsDTO.GlobalErrorResponse;
+import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+@RestControllerAdvice(basePackageClasses = DepartmentService.class)
+public class DepartmentErrorsHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GlobalErrorResponse> handleRegisterException(
+            IllegalArgumentException ex, WebRequest request
+    ) {
+
+        GlobalErrorResponse response = new GlobalErrorResponse("BAD REQUEST", ex.getMessage(),
+                MDC.get("traceId"), Instant.now().truncatedTo(ChronoUnit.SECONDS).toString(),
+                request.getDescription(false).split("uri=")[1]);
+
+        return ResponseEntity.status(400).body(response);
+    }
+}
