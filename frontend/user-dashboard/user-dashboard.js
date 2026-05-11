@@ -108,6 +108,7 @@ function switchTab(tabName) {
 }
 
 const PAGE_SIZE_NOTIFICATIONS = 8;
+const PAGE_SIZE_YOUNG_MESSAGES = 6;
 
 let pageNotifications = 0;
 
@@ -489,44 +490,55 @@ async function saveProfile() {
     }
 }
 
-// Отображение истории сообщений
-async function renderYoungMessages() {
-    const container = document.getElementById('recentNotificationsList');
+// Пагинация на главной — клиентская
+const PAGE_YOUNG   = 6;
+let pageYoung      = 0;
+let youngAllData   = [];
 
+// Отображение истории сообщений
+async function renderYoungMessages(page = 0) {
+    const container = document.getElementById('recentNotificationsList');
     const token = localStorage.getItem('acessToken');
     const userId = getUserIdFromToken(token);
+    if (!token) return;
 
-    if (!token) {
-        console.error('No token found');
-        return;
+    // Загружаем данные только если кэш пустой — бэк хранит их один раз
+    if (youngAllData.length === 0) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/message/young-messages/${userId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+            });
+            youngAllData = await response.json();
+        } catch (error) {
+            console.error('Ошибка загрузки уведомлений:', error);
+            container.innerHTML = '<div class="empty-state"><p>Ошибка загрузки</p></div>';
+            return;
+        }
     }
 
-    const response = await fetch(`${API_BASE_URL}/message/young-messages/${userId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    });
-
-    const result = await response.json();
-
-    if (result.length === 0) {
+    if (!youngAllData || youngAllData.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                 </svg>
-                <h3>Последних уведомлений пока нет(</h3>
+                <h3>Последних уведомлений пока нет</h3>
                 <p>-</p>
-            </div>
-        `;
+            </div>`;
+        document.getElementById('youngPagination').innerHTML = '';
         return;
     }
-    
-    container.innerHTML = result.map(notif => `
+
+    // Режем на страницы на клиенте
+    pageYoung = page;
+    const start = page * PAGE_YOUNG;
+    const pageData = youngAllData.slice(start, start + PAGE_YOUNG);
+    const totalPages = Math.ceil(youngAllData.length / PAGE_YOUNG);
+
+    container.innerHTML = pageData.map(notif => `
         <div class="notification-item">
-            <div class="notification-icon ${'info'}">
+            <div class="notification-icon info">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
@@ -540,6 +552,8 @@ async function renderYoungMessages() {
             </div>
         </div>
     `).join('');
+
+    renderPagination('youngPagination', page, totalPages, 'renderYoungMessages');
 }
 
 // Notifications
