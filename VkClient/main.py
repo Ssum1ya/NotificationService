@@ -1,10 +1,13 @@
 import vk_api
 from vk_api.utils import get_random_id
-from vk_api.longpoll import VkLongPoll, VkEventType
-from config import TOKEN, PASSWORD
-# import pymysql.cursors
+from vk_api.longpoll import VkLongPoll
+
+from config import TOKEN
+
+import psycopg2
 
 import json
+from datetime import datetime
 
 from kafka import KafkaConsumer
 
@@ -23,17 +26,56 @@ def sender(user_id, text):
 
     print(f"Сообщение отправлено пользователю (ID: {user_id})")
 
-# def get_connection():
-#     connection = pymysql.connect(
-#     host='localhost', # нужно будет поменять подключение
-#     port=3306,
-#     user='root',
-#     password='',
-#     database='botlogs',
-#     charset='utf8mb4',
-#     cursorclass=pymysql.cursors.DictCursor
-# )
-#     return connection
+def get_connection():
+    connection = psycopg2.connect(
+        dbname="postgres",
+        user="postgres",
+        password="postgres",
+        host="db",
+        port="5432"
+    )
+    return connection
+
+connection = get_connection()
+cursor = None
+try:
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS logs (
+            id SERIAL PRIMARY KEY,
+            user_id VARCHAR(100),
+            datetime TIMESTAMP,
+            message TEXT
+        );
+    ''')
+except Exception as e:
+    connection.rollback()
+    print(f"Error: {e}") 
+finally:
+    connection.commit()
+    if cursor:
+        cursor.close()
+    if connection:
+        connection.close()
+
+def add_to_database(id, datetime, message):
+    connection = get_connection()
+    cursor = None
+    try:
+        cursor = connection.cursor()
+        cursor.execute('''
+            INSERT INTO logs (user_id, datetime, message) 
+            VALUES (%s, %s, %s)
+        ''', ('user123', datetime, 'test message'))
+    except Exception as e:
+        connection.rollback()
+        print(f"Error: {e}")    
+    finally:
+        connection.commit()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 consumer = KafkaConsumer(
     'notifications-vk',
@@ -43,33 +85,12 @@ consumer = KafkaConsumer(
 )
 
 for message in consumer:
+    now = datetime.now()
     notification = message.value
     print(f"Получено сообщение: {notification}")
 
     subj = notification['fromFullName'] + ", " +  notification['fromFullPosition'] + ", " + notification['fromDepartmentName']
     message = notification['message']
     for id in notification['usernameList']:
+        add_to_database(id, now, message)
         sender(id, subj + ": " + message) 
-
-
-# sender('680045495', 'VK-client started')
-
-# def add_to_database(id, datetime, message):
-#     connection = get_connection()
-#     cursor = connection.cursor()
-#     sql = f"INSERT INTO logs (user_id, datetime, message) VALUES ({id}, {datetime}, {message})"
-#     cursor.execute(sql)
-#     connection.commit()
-#     connection.close()
-# print("Connected")
-# for event in longpoll.listen():
-#     if event.type == VkEventType.MESSAGE_NEW:
-#         if event.to_me:
-#             msg = event.text
-#             id = event.user_id
-#             datetime = event.datetime
-#             add_to_database(id, datetime, msg)
-#             sender(id, "Сообщение успешно записано")
-#             print("Connected")
-
-#sender('712040972', 'KTH4RFGGWJ354BNFSL!!DSJDG465NFFHEPDE')
