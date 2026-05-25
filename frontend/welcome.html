@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добро пожаловать</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+        :root {
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-900: #1e3a8a;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-800: #1e293b;
+        }
+ 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--blue-50);
+            color: var(--slate-800);
+            min-height: 100vh;
+        }
+ 
+        /* HEADER */
+        .site-header {
+            background: white;
+            border-bottom: 1px solid var(--blue-200);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 8px rgba(37,99,235,0.07);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--blue-600);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--blue-900); letter-spacing: -0.3px; }
+        .logo-text span { color: var(--blue-600); }
+ 
+        /* HERO */
+        .hero {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; padding: 80px 24px 60px;
+            max-width: 740px; margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--blue-100); color: var(--blue-700);
+            border: 1px solid var(--blue-200); border-radius: 100px;
+            padding: 6px 16px; font-size: 13px; font-weight: 600;
+            margin-bottom: 28px; letter-spacing: 0.2px;
+        }
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 58px);
+            font-weight: 800; color: var(--blue-900);
+            line-height: 1.12; letter-spacing: -1.5px; margin-bottom: 20px;
+        }
+        .hero h1 em { font-style: normal; color: var(--blue-600); }
+        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+ 
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--blue-600); color: white;
+            border: none; border-radius: 12px; padding: 14px 32px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+        }
+        .btn-primary:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.45); }
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: white; color: var(--blue-600);
+            border: 1.5px solid var(--blue-200); border-radius: 12px;
+            padding: 14px 28px; font-size: 16px; font-weight: 600;
+            cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--blue-500); background: var(--blue-50); }
+ 
+        /* SECTION LABEL */
+        .section-label { text-align: center; margin: 8px 0 48px; }
+        .section-label p {
+            display: inline-flex; align-items: center; gap: 12px;
+            font-size: 12px; color: var(--slate-500);
+            text-transform: uppercase; letter-spacing: 1.4px; font-weight: 600;
+        }
+        .section-label p::before, .section-label p::after {
+            content: ''; display: block; width: 48px; height: 1px; background: var(--blue-200);
+        }
+ 
+        /* STEPS GRID — 4 колонки на всех экранах */
+        .steps-section { max-width: 1400px; margin: 0 auto; padding: 0 24px 80px; }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+        }
+        @media (max-width: 1100px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px)  { .steps-grid { grid-template-columns: 1fr; } }
+ 
+        .step-card {
+            background: white; border-radius: 20px;
+            border: 1px solid var(--blue-100);
+            box-shadow: 0 4px 24px rgba(37,99,235,0.06);
+            overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .step-card:hover { transform: translateY(-5px); box-shadow: 0 14px 44px rgba(37,99,235,0.14); }
+ 
+        .step-image {
+            height: 220px; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .step-image.vk-bg  { background: linear-gradient(135deg, #e8f0fe 0%, #c7d9fd 100%); }
+        .step-image.tg-bg  { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); }
+        .step-image.sub-bg { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); }
+        .step-image.mail-bg{ background: linear-gradient(135deg, #ecfdf5 0%, #bbf7d0 100%); }
+ 
+        .step-image .deco1 {
+            position: absolute; width: 170px; height: 170px; border-radius: 50%;
+            top: -55px; right: -45px; opacity: 0.15; background: var(--blue-600);
+        }
+        .step-image .deco2 {
+            position: absolute; width: 90px; height: 90px; border-radius: 50%;
+            bottom: -28px; left: -18px; opacity: 0.15; background: var(--blue-500);
+        }
+        .step-image svg { position: relative; z-index: 1; }
+        .step-num {
+            position: absolute; top: 14px; left: 14px; z-index: 2;
+            width: 30px; height: 30px; background: var(--blue-600); color: white;
+            border-radius: 50%; font-size: 13px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        }
+ 
+        .step-body { padding: 24px 28px 28px; }
+        .step-body h3 { font-size: 20px; font-weight: 700; color: var(--blue-900); margin-bottom: 10px; }
+        .step-body > p { font-size: 14px; color: var(--slate-500); line-height: 1.7; margin-bottom: 18px; }
+ 
+        .instr-list { display: flex; flex-direction: column; gap: 9px; }
+        .instr-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--slate-600); line-height: 1.5; }
+        .instr-dot {
+            flex-shrink: 0; width: 20px; height: 20px;
+            background: var(--blue-100); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin-top: 1px;
+        }
+        .step-link {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 18px;
+            color: var(--blue-600); font-size: 13px; font-weight: 600;
+            text-decoration: none; border: 1.5px solid var(--blue-200);
+            border-radius: 8px; padding: 8px 14px; transition: all 0.2s;
+        }
+        .step-link:hover { background: var(--blue-50); border-color: var(--blue-500); }
+ 
+        /* FOOTER */
+        .site-footer {
+            text-align: center; padding: 24px;
+            border-top: 1px solid var(--blue-100);
+            font-size: 13px; color: var(--slate-500); background: white;
+        }
+ 
+        /* ANIMATIONS */
+        .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .fade-in.visible { opacity: 1; transform: none; }
+ 
+        @media (max-width: 640px) {
+            .hero { padding: 52px 20px 44px; }
+        }
+    </style>
+</head>
+<body>
+ 
+<header class="site-header">
+    <a href="#" class="logo">
+        <div class="logo-icon">
+            <svg width="20" height="20" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+            </svg>
+        </div>
+        <span class="logo-text">Notification<span>Service</span></span>
+    </a>
+</header>
+ 
+<!-- HERO -->
+<section class="hero">
+    <h1 class="fade-in">Добро пожаловать<br></h1>
+    <div class="hero-actions fade-in" style="margin-top: 8px;">
+        <a href="register.html" class="btn-primary">
+            Начать регистрацию
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+        </a>
+        <a href="index.html" class="btn-secondary">
+            Уже есть аккаунт? Войти
+        </a>
+    </div>
+</section>
+ 
+<div class="section-label">
+    <p>Как начать работу</p>
+</div>
+ 
+<!-- STEPS -->
+<section class="steps-section">
+    <div class="steps-grid">
+ 
+        <!-- STEP 1: VK ID -->
+        <div class="step-card fade-in">
+            <div class="step-image vk-bg">
+                <div class="deco1"></div>
+                <div class="deco2"></div>
+                <span class="step-num">1</span>
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <rect x="42" y="22" width="56" height="96" rx="10" fill="white" opacity="0.9"/>
+                    <rect x="46" y="34" width="48" height="64" rx="5" fill="#dbeafe"/>
+                    <rect x="52" y="42" width="36" height="28" rx="4" fill="#2563eb" opacity="0.9"/>
+                    <text x="70" y="62" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="15" font-weight="900" fill="white">VK</text>
+                    <rect x="52" y="76" width="36" height="7" rx="3.5" fill="#2563eb" opacity="0.25"/>
+                    <rect x="52" y="88" width="26" height="5" rx="2.5" fill="#2563eb" opacity="0.15"/>
+                    <circle cx="70" cy="107" r="5" fill="white" stroke="#bfdbfe" stroke-width="1.5"/>
+                </svg>
+            </div>
+            <div class="step-body">
+                <h3>(Если вы при регистрации выбираете средство связи VK)</h3>
+                <div class="instr-list">
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Откройте <strong>vk.com</strong> и войдите в аккаунт</span></div>
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Перейдите в <strong>Настройки → Общее</strong></span></div>
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Найдите строку «Адрес страницы» — там указан ваш числовой ID</span></div>
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Скопируйте цифры из <strong>vk.com/id<u>12345678</u></strong></span></div>
+                </div>
+                <a href="https://vk.com/settings" class="step-link" target="_blank" rel="noopener">
+                    Открыть настройки VK
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+        </div>
+ 
+        <!-- STEP 2: TELEGRAM -->
+        <div class="step-card fade-in" style="transition-delay:0.1s">
+            <div class="step-image tg-bg">
+                <div class="deco1" style="background:#0ea5e9"></div>
+                <div class="deco2" style="background:#0284c7"></div>
+                <span class="step-num">2</span>
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <rect x="20" y="30" width="80" height="52" rx="14" fill="white" opacity="0.9"/>
+                    <path d="M36 82l-12 14 4-14" fill="white" opacity="0.9"/>
+                    <rect x="32" y="46" width="56" height="6" rx="3" fill="#0ea5e9" opacity="0.3"/>
+                    <rect x="32" y="58" width="40" height="6" rx="3" fill="#0ea5e9" opacity="0.2"/>
+                    <circle cx="96" cy="96" r="28" fill="#0ea5e9" opacity="0.9"/>
+                    <path d="M82 96l28-12-10 28-7-10-11-6z" fill="white" opacity="0.9"/>
+                    <path d="M96 102l-7-6 18-12" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+                </svg>
+            </div>
+            <div class="step-body">
+                <h3>(Если вы при регистрации выбираете средство связи Telegram)</h3>
+                <p>Напишите администратору</p>
+                <div class="instr-list">
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Найдите в Telegram аккаунт <strong>@Ogre_mage43</strong></span></div>
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Отправьте любое сообщение</span></div>
+                </div>
+                <a href="https://t.me/Ogre_mage43" class="step-link" target="_blank" rel="noopener">
+                    Написать в Telegram
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+        </div>
+ 
+        <!-- STEP 3: COMMUNITY -->
+        <div class="step-card fade-in" style="transition-delay:0.2s">
+            <div class="step-image sub-bg">
+                <div class="deco1" style="background:#7c3aed"></div>
+                <div class="deco2" style="background:#6d28d9"></div>
+                <span class="step-num">3</span>
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <circle cx="50" cy="52" r="16" fill="#7c3aed" opacity="0.85"/>
+                    <path d="M26 92c0-13.3 10.7-24 24-24s24 10.7 24 24" stroke="#7c3aed" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85"/>
+                    <circle cx="95" cy="48" r="13" fill="#2563eb" opacity="0.85"/>
+                    <path d="M74 90c0-11.6 9.4-21 21-21s21 9.4 21 21" stroke="#2563eb" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85"/>
+                    <circle cx="104" cy="26" r="16" fill="#22c55e"/>
+                    <path d="M96 26l6 6 10-12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="step-body">
+                <h3>(Если вы при регистрации выбираете средство связи VK)</h3>
+                <p>Подпишитесь на корпоративное сообщество ВКонтакте.</p>
+                <div class="instr-list">
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Перейдите по ссылке на <strong>корпоративную группу VK</strong></span></div>
+                    <div class="instr-item"><div class="instr-dot"><svg width="10" height="10" fill="none" stroke="#2563eb" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span>Нажмите кнопку <strong>«Вступить»</strong> на странице группы</span></div>
+                </div>
+                <a href="https://vk.com/club236714194" class="step-link" target="_blank" rel="noopener">
+                    Открыть сообщество VK
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+        </div>
+ 
+        <!-- STEP 4: EMAIL -->
+        <div class="step-card fade-in" style="transition-delay:0.3s">
+            <div class="step-image mail-bg">
+                <div class="deco1" style="background:#16a34a"></div>
+                <div class="deco2" style="background:#15803d"></div>
+                <span class="step-num">4</span>
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <rect x="18" y="38" width="104" height="72" rx="12" fill="white" opacity="0.9"/>
+                    <path d="M18 50l52 36 52-36" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
+                    <circle cx="70" cy="74" r="14" fill="#16a34a" opacity="0.15"/>
+                    <circle cx="70" cy="74" r="7" fill="none" stroke="#16a34a" stroke-width="3" opacity="0.9"/>
+                    <path d="M77 74c0 5-3.5 8-8 8-5.5 0-9-4-9-10s3.5-10 9-10c4 0 8 2.5 8 7v3" stroke="#16a34a" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+                    <circle cx="106" cy="38" r="16" fill="#16a34a"/>
+                    <path d="M98 38l6 6 10-12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="step-body">
+                <h3>(Если вы при регистрации выбираете средство связи Mail)</h3>
+                <p>При регистрации обязательно укажите актуальный e-mail — на него будут придить уведомления.</p>
+                <div class="instr-list">
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+</section>
+ 
+<div style="max-width:1400px;margin:0 auto 48px;padding:0 24px;">
+    <div class="fade-in" style="background:white;border:1px solid #bfdbfe;border-radius:20px;padding:32px 40px;display:flex;align-items:flex-start;gap:24px;box-shadow:0 4px 24px rgba(37,99,235,0.06);">
+        <div style="flex-shrink:0;width:52px;height:52px;background:#dbeafe;border-radius:14px;display:flex;align-items:center;justify-content:center;">
+            <svg width="26" height="26" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+        </div>
+        <div>
+            <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">После регистрации</div>
+            <h3 style="font-size:19px;font-weight:700;color:#1e3a8a;margin-bottom:10px;">Заявка уходит на рассмотрение</h3>
+            <p style="font-size:14px;color:#475569;line-height:1.7;max-width:640px;">
+                После отправки формы ваша заявка автоматически направляется на проверку
+                <strong>главе вашего отдела</strong> и <strong>администратору системы</strong>.
+                Оба должны одобрить заявку — только после этого аккаунт будет активирован.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
+                <div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:13px;color:#1e3a8a;font-weight:600;">
+                    <svg width="15" height="15" fill="none" stroke="#2563eb" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Глава отдела
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:13px;color:#1e3a8a;font-weight:600;">
+                    <svg width="15" height="15" fill="none" stroke="#2563eb" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Администратор системы
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+ 
+</body>
+</html>

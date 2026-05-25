@@ -78,7 +78,7 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:80",
+                "http://localhost:800",
                 "http://localhost",
                 "http://127.0.0.1"
         ));

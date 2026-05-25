@@ -70,19 +70,19 @@ services:
       kafka:
         condition: service_healthy
 
-  # mail-client:
-  #   build: ./PythonMailingService
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #   networks: [test-net]
+  mail-client:
+    build: ./PythonMailingService
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [test-net]
 
-  # vk-client:
-  #   build: ./VkClient
-  #   depends_on:
-  #     kafka:
-  #       condition: service_healthy
-  #   networks: [test-net]
+  vk-client:
+    build: ./VkClient
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [test-net]
   
   frontend:
     build:
@@ -90,7 +90,10 @@ services:
       dockerfile: Dockerfile.frontend
     networks: [test-net]
     ports:
-      - "80:80"
+      - "800:80"
+    depends_on:
+      backend:
+        condition: service_started
 
 volumes:
   pgdata:
